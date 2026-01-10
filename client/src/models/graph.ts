@@ -4,8 +4,9 @@ export interface Node {
     id: string;
     x: number;
     y: number;
+    radius: number;
     label: string;
-    fixed?: boolean;
+    description: string;
 }
 
 export interface Edge {

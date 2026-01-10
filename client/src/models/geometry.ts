@@ -1,5 +1,6 @@
 import type { Camera } from "@/controllers/camera";
 import { GRID_SIZE } from "@/views/GridView";
+import type { Node } from "./graph";
 
 interface Vector {
     x: number;
@@ -112,22 +113,17 @@ function computeLabelGeometry(direction: Vector, tip: Vector, offset: number = 1
     };
 }
 
-export function computeEdgeGeometry(
-    from: Vector,
-    to: Vector,
-    curvature: number,
-    nodeRadius: number = 32,
-): EdgeGeometry {
+export function computeEdgeGeometry(from: Node, to: Node, curvature: number): EdgeGeometry {
     const midpoint = interpolateQuadraticBezier(from, to, curvature);
-    const [start, end] = insetEndpoints(from, to, midpoint, nodeRadius, nodeRadius);
+    const [start, end] = insetEndpoints(from, to, midpoint, from.radius, to.radius);
 
     const dx = to.x - midpoint.x;
     const dy = to.y - midpoint.y;
     const direction = normalize({ x: dx, y: dy });
 
     const tip = {
-        x: to.x - direction.x * nodeRadius,
-        y: to.y - direction.y * nodeRadius,
+        x: to.x - direction.x * to.radius,
+        y: to.y - direction.y * to.radius,
     };
     const arrow = computeArrowGeometry(tip, direction);
     const label = computeLabelGeometry(direction, tip);

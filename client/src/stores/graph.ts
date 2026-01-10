@@ -7,7 +7,7 @@ interface GraphState {
     nodes: Record<string, Node>;
     edges: Record<string, Edge>;
 
-    addNode: (x: number, y: number) => void;
+    addNode: (x: number, y: number, radius?: number) => void;
     addEdge: (from: string, to: string, polarity?: Polarity) => void;
     updateNode: (id: string, patch: Partial<Node>) => void;
     updateEdge: (id: string, patch: Partial<Edge>) => void;
@@ -20,13 +20,15 @@ export const useGraphStore = create<GraphState>((set) => ({
     nodes: {},
     edges: {},
 
-    addNode: (x, y) =>
+    addNode: (x, y, radius = 32) =>
         set((state) => {
             const node = {
                 id: toNodeId(state.counter),
                 x,
                 y,
-                label: `Node ${state.counter}`,
+                radius,
+                label: "",
+                description: "",
             };
 
             return {

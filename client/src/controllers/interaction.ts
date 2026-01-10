@@ -15,8 +15,8 @@ export function useInteractionController(camera: Camera) {
         if (e.target !== e.target.getStage()) return;
 
         if (interactionMode === "add-node") {
-            const pos = snapToGrid(mouseToWorldSpace(e.evt, camera));
-            addNode(pos.x, pos.y);
+            const position = snapToGrid(mouseToWorldSpace(e.evt, camera));
+            addNode(position.x, position.y);
             return "handled";
         }
 
@@ -58,7 +58,6 @@ export function useNodeInteractions(nodeId: string) {
 
             updateNode(nodeId, {
                 ...position,
-                fixed: true,
             });
         },
     };

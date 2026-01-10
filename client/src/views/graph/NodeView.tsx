@@ -3,9 +3,6 @@ import { Circle, Group, Text } from "react-konva";
 import { useGraphStore } from "../../stores/graph";
 import { useNodeInteractions } from "@/controllers/interaction";
 
-export const NODE_RADIUS = 32;
-export const NODE_DIAMETER = NODE_RADIUS * 2;
-
 export function NodeView({ nodeId }: { nodeId: string }) {
     const node = useGraphStore((s) => s.nodes[nodeId]);
     if (!node) {
@@ -19,23 +16,23 @@ export function NodeView({ nodeId }: { nodeId: string }) {
             x={node.x}
             y={node.y}
             draggable
-            dragBoundFunc={(pos) => pos}
+            dragBoundFunc={(position) => position}
             onClick={onClick}
             onDragEnd={onDragEnd}
         >
             <Circle
-                radius={NODE_RADIUS}
+                radius={node.radius}
                 fill="#ffffff"
                 stroke={isSelected ? "#ff0000" : "#111111"}
             />
             <Text
                 text={node.label}
-                width={NODE_DIAMETER}
-                height={NODE_DIAMETER}
+                width={node.radius * 2}
+                height={node.radius * 2}
                 align="center"
                 verticalAlign="middle"
-                x={-NODE_RADIUS}
-                y={-NODE_RADIUS}
+                x={-node.radius}
+                y={-node.radius}
                 fontSize={12}
                 wrap="word"
             />
