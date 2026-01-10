@@ -13,6 +13,7 @@ export interface Edge {
     from: string;
     to: string;
     polarity: Polarity;
+    curvature: number;
 }
 
 export function toNodeId(counter: number) {

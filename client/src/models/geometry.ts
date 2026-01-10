@@ -34,7 +34,7 @@ export interface EdgeGeometry {
     label: Vector;
 }
 
-function interpolateQuadraticBezier(from: Vector, to: Vector, curvature: number = 0.25): Vector {
+function interpolateQuadraticBezier(from: Vector, to: Vector, curvature: number): Vector {
     const dx = to.x - from.x;
     const dy = to.y - from.y;
     const mx = (from.x + to.x) / 2;
@@ -112,8 +112,13 @@ function computeLabelGeometry(direction: Vector, tip: Vector, offset: number = 1
     };
 }
 
-export function computeEdgeGeometry(from: Vector, to: Vector, nodeRadius: number = 32): EdgeGeometry {
-    const midpoint = interpolateQuadraticBezier(from, to);
+export function computeEdgeGeometry(
+    from: Vector,
+    to: Vector,
+    curvature: number,
+    nodeRadius: number = 32,
+): EdgeGeometry {
+    const midpoint = interpolateQuadraticBezier(from, to, curvature);
     const [start, end] = insetEndpoints(from, to, midpoint, nodeRadius, nodeRadius);
 
     const dx = to.x - midpoint.x;

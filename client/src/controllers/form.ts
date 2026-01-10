@@ -1,3 +1,4 @@
+import type { Edge } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
 
@@ -5,8 +6,10 @@ export function useNodeForm(nodeId: string) {
     const { nodes, updateNode, deleteNode } = useGraphStore((s) => s);
     const { clearSelectedIds } = useInteractionStore((s) => s);
 
+    const node = nodes[nodeId];
+
     return {
-        defaultLabel: nodes[nodeId]?.label,
+        defaultLabel: node?.label,
         handleSubmit: (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
 
@@ -35,19 +38,9 @@ export function useEdgeForm(edgeId: string) {
     const { clearSelectedIds } = useInteractionStore((s) => s);
 
     return {
-        defaultPolarity: edges[edgeId]?.polarity,
-        handleSubmit: (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-
-            const formData = new FormData(e.currentTarget);
-            const polarity = formData.get("polarity")?.toString();
-
-            if (polarity === "+" || polarity === "-") {
-                updateEdge(edgeId, {
-                    polarity,
-                });
-            }
-            clearSelectedIds();
+        edge: edges[edgeId],
+        handleChange: (patch: Partial<Edge>) => {
+            updateEdge(edgeId, patch);
         },
         handleCancel: () => {
             clearSelectedIds();
@@ -55,6 +48,6 @@ export function useEdgeForm(edgeId: string) {
         handleDelete: () => {
             deleteEdge(edgeId);
             clearSelectedIds();
-        }
+        },
     };
 }

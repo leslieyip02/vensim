@@ -38,13 +38,14 @@ export const useGraphStore = create<GraphState>((set) => ({
             };
         }),
 
-    addEdge: (from, to, polarity = "+") =>
+    addEdge: (from, to, polarity = "+", curvature = 0.25) =>
         set((state) => {
             const edge = {
                 id: toEdgeId(state.counter),
                 from,
                 to,
                 polarity,
+                curvature,
             };
 
             return {

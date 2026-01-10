@@ -13,7 +13,7 @@ export function EdgeView({ edgeId }: { edgeId: string }) {
         return null;
     }
 
-    const { start, end, midpoint, arrow, label } = computeEdgeGeometry(from, to);
+    const { start, end, midpoint, arrow, label } = computeEdgeGeometry(from, to, edge.curvature);
     const { isSelected, onClick } = useEdgeInteractions(edge.id);
 
     function draw(ctx: Context) {
