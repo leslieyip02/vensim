@@ -1,8 +1,7 @@
 import { Circle, Group, Text } from "react-konva";
 
 import { useGraphStore } from "../../stores/graph";
-import { useInteractionStore } from "../../stores/interaction";
-import { snapToGrid } from "@/models/geometry";
+import { useNodeInteractions } from "@/controllers/interaction";
 
 export const NODE_RADIUS = 32;
 export const NODE_DIAMETER = NODE_RADIUS * 2;
@@ -10,13 +9,10 @@ export const NODE_DIAMETER = NODE_RADIUS * 2;
 export function NodeView({ nodeId }: { nodeId: string }) {
     const node = useGraphStore((s) => s.nodes[nodeId]);
     if (!node) {
-        return;
+        return null;
     }
 
-    const { addEdge, updateNode } = useGraphStore((s) => s);
-
-    const { selectedIds, selectId, clearSelectedIds, interactionMode } = useInteractionStore((s) => s);
-    const isSelected = selectedIds.includes(nodeId);
+    const { isSelected, onClick, onDragEnd } = useNodeInteractions(node.id);
 
     return (
         <Group
@@ -24,37 +20,14 @@ export function NodeView({ nodeId }: { nodeId: string }) {
             y={node.y}
             draggable
             dragBoundFunc={(pos) => pos}
-            onClick={() => {
-                selectId(node.id);
-
-                if (interactionMode !== "add-edge") {
-                    return;
-                }
-
-                if (selectedIds.length !== 1 || !selectedIds.every((id) => id.startsWith("node"))) {
-                    return;
-                }
-
-                const from = selectedIds[0];
-                addEdge(from, node.id);
-                clearSelectedIds();
-            }}
-            onDragEnd={(e) => {
-                const position = snapToGrid({ x: e.target.x(), y: e.target.y() });
-                e.target.position(position);
-
-                updateNode(nodeId, {
-                    ...position,
-                    fixed: true,
-                });
-            }}
+            onClick={onClick}
+            onDragEnd={onDragEnd}
         >
             <Circle
                 radius={NODE_RADIUS}
                 fill="#ffffff"
                 stroke={isSelected ? "#ff0000" : "#111111"}
             />
-
             <Text
                 text={node.label}
                 width={NODE_DIAMETER}

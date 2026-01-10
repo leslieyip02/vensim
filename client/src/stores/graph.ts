@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Edge, Node, Polarity } from "../models/graph";
+import { toEdgeId, toNodeId, type Edge, type Node, type Polarity } from "../models/graph";
 
 interface GraphState {
     counter: number;
@@ -23,7 +23,7 @@ export const useGraphStore = create<GraphState>((set) => ({
     addNode: (x, y) =>
         set((state) => {
             const node = {
-                id: `node-${state.counter}`,
+                id: toNodeId(state.counter),
                 x,
                 y,
                 label: `Node ${state.counter}`,
@@ -41,7 +41,7 @@ export const useGraphStore = create<GraphState>((set) => ({
     addEdge: (from, to, polarity = "+") =>
         set((state) => {
             const edge = {
-                id: `edge-${state.counter}`,
+                id: toEdgeId(state.counter),
                 from,
                 to,
                 polarity,

@@ -7,43 +7,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
-import { useGraphStore } from "@/stores/graph";
-import { useInteractionStore } from "@/stores/interaction";
+import { useEdgeForm } from "@/controllers/form";
 import { LuTrash2 } from "react-icons/lu";
 
-export function EditEdgeFormView() {
-    const { selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
-    if (selectedIds.length !== 1) {
-        return;
-    }
-
-    const selectedId = selectedIds[0];
-    if (!selectedId.startsWith("edge")) {
-        return;
-    }
-
-    const edge = useGraphStore((s) => s.edges[selectedId]);
-    const { updateEdge, deleteEdge } = useGraphStore((s) => s);
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.currentTarget);
-        const polarity = formData.get("polarity")?.toString();
-
-        if (polarity === "+" || polarity === "-") {
-            updateEdge(edge.id, {
-                polarity,
-            });
-        }
-        clearSelectedIds();
-    };
-
-    const handleDelete = () => {
-        deleteEdge(edge.id);
-        clearSelectedIds();
-    }
+export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
+    const { defaultPolarity, handleSubmit, handleCancel, handleDelete } = useEdgeForm(edgeId);
 
     return (
         <form onSubmit={handleSubmit}>
@@ -53,7 +21,7 @@ export function EditEdgeFormView() {
                     <FieldGroup>
                         <Field>
                             <FieldLabel htmlFor="polarity">Edge Polarity</FieldLabel>
-                            <Select name="polarity" defaultValue={edge.polarity}>
+                            <Select name="polarity" defaultValue={defaultPolarity}>
                                 <SelectTrigger id="polarity">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -67,7 +35,7 @@ export function EditEdgeFormView() {
                 </FieldSet>
                 <Field orientation="horizontal">
                     <Button type="submit">Confirm Changes</Button>
-                    <Button variant="outline" type="button" onClick={clearSelectedIds}>
+                    <Button variant="outline" type="button" onClick={handleCancel}>
                         Cancel
                     </Button>
                     <Button variant="destructive" type="button" onClick={handleDelete}>

@@ -14,3 +14,19 @@ export interface Edge {
     to: string;
     polarity: Polarity;
 }
+
+export function toNodeId(counter: number) {
+    return `node-${counter}`;
+}
+
+export function toEdgeId(counter: number) {
+    return `edge-${counter}`;
+}
+
+export function isNodeId(id: string): boolean {
+    return id.startsWith("node");
+}
+
+export function isEdgeId(id: string): boolean {
+    return id.startsWith("edge");
+}
