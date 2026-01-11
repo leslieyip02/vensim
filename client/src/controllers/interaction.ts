@@ -6,6 +6,7 @@ import { useInteractionStore } from "@/stores/interaction";
 
 import type { Camera } from "./camera";
 import { isNodeId } from "@/models/graph";
+import { useTagStore } from "@/stores/tag";
 
 export function useInteractionController(camera: Camera) {
     const addNode = useGraphStore((s) => s.addNode);
@@ -31,14 +32,17 @@ export function useInteractionController(camera: Camera) {
 
 export function useNodeInteractions(nodeId: string) {
     const { addEdge, updateNode } = useGraphStore((s) => s);
-    const { selectedIds, selectId, clearSelectedIds, interactionMode } = useInteractionStore(
-        (s) => s,
-    );
+    const { isTagged } = useTagStore((s) => s);
+    const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
+        useInteractionStore((s) => s);
+
+    const isNodeTagged = selectedTags.some((tagId) => isTagged(tagId, nodeId));
 
     return {
         isSelected: selectedIds.includes(nodeId),
+        opacity: selectedTags.length === 0 || isNodeTagged ? 1 : 0.25,
         onClick: () => {
-            selectId(nodeId);
+            toggleSelectId(nodeId);
 
             if (interactionMode !== "add-edge") {
                 return;
@@ -64,10 +68,14 @@ export function useNodeInteractions(nodeId: string) {
 }
 
 export function useEdgeInteractions(edgeId: string) {
-    const { selectedIds, selectId } = useInteractionStore((s) => s);
+    const { isTagged } = useTagStore((s) => s);
+    const { selectedIds, selectedTags, toggleSelectId } = useInteractionStore((s) => s);
+
+    const isEdgeTagged = selectedTags.some((tagId) => isTagged(tagId, edgeId));
 
     return {
         isSelected: selectedIds.includes(edgeId),
-        onClick: () => selectId(edgeId),
+        opacity: selectedTags.length === 0 || isEdgeTagged ? 1 : 0.25,
+        onClick: () => toggleSelectId(edgeId),
     };
 }

@@ -1,21 +1,29 @@
 import { create } from "zustand";
 
 interface InteractionState {
-    selectedIds: string[];
     interactionMode: InteractionMode;
+    selectedIds: string[];
+    selectedTags: string[];
 
-    selectId: (id: string) => void;
-    clearSelectedIds: () => void;
     setInteractionMode: (interactionMode: InteractionMode) => void;
+    toggleSelectId: (id: string) => void;
+    clearSelectedIds: () => void;
+    toggleSelectTag: (tagId: string) => void;
 }
 
 export type InteractionMode = "select" | "add-node" | "add-edge";
 
 export const useInteractionStore = create<InteractionState>((set) => ({
-    selectedIds: [],
     interactionMode: "select",
+    selectedIds: [],
+    selectedTags: [],
 
-    selectId: (id) =>
+    setInteractionMode: (interactionMode) =>
+        set((_) => ({
+            interactionMode,
+        })),
+
+    toggleSelectId: (id) =>
         set((state) => ({
             selectedIds: state.selectedIds.includes(id)
                 ? state.selectedIds.filter((selectedId) => selectedId !== id)
@@ -27,8 +35,10 @@ export const useInteractionStore = create<InteractionState>((set) => ({
             selectedIds: [],
         })),
 
-    setInteractionMode: (interactionMode) =>
-        set((_) => ({
-            interactionMode,
+    toggleSelectTag: (tagId) =>
+        set((state) => ({
+            selectedTags: state.selectedTags.includes(tagId)
+                ? state.selectedTags.filter((selectedTag) => selectedTag !== tagId)
+                : [...state.selectedTags, tagId],
         })),
 }));

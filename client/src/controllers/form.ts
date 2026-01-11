@@ -1,6 +1,8 @@
 import type { Edge, Node } from "@/models/graph";
+import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
+import { useTagStore } from "@/stores/tag";
 
 export function useNodeForm(nodeId: string) {
     const { nodes, updateNode, deleteNode } = useGraphStore((s) => s);
@@ -36,6 +38,20 @@ export function useEdgeForm(edgeId: string) {
         handleDelete: () => {
             deleteEdge(edgeId);
             clearSelectedIds();
+        },
+    };
+}
+
+export function useTagForm(tagId: string) {
+    const { tags, updateTag, deleteTag } = useTagStore((s) => s);
+
+    return {
+        tag: tags[tagId],
+        handleChange: (patch: Partial<Tag>) => {
+            updateTag(tagId, patch);
+        },
+        handleDelete: () => {
+            deleteTag(tagId);
         },
     };
 }

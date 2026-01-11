@@ -1,6 +1,5 @@
+import type { Edge, Node, Polarity } from "@/models/graph";
 import { create } from "zustand";
-
-import { toEdgeId, toNodeId, type Edge, type Node, type Polarity } from "../models/graph";
 
 interface GraphState {
     counter: number;
@@ -15,8 +14,16 @@ interface GraphState {
     deleteEdge: (id: string) => void;
 }
 
+function toNodeId(counter: number) {
+    return `node-${counter}`;
+}
+
+function toEdgeId(counter: number) {
+    return `edge-${counter}`;
+}
+
 export const useGraphStore = create<GraphState>((set) => ({
-    counter: 0,
+    counter: 1,
     nodes: {},
     edges: {},
 
@@ -29,6 +36,7 @@ export const useGraphStore = create<GraphState>((set) => ({
                 radius,
                 label: "",
                 description: "",
+                tagIds: [],
             };
 
             return {
@@ -48,6 +56,7 @@ export const useGraphStore = create<GraphState>((set) => ({
                 to,
                 polarity,
                 curvature,
+                tagIds: [],
             };
 
             return {

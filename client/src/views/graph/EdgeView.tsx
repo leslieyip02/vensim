@@ -1,5 +1,5 @@
 import type { Context } from "konva/lib/Context";
-import { Shape, Text } from "react-konva";
+import { Group, Shape, Text } from "react-konva";
 
 import { useGraphStore } from "../../stores/graph";
 import { computeEdgeGeometry } from "@/models/geometry";
@@ -14,7 +14,7 @@ export function EdgeView({ edgeId }: { edgeId: string }) {
     }
 
     const { start, end, midpoint, arrow, label } = computeEdgeGeometry(from, to, edge.curvature);
-    const { isSelected, onClick } = useEdgeInteractions(edge.id);
+    const { isSelected, opacity, onClick } = useEdgeInteractions(edge.id);
 
     function draw(ctx: Context) {
         ctx.strokeStyle = isSelected ? "#ff0000" : "#000000";
@@ -44,9 +44,9 @@ export function EdgeView({ edgeId }: { edgeId: string }) {
     }
 
     return (
-        <>
+        <Group opacity={opacity}>
             <Shape sceneFunc={draw} hitFunc={hit} onClick={onClick} />
             <Text x={label.x} y={label.y} text={edge.polarity} />
-        </>
+        </Group>
     );
 }

@@ -9,7 +9,7 @@ export function NodeView({ nodeId }: { nodeId: string }) {
         return null;
     }
 
-    const { isSelected, onClick, onDragEnd } = useNodeInteractions(node.id);
+    const { isSelected, opacity, onClick, onDragEnd } = useNodeInteractions(node.id);
 
     return (
         <Group
@@ -19,6 +19,7 @@ export function NodeView({ nodeId }: { nodeId: string }) {
             dragBoundFunc={(position) => position}
             onClick={onClick}
             onDragEnd={onDragEnd}
+            opacity={opacity}
         >
             <Circle
                 radius={node.radius}

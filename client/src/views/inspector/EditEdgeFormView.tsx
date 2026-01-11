@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
     Select,
@@ -12,6 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { useEdgeForm } from "@/controllers/form";
 import type { Polarity } from "@/models/graph";
 import { LuTrash2 } from "react-icons/lu";
+import { EditTagsView } from "./EditTagsView";
 
 export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
     const { edge, handleChange, handleCancel, handleDelete } = useEdgeForm(edgeId);
@@ -22,7 +23,6 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
     return (
         <FieldGroup>
             <FieldSet>
-                <FieldLegend>Edit Edge</FieldLegend>
                 <FieldGroup>
                     <Field>
                         <FieldLabel>Polarity</FieldLabel>
@@ -56,6 +56,10 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
                             value={[edge.curvature]}
                             onValueChange={(v) => handleChange({ curvature: Number(v) })}
                         />
+                    </Field>
+                    <Field>
+                        <FieldLabel>Tags</FieldLabel>
+                        <EditTagsView targetId={edgeId} />
                     </Field>
                 </FieldGroup>
             </FieldSet>

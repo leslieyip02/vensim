@@ -1,18 +1,21 @@
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { useNodeForm } from "@/controllers/form";
 import { LuTrash2 } from "react-icons/lu";
+import { EditTagsView } from "./EditTagsView";
 
 export function EditNodeFormView({ nodeId }: { nodeId: string }) {
     const { node, handleChange, handleCancel, handleDelete } = useNodeForm(nodeId);
+    if (!node) {
+        return null;
+    }
 
     return (
         <FieldGroup>
             <FieldSet>
-                <FieldLegend>Edit Node</FieldLegend>
                 <FieldGroup>
                     <Field>
                         <FieldLabel>Label</FieldLabel>
@@ -47,10 +50,13 @@ export function EditNodeFormView({ nodeId }: { nodeId: string }) {
                             onValueChange={(v) => handleChange({ radius: Number(v) })}
                         />
                     </Field>
+                    <Field>
+                        <FieldLabel>Tags</FieldLabel>
+                        <EditTagsView targetId={nodeId} />
+                    </Field>
                 </FieldGroup>
             </FieldSet>
             <Field orientation="horizontal">
-                <Button type="submit">Confirm Changes</Button>
                 <Button variant="outline" type="button" onClick={handleCancel}>
                     Cancel
                 </Button>
