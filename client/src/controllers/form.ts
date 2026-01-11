@@ -44,6 +44,7 @@ export function useEdgeForm(edgeId: string) {
 
 export function useTagForm(tagId: string) {
     const { tags, updateTag, deleteTag } = useTagStore((s) => s);
+    const { selectedTags, toggleSelectedTag } = useInteractionStore((s) => s);
 
     return {
         tag: tags[tagId],
@@ -51,6 +52,9 @@ export function useTagForm(tagId: string) {
             updateTag(tagId, patch);
         },
         handleDelete: () => {
+            if (selectedTags.includes(tagId)) {
+                toggleSelectedTag(tagId);
+            }
             deleteTag(tagId);
         },
     };

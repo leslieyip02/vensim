@@ -6,7 +6,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export function TagSelectorView() {
     const { tags, addTag } = useTagStore();
-    const { selectedTags, toggleSelectTag: selectTag } = useInteractionStore();
+    const { selectedTags, toggleSelectedTag } = useInteractionStore();
 
     if (Object.keys(tags).length === 0) {
         return null;
@@ -20,10 +20,10 @@ export function TagSelectorView() {
                     <TagBadgeView
                         isSelected={selectedTags.includes(tagId)}
                         tag={tag}
-                        onClick={() => selectTag(tagId)}
+                        onClick={() => toggleSelectedTag(tagId)}
                     />
                 ))}
-                <Button variant="outline" onClick={() => addTag("default")}>
+                <Button variant="outline" onClick={() => addTag()}>
                     + Add tag
                 </Button>
             </CardContent>

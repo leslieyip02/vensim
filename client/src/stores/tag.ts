@@ -1,3 +1,4 @@
+import { getPaletteColor } from "@/configs/color";
 import type { Tag } from "@/models/tag";
 import { create } from "zustand";
 
@@ -6,7 +7,7 @@ interface TagState {
     tags: Record<string, Tag>;
     tagToItems: Record<string, Set<string>>;
 
-    addTag: (label: string) => string;
+    addTag: (label?: string) => string;
     updateTag: (id: string, patch: Partial<Tag>) => void;
     deleteTag: (id: string) => void;
     toggleTag: (tagId: string, itemId: string) => void;
@@ -24,12 +25,17 @@ export const useTagStore = create<TagState>((set, get) => ({
 
     addTag: (label) => {
         const tagId = toTagId(get().counter);
+        const color = getPaletteColor(get().counter - 1);
 
         set((state) => ({
             counter: state.counter + 1,
             tags: {
                 ...state.tags,
-                [tagId]: { id: tagId, label },
+                [tagId]: {
+                    id: tagId,
+                    label: label ?? `#${tagId}`,
+                    color,
+                },
             },
             tagToItems: {
                 ...state.tagToItems,

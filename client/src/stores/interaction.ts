@@ -8,7 +8,7 @@ interface InteractionState {
     setInteractionMode: (interactionMode: InteractionMode) => void;
     toggleSelectId: (id: string) => void;
     clearSelectedIds: () => void;
-    toggleSelectTag: (tagId: string) => void;
+    toggleSelectedTag: (id: string) => void;
 }
 
 export type InteractionMode = "select" | "add-node" | "add-edge";
@@ -35,10 +35,10 @@ export const useInteractionStore = create<InteractionState>((set) => ({
             selectedIds: [],
         })),
 
-    toggleSelectTag: (tagId) =>
+    toggleSelectedTag: (id) =>
         set((state) => ({
-            selectedTags: state.selectedTags.includes(tagId)
-                ? state.selectedTags.filter((selectedTag) => selectedTag !== tagId)
-                : [...state.selectedTags, tagId],
+            selectedTags: state.selectedTags.includes(id)
+                ? state.selectedTags.filter((selectedTag) => selectedTag !== id)
+                : [...state.selectedTags, id],
         })),
 }));

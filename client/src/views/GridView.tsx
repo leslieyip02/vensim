@@ -1,3 +1,4 @@
+import { GRID_STROKE_COLOR } from "@/configs/color";
 import { Line } from "react-konva";
 
 export const GRID_SIZE = 64;
@@ -12,13 +13,13 @@ export function GridView() {
                 listening={false}
                 key={`v${i}`}
                 points={[i, -extent, i, extent]}
-                stroke="#eeeeee"
+                stroke={GRID_STROKE_COLOR}
             />,
             <Line
                 listening={false}
                 key={`h${i}`}
                 points={[-extent, i, extent, i]}
-                stroke="#eeeeee"
+                stroke={GRID_STROKE_COLOR}
             />,
         );
     }

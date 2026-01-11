@@ -17,6 +17,7 @@ export function TagBadgeView({ isSelected, tag, onClick }: TagBadgeProps) {
                     key={tag.id}
                     className={`h-9 px-3 flex items-center cursor-pointer rounded-md ${isSelected ? "opacity-100" : "opacity-25"}`}
                     onClick={onClick}
+                    style={{ backgroundColor: tag.color }}
                 >
                     {tag.label}
                 </Badge>

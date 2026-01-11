@@ -14,10 +14,10 @@ export function EdgeView({ edgeId }: { edgeId: string }) {
     }
 
     const { start, end, midpoint, arrow, label } = computeEdgeGeometry(from, to, edge.curvature);
-    const { isSelected, opacity, onClick } = useEdgeInteractions(edge.id);
+    const { stroke, opacity, onClick } = useEdgeInteractions(edge.id);
 
     function draw(ctx: Context) {
-        ctx.strokeStyle = isSelected ? "#ff0000" : "#000000";
+        ctx.strokeStyle = stroke;
         ctx.fillStyle = ctx.strokeStyle;
 
         // tail

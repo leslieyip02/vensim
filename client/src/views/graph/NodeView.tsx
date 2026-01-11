@@ -9,7 +9,7 @@ export function NodeView({ nodeId }: { nodeId: string }) {
         return null;
     }
 
-    const { isSelected, opacity, onClick, onDragEnd } = useNodeInteractions(node.id);
+    const { stroke, opacity, onClick, onDragEnd } = useNodeInteractions(node.id);
 
     return (
         <Group
@@ -21,11 +21,7 @@ export function NodeView({ nodeId }: { nodeId: string }) {
             onDragEnd={onDragEnd}
             opacity={opacity}
         >
-            <Circle
-                radius={node.radius}
-                fill="#ffffff"
-                stroke={isSelected ? "#ff0000" : "#111111"}
-            />
+            <Circle radius={node.radius} fill="#ffffff" stroke={stroke} />
             <Text
                 text={node.label}
                 width={node.radius * 2}

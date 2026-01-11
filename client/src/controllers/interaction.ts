@@ -7,6 +7,7 @@ import { useInteractionStore } from "@/stores/interaction";
 import type { Camera } from "./camera";
 import { isNodeId } from "@/models/graph";
 import { useTagStore } from "@/stores/tag";
+import { SELECTED_STROKE_COLOR, UNSELECTED_STROKE_COLOR } from "@/configs/color";
 
 export function useInteractionController(camera: Camera) {
     const addNode = useGraphStore((s) => s.addNode);
@@ -32,15 +33,22 @@ export function useInteractionController(camera: Camera) {
 
 export function useNodeInteractions(nodeId: string) {
     const { addEdge, updateNode } = useGraphStore((s) => s);
-    const { isTagged } = useTagStore((s) => s);
+    const { tags, isTagged } = useTagStore((s) => s);
     const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
         useInteractionStore((s) => s);
 
-    const isNodeTagged = selectedTags.some((tagId) => isTagged(tagId, nodeId));
+    const isSelected = selectedIds.includes(nodeId);
+    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, nodeId));
+    const stroke = activeTagId
+        ? tags[activeTagId].color
+        : isSelected
+          ? SELECTED_STROKE_COLOR
+          : UNSELECTED_STROKE_COLOR;
 
     return {
-        isSelected: selectedIds.includes(nodeId),
-        opacity: selectedTags.length === 0 || isNodeTagged ? 1 : 0.25,
+        isSelected,
+        stroke,
+        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
         onClick: () => {
             toggleSelectId(nodeId);
 
@@ -68,14 +76,21 @@ export function useNodeInteractions(nodeId: string) {
 }
 
 export function useEdgeInteractions(edgeId: string) {
-    const { isTagged } = useTagStore((s) => s);
+    const { tags, isTagged } = useTagStore((s) => s);
     const { selectedIds, selectedTags, toggleSelectId } = useInteractionStore((s) => s);
 
-    const isEdgeTagged = selectedTags.some((tagId) => isTagged(tagId, edgeId));
+    const isSelected = selectedIds.includes(edgeId);
+    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, edgeId));
+    const stroke = activeTagId
+        ? tags[activeTagId].color
+        : isSelected
+          ? SELECTED_STROKE_COLOR
+          : UNSELECTED_STROKE_COLOR;
 
     return {
-        isSelected: selectedIds.includes(edgeId),
-        opacity: selectedTags.length === 0 || isEdgeTagged ? 1 : 0.25,
+        isSelected,
+        stroke,
+        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
         onClick: () => toggleSelectId(edgeId),
     };
 }
