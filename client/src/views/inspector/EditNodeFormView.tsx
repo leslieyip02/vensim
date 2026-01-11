@@ -52,7 +52,7 @@ export function EditNodeFormView({ nodeId }: { nodeId: string }) {
                     </Field>
                     <Field>
                         <FieldLabel>Tags</FieldLabel>
-                        <EditTagsView targetId={nodeId} />
+                        <EditTagsView targetIds={[nodeId]} />
                     </Field>
                 </FieldGroup>
             </FieldSet>

@@ -59,7 +59,7 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
                     </Field>
                     <Field>
                         <FieldLabel>Tags</FieldLabel>
-                        <EditTagsView targetId={edgeId} />
+                        <EditTagsView targetIds={[edgeId]} />
                     </Field>
                 </FieldGroup>
             </FieldSet>

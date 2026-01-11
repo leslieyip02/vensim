@@ -1,4 +1,4 @@
-import type { Edge, Node } from "@/models/graph";
+import { isEdgeId, isNodeId, type Edge, type Node } from "@/models/graph";
 import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
@@ -37,6 +37,27 @@ export function useEdgeForm(edgeId: string) {
         },
         handleDelete: () => {
             deleteEdge(edgeId);
+            clearSelectedIds();
+        },
+    };
+}
+
+export function useGroupForm(targetIds: string[]) {
+    const {deleteNode, deleteEdge} = useGraphStore(s=>s);
+    const { clearSelectedIds } = useInteractionStore((s) => s);
+
+    return {
+        handleCancel: () => {
+            clearSelectedIds();
+        },
+        handleDelete: () => {
+            targetIds.forEach((targetId) => {
+                if (isNodeId(targetId)) {
+                    deleteNode(targetId);
+                } else if (isEdgeId(targetId)) {
+                    deleteEdge(targetId);
+                }
+            })
             clearSelectedIds();
         },
     };
