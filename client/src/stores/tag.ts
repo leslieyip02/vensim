@@ -1,5 +1,5 @@
 import { getPaletteColor } from "@/configs/color";
-import type { Tag } from "@/models/tag";
+import { makeTagId, type Tag } from "@/models/tag";
 import { create } from "zustand";
 
 interface TagState {
@@ -14,17 +14,13 @@ interface TagState {
     isTagged: (tagId: string, itemId: string) => boolean;
 }
 
-function toTagId(counter: number) {
-    return `tag-${counter}`;
-}
-
 export const useTagStore = create<TagState>((set, get) => ({
     counter: 1,
     tags: {},
     tagToItems: {},
 
     addTag: (label) => {
-        const tagId = toTagId(get().counter);
+        const tagId = makeTagId(get().counter);
         const color = getPaletteColor(get().counter - 1);
 
         set((state) => ({

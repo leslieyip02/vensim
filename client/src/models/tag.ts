@@ -3,3 +3,7 @@ export interface Tag {
     label: string;
     color: string;
 }
+
+export function makeTagId(counter: number) {
+    return `tag-${counter}`;
+}

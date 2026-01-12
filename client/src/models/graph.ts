@@ -17,6 +17,14 @@ export interface Edge {
     curvature: number;
 }
 
+export function makeNodeId(counter: number) {
+    return `node-${counter}`;
+}
+
+export function makeEdgeId(counter: number) {
+    return `edge-${counter}`;
+}
+
 export function isNodeId(id: string): boolean {
     return id.startsWith("node");
 }
