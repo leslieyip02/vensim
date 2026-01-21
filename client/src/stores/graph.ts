@@ -1,4 +1,5 @@
-import type { Edge, Node, Polarity } from "@/models/graph";
+import type { Edge, Node } from "@/models/graph";
+import type { Operation } from "@/models/operation";
 import { create } from "zustand";
 
 interface GraphState {
@@ -6,20 +7,7 @@ interface GraphState {
     nodes: Record<string, Node>;
     edges: Record<string, Edge>;
 
-    addNode: (x: number, y: number, radius?: number) => void;
-    addEdge: (from: string, to: string, polarity?: Polarity) => void;
-    updateNode: (id: string, patch: Partial<Node>) => void;
-    updateEdge: (id: string, patch: Partial<Edge>) => void;
-    deleteNode: (id: string) => void;
-    deleteEdge: (id: string) => void;
-}
-
-function toNodeId(counter: number) {
-    return `node-${counter}`;
-}
-
-function toEdgeId(counter: number) {
-    return `edge-${counter}`;
+    apply: (op: Operation) => void;
 }
 
 export const useGraphStore = create<GraphState>((set) => ({
@@ -27,80 +15,50 @@ export const useGraphStore = create<GraphState>((set) => ({
     nodes: {},
     edges: {},
 
-    addNode: (x, y, radius = 32) =>
+    apply: (op) =>
         set((state) => {
-            const node = {
-                id: toNodeId(state.counter),
-                x,
-                y,
-                radius,
-                label: "",
-                description: "",
-                tagIds: [],
-            };
+            switch (op.type) {
+                case "node/add":
+                    return {
+                        counter: state.counter + 1,
+                        nodes: { ...state.nodes, [op.node.id]: op.node },
+                    };
 
-            return {
-                counter: state.counter + 1,
-                nodes: {
-                    ...state.nodes,
-                    [node.id]: node,
-                },
-            };
+                case "node/update":
+                    return {
+                        nodes: {
+                            ...state.nodes,
+                            [op.id]: { ...state.nodes[op.id], ...op.patch },
+                        },
+                    };
+
+                case "node/delete":
+                    return {
+                        nodes: Object.fromEntries(
+                            Object.entries(state.nodes).filter(([id]) => id !== op.id),
+                        ),
+                    };
+
+                case "edge/add":
+                    return {
+                        counter: state.counter + 1,
+                        edges: { ...state.edges, [op.edge.id]: op.edge },
+                    };
+
+                case "edge/update":
+                    return {
+                        edges: {
+                            ...state.edges,
+                            [op.id]: { ...state.edges[op.id], ...op.patch },
+                        },
+                    };
+
+                case "edge/delete":
+                    return {
+                        edges: Object.fromEntries(
+                            Object.entries(state.edges).filter(([id]) => id !== op.id),
+                        ),
+                    };
+            }
         }),
-
-    addEdge: (from, to, polarity = "+", curvature = 0.25) =>
-        set((state) => {
-            const edge = {
-                id: toEdgeId(state.counter),
-                from,
-                to,
-                polarity,
-                curvature,
-                tagIds: [],
-            };
-
-            return {
-                counter: state.counter + 1,
-                edges: {
-                    ...state.edges,
-                    [edge.id]: edge,
-                },
-            };
-        }),
-
-    updateNode: (id, patch) =>
-        set((state) => ({
-            nodes: {
-                ...state.nodes,
-                [id]: {
-                    ...state.nodes[id],
-                    ...patch,
-                },
-            },
-        })),
-
-    updateEdge: (id, patch) =>
-        set((state) => ({
-            edges: {
-                ...state.edges,
-                [id]: {
-                    ...state.edges[id],
-                    ...patch,
-                },
-            },
-        })),
-
-    deleteNode: (id) =>
-        set((state) => ({
-            nodes: Object.fromEntries(
-                Object.entries(state.nodes).filter(([entryId]) => entryId !== id),
-            ),
-        })),
-
-    deleteEdge: (id) =>
-        set((state) => ({
-            edges: Object.fromEntries(
-                Object.entries(state.edges).filter(([entryId]) => entryId !== id),
-            ),
-        })),
 }));

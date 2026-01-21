@@ -1,16 +1,15 @@
 import type { KonvaEventObject } from "konva/lib/Node";
 
 import { mouseToWorldSpace, snapToGrid } from "@/models/geometry";
-import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
 
 import type { Camera } from "./camera";
 import { isNodeId } from "@/models/graph";
 import { useTagStore } from "@/stores/tag";
 import { SELECTED_STROKE_COLOR, UNSELECTED_STROKE_COLOR } from "@/configs/color";
+import { addEdge, addNode, updateNode } from "@/actions/graph";
 
 export function useInteractionController(camera: Camera) {
-    const addNode = useGraphStore((s) => s.addNode);
     const { interactionMode, clearSelectedIds } = useInteractionStore((s) => s);
 
     function handleStageMouseDown(e: KonvaEventObject<MouseEvent>) {
@@ -32,7 +31,6 @@ export function useInteractionController(camera: Camera) {
 }
 
 export function useNodeInteractions(nodeId: string) {
-    const { addEdge, updateNode } = useGraphStore((s) => s);
     const { tags, isTagged } = useTagStore((s) => s);
     const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
         useInteractionStore((s) => s);

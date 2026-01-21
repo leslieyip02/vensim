@@ -1,3 +1,4 @@
+import { deleteEdge, deleteNode, updateEdge, updateNode } from "@/actions/graph";
 import { isEdgeId, isNodeId, type Edge, type Node } from "@/models/graph";
 import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
@@ -5,7 +6,7 @@ import { useInteractionStore } from "@/stores/interaction";
 import { useTagStore } from "@/stores/tag";
 
 export function useNodeForm(nodeId: string) {
-    const { nodes, updateNode, deleteNode } = useGraphStore((s) => s);
+    const { nodes } = useGraphStore((s) => s);
     const { clearSelectedIds } = useInteractionStore((s) => s);
 
     return {
@@ -24,7 +25,7 @@ export function useNodeForm(nodeId: string) {
 }
 
 export function useEdgeForm(edgeId: string) {
-    const { edges, updateEdge, deleteEdge } = useGraphStore((s) => s);
+    const { edges } = useGraphStore((s) => s);
     const { clearSelectedIds } = useInteractionStore((s) => s);
 
     return {
@@ -43,7 +44,6 @@ export function useEdgeForm(edgeId: string) {
 }
 
 export function useGroupForm(targetIds: string[]) {
-    const {deleteNode, deleteEdge} = useGraphStore(s=>s);
     const { clearSelectedIds } = useInteractionStore((s) => s);
 
     return {
@@ -57,7 +57,7 @@ export function useGroupForm(targetIds: string[]) {
                 } else if (isEdgeId(targetId)) {
                     deleteEdge(targetId);
                 }
-            })
+            });
             clearSelectedIds();
         },
     };
