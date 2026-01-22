@@ -73,6 +73,8 @@ export function useGroupForm(targetIds: string[]) {
             targetIds.forEach((targetId) => {
                 if (isNodeId(targetId)) {
                     deleteNode(targetId);
+                } else if (isStockId(targetId)) {
+                    deleteStock(targetId);
                 } else if (isEdgeId(targetId)) {
                     deleteEdge(targetId);
                 }
