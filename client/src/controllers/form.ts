@@ -1,5 +1,5 @@
-import { deleteEdge, deleteNode, updateEdge, updateNode } from "@/actions/graph";
-import { isEdgeId, isNodeId, type Edge, type Node } from "@/models/graph";
+import { deleteEdge, deleteNode, deleteStock, updateEdge, updateNode, updateStock } from "@/actions/graph";
+import { isEdgeId, isNodeId, isStockId, type Edge, type Node, type Stock } from "@/models/graph";
 import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
@@ -38,6 +38,25 @@ export function useEdgeForm(edgeId: string) {
         },
         handleDelete: () => {
             deleteEdge(edgeId);
+            clearSelectedIds();
+        },
+    };
+}
+
+export function useStockForm(stockId: string) {
+    const { stocks } = useGraphStore((s) => s);
+    const { clearSelectedIds } = useInteractionStore((s) => s);
+
+    return {
+        stock: stocks[stockId],
+        handleChange: (patch: Partial<Stock>) => {
+            updateStock(stockId, patch);
+        },
+        handleCancel: () => {
+            clearSelectedIds();
+        },
+        handleDelete: () => {
+            deleteStock(stockId);
             clearSelectedIds();
         },
     };

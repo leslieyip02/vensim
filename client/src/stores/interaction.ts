@@ -11,7 +11,7 @@ interface InteractionState {
     toggleSelectedTag: (id: string) => void;
 }
 
-export type InteractionMode = "select" | "add-node" | "add-edge";
+export type InteractionMode = "select" | "add-node" | "add-edge" | "add-stock";
 
 export const useInteractionStore = create<InteractionState>((set) => ({
     interactionMode: "select",

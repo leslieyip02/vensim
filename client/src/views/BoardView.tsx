@@ -3,6 +3,7 @@ import { Layer, Stage } from "react-konva";
 import { useGraphStore } from "../stores/graph";
 import { EdgeView } from "./graph/EdgeView";
 import { NodeView } from "./graph/NodeView";
+import { StockView } from "./graph/StockView";
 import { GridView } from "./GridView";
 import { useCameraController } from "@/controllers/camera";
 import { useInteractionController as useInteractionController } from "@/controllers/interaction";
@@ -10,6 +11,7 @@ import { useInteractionController as useInteractionController } from "@/controll
 export function BoardView() {
     const nodeIds = Object.keys(useGraphStore((s) => s.nodes));
     const edgeIds = Object.keys(useGraphStore((s) => s.edges));
+    const stockIds = Object.keys(useGraphStore((s) => s.stocks));
 
     const cameraController = useCameraController({
         x: window.innerWidth / 2,
@@ -41,12 +43,14 @@ export function BoardView() {
         >
             <Layer>
                 <GridView />
-
                 {nodeIds.map((id) => (
                     <NodeView key={id} nodeId={id} />
                 ))}
                 {edgeIds.map((id) => (
                     <EdgeView key={id} edgeId={id} />
+                ))}
+                {stockIds.map((id) => (
+                    <StockView key={id} stockId={id} />
                 ))}
             </Layer>
         </Stage>

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { isNodeId } from "@/models/graph";
+import { isNodeId, isStockId } from "@/models/graph";
 import { EditNodeFormView } from "./EditNodeFormView";
 import { EditEdgeFormView } from "./EditEdgeFormView";
 import { useInteractionStore } from "@/stores/interaction";
@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { useState } from "react";
 import { EditGroupFormView } from "./EditGroupFormView";
+import { EditStockFormView } from "./EditStockFormView";
 
-type FormType = "node" | "edge" | "group";
+type FormType = "node" | "edge" | "stock" | "group";
 
 export function EditFormView() {
     const [isOpen, setIsOpen] = useState<boolean>(true);
@@ -20,7 +21,14 @@ export function EditFormView() {
     }
 
     const formType: FormType =
-        selectedIds.length > 1 ? "group" : isNodeId(selectedIds[0]) ? "node" : "edge";
+        selectedIds.length > 1
+            ? "group"
+            : isNodeId(selectedIds[0])
+            ? "node"
+            : isStockId(selectedIds[0])
+            ? "stock"
+            : "edge";
+
 
     const FormView = () => {
         switch (formType) {
@@ -28,6 +36,8 @@ export function EditFormView() {
                 return <EditNodeFormView nodeId={selectedIds[0]} />;
             case "edge":
                 return <EditEdgeFormView edgeId={selectedIds[0]} />;
+            case "stock":
+                return <EditStockFormView stockId={selectedIds[0]} />;
             case "group":
                 return <EditGroupFormView targetIds={selectedIds} />;
             default:

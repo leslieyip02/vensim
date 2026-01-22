@@ -1,4 +1,4 @@
-import type { Edge, Node } from "./graph";
+import type { Edge, Node, Stock } from "./graph";
 
 export type Operation =
     | { type: "node/add"; node: Node }
@@ -6,4 +6,7 @@ export type Operation =
     | { type: "node/delete"; id: string }
     | { type: "edge/add"; edge: Edge }
     | { type: "edge/update"; id: string; patch: Partial<Edge> }
-    | { type: "edge/delete"; id: string };
+    | { type: "edge/delete"; id: string }
+    | { type: "stock/add"; stock: Stock }
+    | { type: "stock/update"; id: string; patch: Partial<Stock> }
+    | { type: "stock/delete"; id: string };

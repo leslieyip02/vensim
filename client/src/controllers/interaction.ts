@@ -7,7 +7,7 @@ import type { Camera } from "./camera";
 import { isNodeId } from "@/models/graph";
 import { useTagStore } from "@/stores/tag";
 import { SELECTED_STROKE_COLOR, UNSELECTED_STROKE_COLOR } from "@/configs/color";
-import { addEdge, addNode, updateNode } from "@/actions/graph";
+import { addEdge, addNode, updateNode, addStock, updateStock } from "@/actions/graph";
 
 export function useInteractionController(camera: Camera) {
     const { interactionMode, clearSelectedIds } = useInteractionStore((s) => s);
@@ -18,6 +18,12 @@ export function useInteractionController(camera: Camera) {
         if (interactionMode === "add-node") {
             const position = snapToGrid(mouseToWorldSpace(e.evt, camera));
             addNode(position.x, position.y);
+            return "handled";
+        }
+
+        if (interactionMode === "add-stock") {
+            const position = snapToGrid(mouseToWorldSpace(e.evt, camera));
+            addStock(position.x, position.y);
             return "handled";
         }
 
@@ -90,5 +96,34 @@ export function useEdgeInteractions(edgeId: string) {
         stroke,
         opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
         onClick: () => toggleSelectId(edgeId),
+    };
+}
+
+export function useStockInteractions(stockId: string) {
+    const { tags, isTagged } = useTagStore((s) => s);
+    const { selectedIds, selectedTags, toggleSelectId } =
+        useInteractionStore((s) => s);
+
+    const isSelected = selectedIds.includes(stockId);
+    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, stockId));
+    const stroke = activeTagId
+        ? tags[activeTagId].color
+        : isSelected
+          ? SELECTED_STROKE_COLOR
+          : UNSELECTED_STROKE_COLOR;
+
+    return {
+        isSelected,
+        stroke,
+        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
+        onClick: () => toggleSelectId(stockId),
+        onDragEnd: (e: KonvaEventObject<DragEvent, never>) => {
+            const position = snapToGrid({ x: e.target.x(), y: e.target.y() });
+            e.target.position(position);
+
+            updateStock(stockId, {
+                ...position,
+            });
+        },
     };
 }
