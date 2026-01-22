@@ -5,20 +5,24 @@ import "encoding/json"
 type OperationType string
 
 const (
-	NodeAdd    OperationType = "node/add"
-	NodeUpdate OperationType = "node/update"
-	NodeDelete OperationType = "node/delete"
-	EdgeAdd    OperationType = "edge/add"
-	EdgeUpdate OperationType = "edge/update"
-	EdgeDelete OperationType = "edge/delete"
+	NodeAdd     OperationType = "node/add"
+	NodeUpdate  OperationType = "node/update"
+	NodeDelete  OperationType = "node/delete"
+	EdgeAdd     OperationType = "edge/add"
+	EdgeUpdate  OperationType = "edge/update"
+	EdgeDelete  OperationType = "edge/delete"
+	StockAdd    OperationType = "stock/add"
+	StockUpdate OperationType = "stock/update"
+	StockDelete OperationType = "stock/delete"
 )
 
 type Operation struct {
 	Type     OperationType `json:"type"`
 	SenderId string        `json:"senderId"`
 
-	Node *Node `json:"node,omitempty"`
-	Edge *Edge `json:"edge,omitempty"`
+	Node  *Node  `json:"node,omitempty"`
+	Edge  *Edge  `json:"edge,omitempty"`
+	Stock *Stock `json:"stock,omitempty"`
 
 	ID    string         `json:"id,omitempty"`
 	Patch map[string]any `json:"patch,omitempty"`
@@ -47,6 +51,17 @@ func (s *State) Apply(op Operation) {
 
 	case EdgeDelete:
 		delete(s.Edges, op.ID)
+
+	case StockAdd:
+		s.Stocks[op.Stock.ID] = op.Stock
+		s.Counter++
+
+	case StockUpdate:
+		stock := s.Stocks[op.ID]
+		applyPatch(stock, op.Patch)
+
+	case StockDelete:
+		delete(s.Stocks, op.ID)
 	}
 }
 
