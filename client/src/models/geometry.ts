@@ -35,6 +35,15 @@ export interface EdgeGeometry {
     label: Vector;
 }
 
+export interface FlowGeometry {
+    start: Vector;
+    end: Vector;
+    midpoint: Vector;
+    valvepoint: Vector;
+    arrow: ArrowGeometry;
+    label: Vector;
+}
+
 function interpolateQuadraticBezier(from: Vector, to: Vector, curvature: number): Vector {
     const dx = to.x - from.x;
     const dy = to.y - from.y;
@@ -153,7 +162,7 @@ export function computeFlowGeometry(
     from: Stock | Cloud,
     to: Stock | Cloud,
     curvature: number,
-): EdgeGeometry {
+): FlowGeometry {
     
     const midpoint = interpolateQuadraticBezier(from, to, curvature);
     const start = getElementBoundary(from, midpoint);
@@ -171,10 +180,16 @@ export function computeFlowGeometry(
         y: (arrow.left.y + arrow.right.y) / 2,
     }
 
+    const valvepoint = {
+        x: 0.25 * start.x + 0.5 * midpoint.x + 0.25 * end.x,
+        y: 0.25 * start.y + 0.5 * midpoint.y + 0.25 * end.y,
+    }
+
     return {
         start,
         end,
         midpoint,
+        valvepoint,
         arrow,
         label,
     };

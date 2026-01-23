@@ -17,7 +17,7 @@ export function FlowView({ flowId }: { flowId: string }) {
     const from = flow.type === "inflow" ? cloud : stock;
     const to = flow.type === "inflow" ? stock : cloud;
 
-    const { start, end, midpoint, arrow } = computeFlowGeometry(from, to, flow.curvature);
+    const { start, end, midpoint, valvepoint, arrow } = computeFlowGeometry(from, to, flow.curvature);
     const { stroke, opacity, onClick } = useFlowInteractions(flow.id);
 
     function draw(ctx: Context) {
@@ -43,7 +43,7 @@ export function FlowView({ flowId }: { flowId: string }) {
         // head
         ctx.strokeStyle = stroke;
         ctx.fillStyle = ctx.strokeStyle;
-        ctx.lineWidth = 8;
+        ctx.lineWidth = 1;
 
         ctx.beginPath();
         ctx.moveTo(arrow.tip.x, arrow.tip.y);
@@ -51,6 +51,22 @@ export function FlowView({ flowId }: { flowId: string }) {
         ctx.lineTo(arrow.right.x, arrow.right.y);
         ctx.closePath();
         ctx.fill();
+
+        // valve
+        ctx.fillStyle = "white";
+        const dx = 10;
+        const dy = 12;
+
+        ctx.beginPath();
+        ctx.moveTo(valvepoint.x, valvepoint.y);
+        ctx.lineTo(valvepoint.x - dx, valvepoint.y - dy);
+        ctx.lineTo(valvepoint.x + dx, valvepoint.y - dy);
+        ctx.lineTo(valvepoint.x, valvepoint.y);
+        ctx.lineTo(valvepoint.x - dx, valvepoint.y + dy);
+        ctx.lineTo(valvepoint.x + dx, valvepoint.y + dy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
     }
 
     function hit(ctx: Context, shape: any) {
