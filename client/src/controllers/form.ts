@@ -1,5 +1,16 @@
-import { deleteEdge, deleteNode, deleteStock, updateEdge, updateNode, updateStock } from "@/actions/graph";
-import { isEdgeId, isNodeId, isStockId, type Edge, type Node, type Stock } from "@/models/graph";
+import {
+    deleteEdge,
+    deleteNode,
+    deleteStock,
+    deleteCloud,
+    deleteFlow,
+    updateEdge,
+    updateNode,
+    updateStock,
+    updateCloud,
+    updateFlow
+} from "@/actions/graph";
+import { isEdgeId, isNodeId, isStockId, isCloudId, isFlowId, type Edge, type Node, type Stock, type Cloud, type Flow } from "@/models/graph";
 import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
@@ -62,6 +73,44 @@ export function useStockForm(stockId: string) {
     };
 }
 
+export function useCloudForm(cloudId: string) {
+    const { clouds } = useGraphStore((s) => s);
+    const { clearSelectedIds } = useInteractionStore((s) => s);
+
+    return {
+        cloud: clouds[cloudId],
+        handleChange: (patch: Partial<Cloud>) => {
+            updateCloud(cloudId, patch);
+        },
+        handleCancel: () => {
+            clearSelectedIds();
+        },
+        handleDelete: () => {
+            deleteCloud(cloudId);
+            clearSelectedIds();
+        },
+    };
+}
+
+export function useFlowForm(flowId: string) {
+    const { flows } = useGraphStore((s) => s);
+    const { clearSelectedIds } = useInteractionStore((s) => s);
+
+    return {
+        flow: flows[flowId],
+        handleChange: (patch: Partial<Flow>) => {
+            updateFlow(flowId, patch);
+        },
+        handleCancel: () => {
+            clearSelectedIds();
+        },
+        handleDelete: () => {
+            deleteFlow(flowId);
+            clearSelectedIds();
+        },
+    };
+}
+
 export function useGroupForm(targetIds: string[]) {
     const { clearSelectedIds } = useInteractionStore((s) => s);
 
@@ -77,6 +126,8 @@ export function useGroupForm(targetIds: string[]) {
                     deleteStock(targetId);
                 } else if (isEdgeId(targetId)) {
                     deleteEdge(targetId);
+                } else if (isCloudId(targetId)) {
+                    deleteCloud(targetId);
                 }
             });
             clearSelectedIds();

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { isNodeId, isStockId } from "@/models/graph";
+import { isCloudId, isFlowId, isNodeId, isStockId } from "@/models/graph";
 import { EditNodeFormView } from "./EditNodeFormView";
 import { EditEdgeFormView } from "./EditEdgeFormView";
 import { useInteractionStore } from "@/stores/interaction";
@@ -9,8 +9,10 @@ import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { useState } from "react";
 import { EditGroupFormView } from "./EditGroupFormView";
 import { EditStockFormView } from "./EditStockFormView";
+import { EditCloudFormView } from "./EditCloudView";
+import { EditFlowFormView } from "./EdtiFlowView";
 
-type FormType = "node" | "edge" | "stock" | "group";
+type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
 
 export function EditFormView() {
     const [isOpen, setIsOpen] = useState<boolean>(true);
@@ -27,6 +29,10 @@ export function EditFormView() {
             ? "node"
             : isStockId(selectedIds[0])
             ? "stock"
+            : isCloudId(selectedIds[0])
+            ? "cloud"
+            : isFlowId(selectedIds[0])
+            ? "flow"
             : "edge";
 
 
@@ -38,6 +44,10 @@ export function EditFormView() {
                 return <EditEdgeFormView edgeId={selectedIds[0]} />;
             case "stock":
                 return <EditStockFormView stockId={selectedIds[0]} />;
+            case "cloud":
+                return <EditCloudFormView nodeId={selectedIds[0]} />;
+            case "flow":
+                return <EditFlowFormView flowId={selectedIds[0]} />;
             case "group":
                 return <EditGroupFormView targetIds={selectedIds} />;
             default:
@@ -51,6 +61,10 @@ export function EditFormView() {
                 return "Edit Node";
             case "edge":
                 return "Edit Edge";
+            case "stock":
+                return "Edit Stock";
+            case "cloud":
+                return "Edit Cloud";
             case "group":
                 return "Edit Group";
             default:

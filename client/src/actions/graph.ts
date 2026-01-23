@@ -1,4 +1,17 @@
-import { makeEdgeId, makeNodeId, makeStockId, type Edge, type Node, type Polarity, type Stock } from "@/models/graph";
+import {
+    makeEdgeId,
+    makeNodeId,
+    makeStockId,
+    makeCloudId,
+    makeFlowId,
+    type Edge,
+    type Node,
+    type Stock,
+    type Cloud,
+    type Flow,
+    type Polarity,
+    type FlowType,
+} from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/graph";
@@ -103,6 +116,76 @@ export function deleteStock(id: string) {
     const state = useGraphStore.getState();
 
     const op: Operation = { type: "stock/delete", id };
+    state.apply(op);
+    sendGraphOperation(op);
+}
+
+export function addCloud(x: number, y: number, radius = 32) {
+    const state = useGraphStore.getState();
+
+    const cloud = {
+        id: makeCloudId(state.counter),
+        x,
+        y,
+        radius,
+        label: "",
+        description: "",
+    };
+
+    const op: Operation = { type: "cloud/add", cloud };
+    state.apply(op);
+    sendGraphOperation(op);
+}
+
+export function updateCloud(id: string, patch: Partial<Cloud>) {
+    const state = useGraphStore.getState();
+
+    const op: Operation = { type: "cloud/update", id, patch };
+    state.apply(op);
+    sendGraphOperation(op);
+}
+
+export function deleteCloud(id: string) {
+    const state = useGraphStore.getState();
+
+    const op: Operation = { type: "cloud/delete", id };
+    state.apply(op);
+    sendGraphOperation(op);
+}
+
+export function addFlow(
+    stockId: string, 
+    cloudId: string, 
+    type: FlowType,
+    curvature: number = 0.25
+) {
+    const state = useGraphStore.getState();
+
+    const flow = {
+        id: makeFlowId(state.counter),
+        stockId,
+        cloudId,
+        type,
+        curvature,
+    };
+
+    const op: Operation = { type: "flow/add", flow };
+    state.apply(op);
+    sendGraphOperation(op);
+}
+
+export function updateFlow(id: string, patch: Partial<Flow>) {
+    const state = useGraphStore.getState();
+
+    const op: Operation = { type: "flow/update", id, patch };
+    state.apply(op);
+    sendGraphOperation(op);
+}
+
+export function deleteFlow(id: string) {
+    const state = useGraphStore.getState();
+
+    const op: Operation = { type: "flow/delete", id };
     state.apply(op);
     sendGraphOperation(op);
 }

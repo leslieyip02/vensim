@@ -1,6 +1,6 @@
 import type { Camera } from "@/controllers/camera";
 import { GRID_SIZE } from "@/views/GridView";
-import type { Node } from "./graph";
+import type { Node, Stock, Cloud } from "./graph";
 
 interface Vector {
     x: number;
@@ -62,22 +62,33 @@ function insetPoint(point: Vector, direction: Vector, inset: number): Vector {
     };
 }
 
-function insetEndpoints(
-    from: Vector,
-    to: Vector,
-    midpoint: Vector,
-    startInset: number,
-    endInset: number,
-): [Vector, Vector] {
-    const t0x = midpoint.x - from.x;
-    const t0y = midpoint.y - from.y;
+function getElementBoundary(
+    element: Node | Stock | Cloud,
+    target: Vector
+): Vector {
+    const dx = target.x - element.x;
+    const dy = target.y - element.y;
 
-    const t1x = to.x - midpoint.x;
-    const t1y = to.y - midpoint.y;
+    if ("width" in element) {
+        const halfWidth = element.width / 2;
+        const halfHeight = element.height / 2;
 
-    const start = insetPoint(from, { x: t0x, y: t0y }, startInset);
-    const end = insetPoint(to, { x: -t1x, y: -t1y }, endInset);
-    return [start, end];
+        const tx = dx !== 0 ? halfWidth / Math.abs(dx) : Infinity;
+        const ty = dy !== 0 ? halfHeight / Math.abs(dy) : Infinity;
+
+        const t = Math.min(tx, ty);
+
+        return {
+            x: element.x + dx * t,
+            y: element.y + dy * t,
+        };
+    }
+
+    if ("radius" in element) {
+        return insetPoint(element, { x: dx, y: dy }, element.radius);
+    }
+
+    return insetPoint(element, { x: dx, y: dy }, 32);
 }
 
 function computeArrowGeometry(
@@ -115,7 +126,8 @@ function computeLabelGeometry(direction: Vector, tip: Vector, offset: number = 1
 
 export function computeEdgeGeometry(from: Node, to: Node, curvature: number): EdgeGeometry {
     const midpoint = interpolateQuadraticBezier(from, to, curvature);
-    const [start, end] = insetEndpoints(from, to, midpoint, from.radius, to.radius);
+    const start = getElementBoundary(from, midpoint);
+    const end = getElementBoundary(to, midpoint);
 
     const dx = to.x - midpoint.x;
     const dy = to.y - midpoint.y;
@@ -127,6 +139,37 @@ export function computeEdgeGeometry(from: Node, to: Node, curvature: number): Ed
     };
     const arrow = computeArrowGeometry(tip, direction);
     const label = computeLabelGeometry(direction, tip);
+
+    return {
+        start,
+        end,
+        midpoint,
+        arrow,
+        label,
+    };
+}
+
+export function computeFlowGeometry(
+    from: Stock | Cloud,
+    to: Stock | Cloud,
+    curvature: number,
+): EdgeGeometry {
+    
+    const midpoint = interpolateQuadraticBezier(from, to, curvature);
+    const start = getElementBoundary(from, midpoint);
+    const tempEnd = getElementBoundary(to, midpoint);
+
+    const dx = to.x - midpoint.x;
+    const dy = to.y - midpoint.y;
+    const direction = normalize({ x: dx, y: dy });
+
+    const arrow = computeArrowGeometry(tempEnd, direction, 15);
+    const label = computeLabelGeometry(direction, midpoint, 15);
+
+    const end = {
+        x: (arrow.left.x + arrow.right.x) / 2,
+        y: (arrow.left.y + arrow.right.y) / 2,
+    }
 
     return {
         start,

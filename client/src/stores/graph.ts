@@ -1,4 +1,4 @@
-import type { Edge, Node, Stock } from "@/models/graph";
+import type { Edge, Node, Stock, Cloud, Flow } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { create } from "zustand";
 
@@ -7,6 +7,8 @@ interface GraphState {
     nodes: Record<string, Node>;
     edges: Record<string, Edge>;
     stocks: Record<string, Stock>;
+    clouds: Record<string, Cloud>;
+    flows: Record<string, Flow>;
 
     apply: (op: Operation) => void;
 }
@@ -16,6 +18,8 @@ export const useGraphStore = create<GraphState>((set) => ({
     nodes: {},
     edges: {},
     stocks: {},
+    clouds: {},
+    flows: {},
 
     apply: (op) =>
         set((state) => {
@@ -80,6 +84,49 @@ export const useGraphStore = create<GraphState>((set) => ({
                     return {
                         stocks: Object.fromEntries(
                             Object.entries(state.stocks).filter(([id]) => id !== op.id),
+                        ),
+                    };
+
+                case "cloud/add":
+                    console.log("nice", op.cloud);
+                    return {
+                        counter: state.counter + 1,
+                        clouds: { ...state.clouds, [op.cloud.id]: op.cloud },
+                    };
+
+                case "cloud/update":
+                    return {
+                        clouds: {
+                            ...state.clouds,
+                            [op.id]: { ...state.clouds[op.id], ...op.patch },
+                        },
+                    };
+
+                case "cloud/delete":
+                    return {
+                        clouds: Object.fromEntries(
+                            Object.entries(state.clouds).filter(([id]) => id !== op.id),
+                        ),
+                    };
+
+                case "flow/add":
+                    return {
+                        counter: state.counter + 1,
+                        flows: { ...state.flows, [op.flow.id]: op.flow },
+                    };
+
+                case "flow/update":
+                    return {
+                        flows: {
+                            ...state.flows,
+                            [op.id]: { ...state.flows[op.id], ...op.patch },
+                        },
+                    };
+
+                case "flow/delete":
+                    return {
+                        flows: Object.fromEntries(
+                            Object.entries(state.flows).filter(([id]) => id !== op.id),
                         ),
                     };
             }
