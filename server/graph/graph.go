@@ -26,3 +26,20 @@ type Stock struct {
 	Label       string  `json:"label"`
 	Description string  `json:"description"`
 }
+
+type Cloud struct {
+	ID          string  `json:"id"`
+	X           float64 `json:"x"`
+	Y           float64 `json:"y"`
+	Radius      float64 `json:"radius"`
+	Label       string  `json:"label"`
+	Description string  `json:"description"`
+}
+
+type Flow struct {
+	ID        string  `json:"id"`
+	StockID   string  `json:"stockId"`
+	CloudID   string  `json:"cloudId"`
+	Type      string  `json:"type"`
+	Curvature float64 `json:"curvature"`
+}
