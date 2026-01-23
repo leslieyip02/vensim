@@ -3,7 +3,7 @@ import { Group, Shape } from "react-konva";
 
 import { useGraphStore } from "../../stores/graph";
 import { computeFlowGeometry } from "@/models/geometry";
-import { useEdgeInteractions } from "@/controllers/interaction";
+import { useFlowInteractions } from "@/controllers/interaction";
 
 export function FlowView({ flowId }: { flowId: string }) {
     const flow = useGraphStore((s) => s.flows[flowId]);
@@ -18,7 +18,7 @@ export function FlowView({ flowId }: { flowId: string }) {
     const to = flow.type === "inflow" ? stock : cloud;
 
     const { start, end, midpoint, arrow } = computeFlowGeometry(from, to, flow.curvature);
-    const { stroke, opacity, onClick } = useEdgeInteractions(flow.id);
+    const { stroke, opacity, onClick } = useFlowInteractions(flow.id);
 
     function draw(ctx: Context) {
         ctx.strokeStyle = stroke;
@@ -54,16 +54,16 @@ export function FlowView({ flowId }: { flowId: string }) {
     }
 
     function hit(ctx: Context, shape: any) {
-        ctx.lineWidth = 10;
+        ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
         ctx.quadraticCurveTo(midpoint.x, midpoint.y, end.x, end.y);
-        ctx.fillStrokeShape(shape);
+        ctx.strokeShape(shape);
     }
 
     return (
         <Group opacity={opacity}>
-            <Shape sceneFunc={draw} hitFunc={hit} onClick={onClick} />
+            <Shape sceneFunc={draw} hitFunc={hit} onClick={onClick} stroke={stroke} strokeWidth={8} />
         </Group>
     );
 }
