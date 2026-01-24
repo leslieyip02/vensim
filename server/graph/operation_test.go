@@ -68,7 +68,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 		t.Run(desc, func(t *testing.T) {
 			got := test.initial.Apply(test.op)
 			if got.Counter != test.want.Counter {
-				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Nodes, got.Nodes)
+				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Counter, got.Counter)
 			}
 			if !reflect.DeepEqual(test.want.Nodes, got.Nodes) {
 				t.Errorf("nodes mismatch: want %+v but got %+v", test.want.Nodes, got.Nodes)
@@ -140,7 +140,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 		t.Run(desc, func(t *testing.T) {
 			got := test.initial.Apply(test.op)
 			if got.Counter != test.want.Counter {
-				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Edges, got.Edges)
+				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Counter, got.Counter)
 			}
 			if !reflect.DeepEqual(test.want.Edges, got.Edges) {
 				t.Errorf("edges mismatch: want %+v but got %+v", test.want.Edges, got.Edges)
@@ -212,7 +212,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		t.Run(desc, func(t *testing.T) {
 			got := test.initial.Apply(test.op)
 			if got.Counter != test.want.Counter {
-				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Stocks, got.Stocks)
+				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Counter, got.Counter)
 			}
 			if !reflect.DeepEqual(test.want.Stocks, got.Stocks) {
 				t.Errorf("stocks mismatch: want %+v but got %+v", test.want.Stocks, got.Stocks)
@@ -284,7 +284,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		t.Run(desc, func(t *testing.T) {
 			got := test.initial.Apply(test.op)
 			if got.Counter != test.want.Counter {
-				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Clouds, got.Clouds)
+				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Counter, got.Counter)
 			}
 			if !reflect.DeepEqual(test.want.Clouds, got.Clouds) {
 				t.Errorf("clouds mismatch: want %+v but got %+v", test.want.Clouds, got.Clouds)
@@ -356,7 +356,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		t.Run(desc, func(t *testing.T) {
 			got := test.initial.Apply(test.op)
 			if got.Counter != test.want.Counter {
-				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Flows, got.Flows)
+				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Counter, got.Counter)
 			}
 			if !reflect.DeepEqual(test.want.Flows, got.Flows) {
 				t.Errorf("flows mismatch: want %+v but got %+v", test.want.Flows, got.Flows)
