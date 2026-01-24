@@ -16,3 +16,10 @@ PORT=8080
 go install
 go run main.go
 ```
+
+3. Testing
+
+```
+go test ./...
+go test ./... -coverprofile=coverage.out
+```
