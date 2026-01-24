@@ -1,5 +1,16 @@
-import { deleteEdge, deleteNode, updateEdge, updateNode } from "@/actions/graph";
-import { isEdgeId, isNodeId, type Edge, type Node } from "@/models/graph";
+import {
+    deleteEdge,
+    deleteNode,
+    deleteStock,
+    deleteCloud,
+    deleteFlow,
+    updateEdge,
+    updateNode,
+    updateStock,
+    updateCloud,
+    updateFlow
+} from "@/actions/graph";
+import { isEdgeId, isNodeId, isStockId, isCloudId, isFlowId, type Edge, type Node, type Stock, type Cloud, type Flow } from "@/models/graph";
 import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
@@ -43,6 +54,63 @@ export function useEdgeForm(edgeId: string) {
     };
 }
 
+export function useStockForm(stockId: string) {
+    const { stocks } = useGraphStore((s) => s);
+    const { clearSelectedIds } = useInteractionStore((s) => s);
+
+    return {
+        stock: stocks[stockId],
+        handleChange: (patch: Partial<Stock>) => {
+            updateStock(stockId, patch);
+        },
+        handleCancel: () => {
+            clearSelectedIds();
+        },
+        handleDelete: () => {
+            deleteStock(stockId);
+            clearSelectedIds();
+        },
+    };
+}
+
+export function useCloudForm(cloudId: string) {
+    const { clouds } = useGraphStore((s) => s);
+    const { clearSelectedIds } = useInteractionStore((s) => s);
+
+    return {
+        cloud: clouds[cloudId],
+        handleChange: (patch: Partial<Cloud>) => {
+            updateCloud(cloudId, patch);
+        },
+        handleCancel: () => {
+            clearSelectedIds();
+        },
+        handleDelete: () => {
+            deleteCloud(cloudId);
+            clearSelectedIds();
+        },
+    };
+}
+
+export function useFlowForm(flowId: string) {
+    const { flows } = useGraphStore((s) => s);
+    const { clearSelectedIds } = useInteractionStore((s) => s);
+
+    return {
+        flow: flows[flowId],
+        handleChange: (patch: Partial<Flow>) => {
+            updateFlow(flowId, patch);
+        },
+        handleCancel: () => {
+            clearSelectedIds();
+        },
+        handleDelete: () => {
+            deleteFlow(flowId);
+            clearSelectedIds();
+        },
+    };
+}
+
 export function useGroupForm(targetIds: string[]) {
     const { clearSelectedIds } = useInteractionStore((s) => s);
 
@@ -54,8 +122,12 @@ export function useGroupForm(targetIds: string[]) {
             targetIds.forEach((targetId) => {
                 if (isNodeId(targetId)) {
                     deleteNode(targetId);
+                } else if (isStockId(targetId)) {
+                    deleteStock(targetId);
                 } else if (isEdgeId(targetId)) {
                     deleteEdge(targetId);
+                } else if (isCloudId(targetId)) {
+                    deleteCloud(targetId);
                 }
             });
             clearSelectedIds();

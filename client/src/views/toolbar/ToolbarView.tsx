@@ -2,7 +2,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useInteractionStore, type InteractionMode } from "@/stores/interaction";
 
-import { LuArrowUpRight, LuCircle, LuMousePointer2 } from "react-icons/lu";
+import { LuArrowUpRight, LuCircle, LuMousePointer2, LuRectangleHorizontal, LuWaves, LuChevronsRight } from "react-icons/lu";
 
 export function ToolbarView() {
     const { interactionMode, setInteractionMode } = useInteractionStore((s) => s);
@@ -55,6 +55,54 @@ export function ToolbarView() {
         </Tooltip>
     );
 
+    const AddStockButton = () => (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <ToggleGroupItem
+                    value="add-stock"
+                    className={interactionMode === "add-stock" ? "bg-input" : ""}
+                >
+                    <LuRectangleHorizontal />
+                </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Add Stock</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+
+    const AddCloudButton = () => (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <ToggleGroupItem
+                    value="add-cloud"
+                    className={interactionMode === "add-cloud" ? "bg-input" : ""}
+                >
+                    <LuWaves />
+                </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Add Cloud</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+
+    const AddFlowButton = () => (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <ToggleGroupItem
+                    value="add-flow"
+                    className={interactionMode === "add-flow" ? "bg-input" : ""}
+                >
+                    <LuChevronsRight />
+                </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Add Flow</p>
+            </TooltipContent>
+        </Tooltip>
+    );
+
     return (
         <div className="absolute w-full h-full flex flex-col items-center justify-end">
             <ToggleGroup
@@ -68,6 +116,9 @@ export function ToolbarView() {
                 <SelectButton />
                 <AddNodeButton />
                 <AddEdgeButton />
+                <AddStockButton />
+                <AddCloudButton />
+                <AddFlowButton />
             </ToggleGroup>
         </div>
     );

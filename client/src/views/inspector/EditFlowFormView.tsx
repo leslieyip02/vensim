@@ -1,22 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useEdgeForm } from "@/controllers/form";
-import type { Polarity } from "@/models/graph";
+import { useFlowForm } from "@/controllers/form";
 import { LuTrash2 } from "react-icons/lu";
 import { EditTagsView } from "./EditTagsView";
 
-export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
-    const { edge, handleChange, handleCancel, handleDelete } = useEdgeForm(edgeId);
-    if (!edge) {
+export function EditFlowFormView({ flowId }: { flowId: string }) {
+    const { flow, handleChange, handleCancel, handleDelete } = useFlowForm(flowId);
+    if (!flow) {
         return null;
     }
 
@@ -25,45 +17,26 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
             <FieldSet>
                 <FieldGroup>
                     <Field>
-                        <FieldLabel>Polarity</FieldLabel>
-                        <Select
-                            value={edge.polarity ?? "None"} 
-                            onValueChange={(v) => {
-                                const newValue = v === "None" ? null : (v as Polarity);
-                                handleChange({ polarity: newValue });
-                            }}
-                        >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="z-100">
-                                <SelectItem value="+">+</SelectItem>
-                                <SelectItem value="-">-</SelectItem>
-                                <SelectItem value="None">None</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </Field>
-                    <Field>
                         <FieldLabel>Curvature</FieldLabel>
                         <Input
                             type="number"
                             min={-1}
                             max={1}
                             step={0.01}
-                            value={edge.curvature}
+                            value={flow.curvature}
                             onChange={(e) => handleChange({ curvature: Number(e.target.value) })}
                         />
                         <Slider
                             min={-1}
                             max={1}
                             step={0.01}
-                            value={[edge.curvature]}
+                            value={[flow.curvature]}
                             onValueChange={(v) => handleChange({ curvature: Number(v) })}
                         />
                     </Field>
                     <Field>
                         <FieldLabel>Tags</FieldLabel>
-                        <EditTagsView targetIds={[edgeId]} />
+                        <EditTagsView targetIds={[flowId]} />
                     </Field>
                 </FieldGroup>
             </FieldSet>
