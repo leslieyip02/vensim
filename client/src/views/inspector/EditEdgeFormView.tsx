@@ -36,6 +36,7 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
                             <SelectContent className="z-100">
                                 <SelectItem value="+">+</SelectItem>
                                 <SelectItem value="-">-</SelectItem>
+                                <SelectItem value=" ">None</SelectItem>
                             </SelectContent>
                         </Select>
                     </Field>

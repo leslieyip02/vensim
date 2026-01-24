@@ -52,7 +52,7 @@ export function deleteNode(id: string) {
 export function addEdge(
     from: string,
     to: string,
-    polarity: Polarity = "+",
+    polarity: Polarity = " ",
     curvature: number = 0.25,
 ) {
     const state = useGraphStore.getState();

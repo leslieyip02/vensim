@@ -9,8 +9,8 @@ import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { useState } from "react";
 import { EditGroupFormView } from "./EditGroupFormView";
 import { EditStockFormView } from "./EditStockFormView";
-import { EditCloudFormView } from "./EditCloudView";
-import { EditFlowFormView } from "./EdtiFlowView";
+import { EditCloudFormView } from "./EditCloudFormView";
+import { EditFlowFormView } from "./EditFlowFormView";
 
 type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
 

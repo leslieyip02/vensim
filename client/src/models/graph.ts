@@ -1,4 +1,4 @@
-export type Polarity = "+" | "-";
+export type Polarity = "+" | "-" | " ";
 
 export type FlowType = "inflow" | "outflow";
 

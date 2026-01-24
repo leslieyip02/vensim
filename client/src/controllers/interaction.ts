@@ -66,7 +66,7 @@ export function useNodeInteractions(nodeId: string) {
                 return;
             }
 
-            if (selectedIds.length !== 1 || !selectedIds.every(isNodeId)) {
+            if (selectedIds.length !== 1 || (!selectedIds.every(isNodeId) && !selectedIds.every(isStockId))) {
                 return;
             }
 
@@ -193,7 +193,8 @@ export function useCloudInteractions(cloudId: string) {
 
 export function useFlowInteractions(flowId: string) {
     const { tags, isTagged } = useTagStore((s) => s);
-    const { selectedIds, selectedTags, toggleSelectId } = useInteractionStore((s) => s);
+    const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
+        useInteractionStore((s) => s);
 
     const isSelected = selectedIds.includes(flowId);
     const activeTagId = selectedTags.find((tagId) => isTagged(tagId, flowId));
@@ -207,6 +208,20 @@ export function useFlowInteractions(flowId: string) {
         isSelected,
         stroke,
         opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
-        onClick: () => toggleSelectId(flowId),
+        onClick: () => {
+            toggleSelectId(flowId);
+
+            if (interactionMode !== "add-edge") {
+                return;
+            }
+
+            if (selectedIds.length !== 1 || (!selectedIds.every(isNodeId) && !selectedIds.every(isStockId))) {
+                return;
+            }
+
+            const from = selectedIds[0];
+            addEdge(from, flowId);
+            clearSelectedIds();
+        }
     };
 }

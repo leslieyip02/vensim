@@ -27,19 +27,17 @@ interface ArrowGeometry {
     right: Vector;
 }
 
-export interface EdgeGeometry {
-    start: Vector;
-    end: Vector;
-    midpoint: Vector;
-    arrow: ArrowGeometry;
-    label: Vector;
+export interface ValveGeometry {
+    x: number;
+    y: number;
+    radius: number;
 }
 
-export interface FlowGeometry {
+export interface LineGeometry {
     start: Vector;
     end: Vector;
-    midpoint: Vector;
-    valvepoint: Vector;
+    controlPoint: Vector; // for bezier curves
+    mid: Vector; // actual midpoint of curve (e.g. for valve placement)
     arrow: ArrowGeometry;
     label: Vector;
 }
@@ -72,7 +70,7 @@ function insetPoint(point: Vector, direction: Vector, inset: number): Vector {
 }
 
 function getElementBoundary(
-    element: Node | Stock | Cloud,
+    element: Node | Stock | Cloud | ValveGeometry,
     target: Vector
 ): Vector {
     const dx = target.x - element.x;
@@ -97,13 +95,14 @@ function getElementBoundary(
         return insetPoint(element, { x: dx, y: dy }, element.radius);
     }
 
+    // should not reach here
     return insetPoint(element, { x: dx, y: dy }, 32);
 }
 
 function computeArrowGeometry(
     tip: Vector,
     direction: Vector,
-    size = 10,
+    size = 15,
     angle = Math.PI / 6,
 ): ArrowGeometry {
     direction = normalize(direction);
@@ -125,7 +124,7 @@ function computeArrowGeometry(
     };
 }
 
-function computeLabelGeometry(direction: Vector, tip: Vector, offset: number = 12): Vector {
+function computeLabelGeometry(direction: Vector, tip: Vector, offset: number = 20): Vector {
     const perpendicular = normalize({ x: -direction.y, y: direction.x });
     return {
         x: tip.x - direction.x * 0.1 + perpendicular.x * offset,
@@ -133,63 +132,36 @@ function computeLabelGeometry(direction: Vector, tip: Vector, offset: number = 1
     };
 }
 
-export function computeEdgeGeometry(from: Node, to: Node, curvature: number): EdgeGeometry {
-    const midpoint = interpolateQuadraticBezier(from, to, curvature);
-    const start = getElementBoundary(from, midpoint);
-    const end = getElementBoundary(to, midpoint);
-
-    const dx = to.x - midpoint.x;
-    const dy = to.y - midpoint.y;
-    const direction = normalize({ x: dx, y: dy });
-
-    const tip = {
-        x: to.x - direction.x * to.radius,
-        y: to.y - direction.y * to.radius,
-    };
-    const arrow = computeArrowGeometry(tip, direction);
-    const label = computeLabelGeometry(direction, tip);
-
-    return {
-        start,
-        end,
-        midpoint,
-        arrow,
-        label,
-    };
-}
-
-export function computeFlowGeometry(
-    from: Stock | Cloud,
-    to: Stock | Cloud,
+export function computeLineGeometry(
+    from: Node| Stock | Cloud,
+    to: Node | Stock | Cloud | ValveGeometry,
     curvature: number,
-): FlowGeometry {
-    
-    const midpoint = interpolateQuadraticBezier(from, to, curvature);
-    const start = getElementBoundary(from, midpoint);
-    const tempEnd = getElementBoundary(to, midpoint);
+): LineGeometry {
+    const controlPoint = interpolateQuadraticBezier(from, to, curvature);
+    const start = getElementBoundary(from, controlPoint);
+    const tempEnd = getElementBoundary(to, controlPoint);
 
-    const dx = to.x - midpoint.x;
-    const dy = to.y - midpoint.y;
+    const dx = to.x - controlPoint.x;
+    const dy = to.y - controlPoint.y;
     const direction = normalize({ x: dx, y: dy });
 
-    const arrow = computeArrowGeometry(tempEnd, direction, 15);
-    const label = computeLabelGeometry(direction, midpoint, 15);
-
+    const arrow = computeArrowGeometry(tempEnd, direction);
     const end = {
         x: (arrow.left.x + arrow.right.x) / 2,
         y: (arrow.left.y + arrow.right.y) / 2,
     }
+    const label = computeLabelGeometry(direction, end);
 
-    const valvepoint = {
-        x: 0.25 * start.x + 0.5 * midpoint.x + 0.25 * end.x,
-        y: 0.25 * start.y + 0.5 * midpoint.y + 0.25 * end.y,
+    const mid = {
+        x: 0.25 * start.x + 0.5 * controlPoint.x + 0.25 * end.x,
+        y: 0.25 * start.y + 0.5 * controlPoint.y + 0.25 * end.y,
     }
 
     return {
         start,
         end,
-        midpoint,
-        valvepoint,
+        controlPoint,
+        mid,
         arrow,
         label,
     };

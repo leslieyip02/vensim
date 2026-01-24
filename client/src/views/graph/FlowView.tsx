@@ -2,7 +2,7 @@ import type { Context } from "konva/lib/Context";
 import { Group, Shape } from "react-konva";
 
 import { useGraphStore } from "../../stores/graph";
-import { computeFlowGeometry } from "@/models/geometry";
+import { computeLineGeometry} from "@/models/geometry";
 import { useFlowInteractions } from "@/controllers/interaction";
 
 export function FlowView({ flowId }: { flowId: string }) {
@@ -17,7 +17,7 @@ export function FlowView({ flowId }: { flowId: string }) {
     const from = flow.type === "inflow" ? cloud : stock;
     const to = flow.type === "inflow" ? stock : cloud;
 
-    const { start, end, midpoint, valvepoint, arrow } = computeFlowGeometry(from, to, flow.curvature);
+    const { start, end, controlPoint, mid, arrow } = computeLineGeometry(from, to, flow.curvature);
     const { stroke, opacity, onClick } = useFlowInteractions(flow.id);
 
     function draw(ctx: Context) {
@@ -28,7 +28,7 @@ export function FlowView({ flowId }: { flowId: string }) {
         // tail
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
-        ctx.quadraticCurveTo(midpoint.x, midpoint.y, end.x, end.y);
+        ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, end.x, end.y);
         ctx.stroke();
 
         ctx.strokeStyle = "white";
@@ -37,7 +37,7 @@ export function FlowView({ flowId }: { flowId: string }) {
 
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
-        ctx.quadraticCurveTo(midpoint.x, midpoint.y, end.x, end.y);
+        ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, end.x, end.y);
         ctx.stroke();
 
         // head
@@ -58,13 +58,15 @@ export function FlowView({ flowId }: { flowId: string }) {
         const dy = 12;
 
         ctx.beginPath();
-        ctx.moveTo(valvepoint.x, valvepoint.y);
-        ctx.lineTo(valvepoint.x - dx, valvepoint.y - dy);
-        ctx.lineTo(valvepoint.x + dx, valvepoint.y - dy);
-        ctx.lineTo(valvepoint.x, valvepoint.y);
-        ctx.lineTo(valvepoint.x - dx, valvepoint.y + dy);
-        ctx.lineTo(valvepoint.x + dx, valvepoint.y + dy);
+        ctx.moveTo(mid.x, mid.y);
+        ctx.lineTo(mid.x - dx, mid.y - dy);
+        ctx.lineTo(mid.x + dx, mid.y - dy);
+        ctx.lineTo(mid.x, mid.y);
+        ctx.lineTo(mid.x - dx, mid.y + dy);
+        ctx.lineTo(mid.x + dx, mid.y + dy);
         ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
         ctx.fill();
         ctx.stroke();
     }
@@ -73,7 +75,7 @@ export function FlowView({ flowId }: { flowId: string }) {
         ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
-        ctx.quadraticCurveTo(midpoint.x, midpoint.y, end.x, end.y);
+        ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, end.x, end.y);
         ctx.strokeShape(shape);
     }
 
