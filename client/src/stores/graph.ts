@@ -88,7 +88,6 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "cloud/add":
-                    console.log("nice", op.cloud);
                     return {
                         counter: state.counter + 1,
                         clouds: { ...state.clouds, [op.cloud.id]: op.cloud },

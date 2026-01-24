@@ -16,6 +16,12 @@ import type { Operation } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/graph";
 
+function dispatch(op: Operation) {
+    const state = useGraphStore.getState();
+    state.apply(op);
+    sendGraphOperation(op);
+}
+
 export function addNode(x: number, y: number, radius = 32) {
     const state = useGraphStore.getState();
 
@@ -29,24 +35,17 @@ export function addNode(x: number, y: number, radius = 32) {
     };
 
     const op: Operation = { type: "node/add", node };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function updateNode(id: string, patch: Partial<Node>) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "node/update", id, patch };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function deleteNode(id: string) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "node/delete", id };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function addEdge(
@@ -66,24 +65,17 @@ export function addEdge(
     };
 
     const op: Operation = { type: "edge/add", edge };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function updateEdge(id: string, patch: Partial<Edge>) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "edge/update", id, patch };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function deleteEdge(id: string) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "edge/delete", id };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function addStock(x: number, y: number, width = 128, height = 64) {
@@ -100,24 +92,17 @@ export function addStock(x: number, y: number, width = 128, height = 64) {
     };
 
     const op: Operation = { type: "stock/add", stock };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function updateStock(id: string, patch: Partial<Stock>) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "stock/update", id, patch };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function deleteStock(id: string) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "stock/delete", id };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function addCloud(x: number, y: number, radius = 32) {
@@ -131,32 +116,20 @@ export function addCloud(x: number, y: number, radius = 32) {
     };
 
     const op: Operation = { type: "cloud/add", cloud };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function updateCloud(id: string, patch: Partial<Cloud>) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "cloud/update", id, patch };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function deleteCloud(id: string) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "cloud/delete", id };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
-export function addFlow(
-    stockId: string, 
-    cloudId: string, 
-    type: FlowType,
-    curvature: number = 0
-) {
+export function addFlow(stockId: string, cloudId: string, type: FlowType, curvature: number = 0) {
     const state = useGraphStore.getState();
 
     const flow: Flow = {
@@ -168,22 +141,15 @@ export function addFlow(
     };
 
     const op: Operation = { type: "flow/add", flow };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function updateFlow(id: string, patch: Partial<Flow>) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "flow/update", id, patch };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }
 
 export function deleteFlow(id: string) {
-    const state = useGraphStore.getState();
-
     const op: Operation = { type: "flow/delete", id };
-    state.apply(op);
-    sendGraphOperation(op);
+    dispatch(op);
 }

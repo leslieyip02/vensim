@@ -66,9 +66,11 @@ export const useTagStore = create<TagState>((set, get) => ({
 
     toggleTag: (tagId, itemId) =>
         set((state) => {
-            const setForTag = state.tagToItems[tagId] ?? new Set();
+            if (!state.tagToItems[tagId]) {
+                return {};
+            }
 
-            const next = new Set(setForTag);
+            const next = new Set(state.tagToItems[tagId]);
             if (next.has(itemId)) {
                 next.delete(itemId);
             } else {
@@ -83,5 +85,5 @@ export const useTagStore = create<TagState>((set, get) => ({
             };
         }),
 
-    isTagged: (tagId, itemId) => get().tagToItems[tagId].has(itemId),
+    isTagged: (tagId, itemId) => get().tagToItems[tagId]?.has(itemId) ?? false,
 }));
