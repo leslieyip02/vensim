@@ -1,14 +1,9 @@
-import { Rect, Group, Text } from "react-konva";
+import { Group, Rect, Text } from "react-konva";
 
-import { useGraphStore } from "../../stores/graph";
 import { useStockInteractions } from "@/controllers/interaction";
+import type { Stock } from "@/models/graph";
 
-export function StockView({ stockId }: { stockId: string }) {
-    const stock = useGraphStore((s) => s.stocks[stockId]);
-    if (!stock) {
-        return null;
-    }
-
+export function StockView({ stock }: { stock: Stock }) {
     const { stroke, opacity, onClick, onDragEnd } = useStockInteractions(stock.id);
 
     return (

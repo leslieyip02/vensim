@@ -1,16 +1,16 @@
 import {
+    type Cloud,
+    type Edge,
+    type Flow,
+    type FlowType,
+    makeCloudId,
     makeEdgeId,
+    makeFlowId,
     makeNodeId,
     makeStockId,
-    makeCloudId,
-    makeFlowId,
-    type Edge,
     type Node,
-    type Stock,
-    type Cloud,
-    type Flow,
     type Polarity,
-    type FlowType,
+    type Stock,
 } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";

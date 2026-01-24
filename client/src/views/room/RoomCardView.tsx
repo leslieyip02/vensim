@@ -1,11 +1,12 @@
+import { useState } from "react";
+import { LuChevronDown, LuChevronUp } from "react-icons/lu";
+
 import { createRoom, joinRoom } from "@/actions/room";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 
 export function RoomCardView() {
     const [roomId, setRoomId] = useState<string | null>(null);

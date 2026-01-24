@@ -1,11 +1,13 @@
-import { useInteractionStore } from "@/stores/interaction";
-import { useTagStore } from "@/stores/tag";
-import { TagBadgeView } from "./TagBadgeView";
+import { useState } from "react";
+import { LuChevronDown, LuChevronUp } from "react-icons/lu";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LuChevronDown, LuChevronUp } from "react-icons/lu";
-import { useState } from "react";
+import { useInteractionStore } from "@/stores/interaction";
+import { useTagStore } from "@/stores/tag";
+
+import { TagBadgeView } from "./TagBadgeView";
 
 export function TagSelectorView() {
     const [isOpen, setIsOpen] = useState<boolean>(false);

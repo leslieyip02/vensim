@@ -1,5 +1,6 @@
-import { GRID_STROKE_COLOR } from "@/configs/color";
 import { Line } from "react-konva";
+
+import { GRID_STROKE_COLOR } from "@/configs/color";
 
 export const GRID_SIZE = 64;
 

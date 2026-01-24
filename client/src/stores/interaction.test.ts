@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { useInteractionStore, type InteractionMode } from "./interaction";
+import { beforeEach,describe, expect, it } from "vitest";
+
+import { type InteractionMode,useInteractionStore } from "./interaction";
 
 describe("useInteractionStore", () => {
     beforeEach(() => {

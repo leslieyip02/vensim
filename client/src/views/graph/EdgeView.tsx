@@ -1,16 +1,20 @@
 import type { Context } from "konva/lib/Context";
-import { Group, Shape, Text } from "react-konva";
-import { useShallow } from 'zustand/react/shallow';
+import type { Shape, ShapeConfig } from "konva/lib/Shape";
+import { Group, Shape as ShapeDiv, Text } from "react-konva";
+import { useShallow } from "zustand/react/shallow";
+
+import { useEdgeInteractions } from "@/controllers/interaction";
+import { computeLineGeometry } from "@/models/geometry";
+import type { Edge } from "@/models/graph";
 
 import { useGraphStore } from "../../stores/graph";
-import { computeLineGeometry } from "@/models/geometry";
-import { useEdgeInteractions } from "@/controllers/interaction";
 
-export function EdgeView({ edgeId }: { edgeId: string }) {
-    const edge = useGraphStore((s) => s.edges[edgeId]);
+export function EdgeView({ edge }: { edge: Edge }) {
+    const { stroke, opacity, onClick } = useEdgeInteractions(edge.id);
+
     const from = useGraphStore((s) => {
         if (!edge?.from) return null;
-        
+
         if (edge.from.startsWith("node-")) {
             return s.nodes[edge.from];
         }
@@ -21,44 +25,47 @@ export function EdgeView({ edgeId }: { edgeId: string }) {
 
         return null;
     });
-    const to = useGraphStore(useShallow((s) => {
-        if (!edge?.to) return null;
+    const to = useGraphStore(
+        useShallow((s) => {
+            if (!edge?.to) return null;
 
-        if (edge.to.startsWith("node-")) {
-            return s.nodes[edge.to];
-        }
+            if (edge.to.startsWith("node-")) {
+                return s.nodes[edge.to];
+            }
 
-        if (edge.to.startsWith("flow-")) {
-            const flow = s.flows[edge.to];
-            if (!flow) return null;
+            if (edge.to.startsWith("flow-")) {
+                const flow = s.flows[edge.to];
+                if (!flow) return null;
 
-            const flowFrom = flow.type === 'inflow' 
-                 ? s.clouds[flow.cloudId] 
-                 : s.stocks[flow.stockId];
-                 
-            const flowTo = flow.type === 'inflow'
-                 ? s.stocks[flow.stockId]
-                 : s.clouds[flow.cloudId];
+                const flowFrom =
+                    flow.type === "inflow" ? s.clouds[flow.cloudId] : s.stocks[flow.stockId];
 
-            if (!flowFrom || !flowTo) return null;
-            const flowGeo = computeLineGeometry(flowFrom, flowTo, flow.curvature);
-            
-            return {
-                x: flowGeo.mid.x,
-                y: flowGeo.mid.y,
-                radius: 12
-            };
-        }
+                const flowTo =
+                    flow.type === "inflow" ? s.stocks[flow.stockId] : s.clouds[flow.cloudId];
 
-        return null;
-    }));
+                if (!flowFrom || !flowTo) return null;
+                const flowGeo = computeLineGeometry(flowFrom, flowTo, flow.curvature);
+
+                return {
+                    x: flowGeo.mid.x,
+                    y: flowGeo.mid.y,
+                    radius: 12,
+                };
+            }
+
+            return null;
+        }),
+    );
 
     if (!edge || !from || !to) {
         return null;
     }
 
-    const { start, end, controlPoint, arrow, label } = computeLineGeometry(from, to, edge.curvature);
-    const { stroke, opacity, onClick } = useEdgeInteractions(edge.id);
+    const { start, end, controlPoint, arrow, label } = computeLineGeometry(
+        from,
+        to,
+        edge.curvature,
+    );
 
     function draw(ctx: Context) {
         ctx.strokeStyle = stroke;
@@ -79,7 +86,7 @@ export function EdgeView({ edgeId }: { edgeId: string }) {
         ctx.fill();
     }
 
-    function hit(ctx: Context, shape: any) {
+    function hit(ctx: Context, shape: Shape<ShapeConfig>) {
         ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
@@ -89,8 +96,14 @@ export function EdgeView({ edgeId }: { edgeId: string }) {
 
     return (
         <Group opacity={opacity}>
-            <Shape sceneFunc={draw} hitFunc={hit} onClick={onClick} stroke={stroke} strokeWidth={8}/>
-            <Text x={label.x} y={label.y} text={edge.polarity} />
+            <ShapeDiv
+                sceneFunc={draw}
+                hitFunc={hit}
+                onClick={onClick}
+                stroke={stroke}
+                strokeWidth={8}
+            />
+            {edge.polarity && <Text x={label.x} y={label.y} text={edge.polarity} />}
         </Group>
     );
 }

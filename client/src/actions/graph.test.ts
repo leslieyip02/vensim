@@ -1,6 +1,26 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { makeCloudId, makeEdgeId, makeFlowId,makeNodeId, makeStockId } from "@/models/graph";
 import type { Operation } from "@/models/operation";
+import { sendGraphOperation } from "@/sync/graph";
+
+import {
+    addCloud,
+    addEdge,
+    addFlow,
+    addNode,
+    addStock,
+    deleteCloud,
+    deleteEdge,
+    deleteFlow,
+    deleteNode,
+    deleteStock,
+    updateCloud,
+    updateEdge,
+    updateFlow,
+    updateNode,
+    updateStock,
+} from "./graph";
 
 const applyMock = vi.fn();
 
@@ -24,26 +44,6 @@ vi.mock("@/models/graph", () => ({
     makeCloudId: vi.fn((counter: number) => `cloud-${counter}`),
     makeFlowId: vi.fn((counter: number) => `flow-${counter}`),
 }));
-
-import { sendGraphOperation } from "@/sync/graph";
-import { makeNodeId, makeEdgeId, makeStockId, makeCloudId, makeFlowId } from "@/models/graph";
-import {
-    addCloud,
-    addEdge,
-    addFlow,
-    addNode,
-    addStock,
-    deleteCloud,
-    deleteEdge,
-    deleteFlow,
-    deleteNode,
-    deleteStock,
-    updateCloud,
-    updateEdge,
-    updateFlow,
-    updateNode,
-    updateStock,
-} from "./graph";
 
 describe("graph actions", () => {
     beforeEach(() => {

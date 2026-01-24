@@ -1,39 +1,42 @@
 import js from "@eslint/js";
 import { globalIgnores } from "eslint/config";
+import prettierConfig from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unusedImports from "eslint-plugin-unused-imports";
-import prettierPlugin from "eslint-plugin-prettier";
 import globals from "globals";
-import { defineConfig, configs as tsConfigs } from "typescript-eslint";
-import prettierConfig from "eslint-config-prettier";
+import tseslint from "typescript-eslint";
 
-export default defineConfig([
-    globalIgnores(["dist"]),
+export default tseslint.config(
+    globalIgnores(["dist", "coverage", "src/components/ui/**/*"]),
+
+    js.configs.recommended,
+
+    ...tseslint.configs.recommended,
+
     {
-        files: ["**/*.{js,ts,tsx}"],
-        extends: [
-            js.configs.recommended,
-            ...tsConfigs.recommended,
-            reactHooks.configs.flat["recommended-latest"],
-            reactRefresh.configs.vite,
-            prettierConfig,
-        ],
+        files: ["**/*.{js,jsx,ts,tsx}"],
+
         plugins: {
             import: importPlugin,
             "simple-import-sort": simpleImportSort,
             "unused-imports": unusedImports,
-            prettier: prettierPlugin,
         },
+
         languageOptions: {
             ecmaVersion: 2020,
-            globals: globals.browser,
+            sourceType: "module",
+            globals: {
+                ...globals.browser,
+                ...globals.node,
+                ...globals.es2021,
+                ...globals.vitest,
+            },
         },
-        rules: {
-            "prettier/prettier": "error",
 
+        rules: {
             "no-var": "error",
             "prefer-const": "error",
             "no-console": "warn",
@@ -51,4 +54,9 @@ export default defineConfig([
             "unused-imports/no-unused-vars": "error",
         },
     },
-]);
+
+    reactHooks.configs.flat["recommended-latest"],
+    reactRefresh.configs.vite,
+
+    prettierConfig,
+);

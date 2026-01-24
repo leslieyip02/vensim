@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from "@/components/ui/context-menu";
 import type { Tag } from "@/models/tag";
+
 import { EditTagFormView } from "./EditTagFormView";
 
 interface TagBadgeProps {

@@ -1,4 +1,4 @@
-import type { Edge, Node, Stock, Cloud, Flow } from "./graph";
+import type { Cloud, Edge, Flow,Node, Stock } from "./graph";
 
 export type Operation =
     | { type: "node/add"; node: Node }

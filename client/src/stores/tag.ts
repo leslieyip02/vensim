@@ -1,6 +1,7 @@
+import { create } from "zustand";
+
 import { getPaletteColor } from "@/configs/color";
 import { makeTagId, type Tag } from "@/models/tag";
-import { create } from "zustand";
 
 interface TagState {
     counter: number;
@@ -55,13 +56,13 @@ export const useTagStore = create<TagState>((set, get) => ({
 
     deleteTag: (tagId) =>
         set((state) => {
-            const { [tagId]: _, ...restTags } = state.tags;
-            const { [tagId]: __, ...restMap } = state.tagToItems;
+            const tags = { ...state.tags };
+            const tagToItems = { ...state.tagToItems };
 
-            return {
-                tags: restTags,
-                tagToItems: restMap,
-            };
+            delete tags[tagId];
+            delete tagToItems[tagId];
+
+            return { tags, tagToItems };
         }),
 
     toggleTag: (tagId, itemId) =>
