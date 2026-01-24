@@ -19,7 +19,7 @@ import { sendGraphOperation } from "@/sync/graph";
 export function addNode(x: number, y: number, radius = 32) {
     const state = useGraphStore.getState();
 
-    const node = {
+    const node: Node = {
         id: makeNodeId(state.counter),
         x,
         y,
@@ -52,12 +52,12 @@ export function deleteNode(id: string) {
 export function addEdge(
     from: string,
     to: string,
-    polarity: Polarity = " ",
+    polarity: Polarity | null = null,
     curvature: number = 0.25,
 ) {
     const state = useGraphStore.getState();
 
-    const edge = {
+    const edge: Edge = {
         id: makeEdgeId(state.counter),
         from,
         to,
@@ -89,7 +89,7 @@ export function deleteEdge(id: string) {
 export function addStock(x: number, y: number, width = 128, height = 64) {
     const state = useGraphStore.getState();
 
-    const stock = {
+    const stock: Stock = {
         id: makeStockId(state.counter),
         x,
         y,
@@ -123,13 +123,11 @@ export function deleteStock(id: string) {
 export function addCloud(x: number, y: number, radius = 32) {
     const state = useGraphStore.getState();
 
-    const cloud = {
+    const cloud: Cloud = {
         id: makeCloudId(state.counter),
         x,
         y,
         radius,
-        label: "",
-        description: "",
     };
 
     const op: Operation = { type: "cloud/add", cloud };
@@ -157,11 +155,11 @@ export function addFlow(
     stockId: string, 
     cloudId: string, 
     type: FlowType,
-    curvature: number = 0.25
+    curvature: number = 0
 ) {
     const state = useGraphStore.getState();
 
-    const flow = {
+    const flow: Flow = {
         id: makeFlowId(state.counter),
         stockId,
         cloudId,

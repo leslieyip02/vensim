@@ -1,4 +1,4 @@
-export type Polarity = "+" | "-" | " ";
+export type Polarity = "+" | "-";
 
 export type FlowType = "inflow" | "outflow";
 
@@ -15,7 +15,7 @@ export interface Edge {
     id: string;
     from: string;
     to: string;
-    polarity: Polarity;
+    polarity: Polarity | null;
     curvature: number;
 }
 
@@ -34,8 +34,6 @@ export interface Cloud {
     x: number;
     y: number;
     radius: number;
-    label: string;
-    description: string;
 }
 
 export interface Flow {

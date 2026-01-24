@@ -9,7 +9,6 @@ import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { useState } from "react";
 import { EditGroupFormView } from "./EditGroupFormView";
 import { EditStockFormView } from "./EditStockFormView";
-import { EditCloudFormView } from "./EditCloudFormView";
 import { EditFlowFormView } from "./EditFlowFormView";
 
 type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
@@ -44,8 +43,6 @@ export function EditFormView() {
                 return <EditEdgeFormView edgeId={selectedIds[0]} />;
             case "stock":
                 return <EditStockFormView stockId={selectedIds[0]} />;
-            case "cloud":
-                return <EditCloudFormView nodeId={selectedIds[0]} />;
             case "flow":
                 return <EditFlowFormView flowId={selectedIds[0]} />;
             case "group":
@@ -64,7 +61,7 @@ export function EditFormView() {
             case "stock":
                 return "Edit Stock";
             case "cloud":
-                return "Edit Cloud";
+                return "Cloud";
             case "group":
                 return "Edit Group";
             default:

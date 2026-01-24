@@ -1,4 +1,4 @@
-import { Circle, Group, Text } from "react-konva";
+import { Circle, Group } from "react-konva";
 
 import { useGraphStore } from "../../stores/graph";
 import { useCloudInteractions } from "@/controllers/interaction";
@@ -22,17 +22,6 @@ export function CloudView({ cloudId }: { cloudId: string }) {
             opacity={opacity}
         >
             <Circle radius={cloud.radius} fill="#add8e6" stroke={stroke} />
-            <Text
-                text={cloud.label}
-                width={cloud.radius * 2}
-                height={cloud.radius * 2}
-                align="center"
-                verticalAlign="middle"
-                x={-cloud.radius}
-                y={-cloud.radius}
-                fontSize={12}
-                wrap="word"
-            />
         </Group>
     );
 }
