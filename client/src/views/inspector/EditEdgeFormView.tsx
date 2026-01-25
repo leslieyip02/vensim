@@ -29,7 +29,7 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
                     <Field>
                         <FieldLabel>Polarity</FieldLabel>
                         <Select
-                            value={edge.polarity ?? "None"} 
+                            value={edge.polarity ?? "None"}
                             onValueChange={(v) => {
                                 const newValue = v === "None" ? null : (v as Polarity);
                                 handleChange({ polarity: newValue });

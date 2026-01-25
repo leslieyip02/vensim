@@ -8,8 +8,19 @@ import {
     updateEdge,
     updateFlow,
     updateNode,
-    updateStock} from "@/actions/graph";
-import { type Cloud, type Edge, type Flow,isCloudId, isEdgeId, isNodeId, isStockId, type Node, type Stock } from "@/models/graph";
+    updateStock,
+} from "@/actions/graph";
+import {
+    type Cloud,
+    type Edge,
+    type Flow,
+    isCloudId,
+    isEdgeId,
+    isNodeId,
+    isStockId,
+    type Node,
+    type Stock,
+} from "@/models/graph";
 import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";

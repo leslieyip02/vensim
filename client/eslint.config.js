@@ -1,7 +1,8 @@
 import js from "@eslint/js";
-import { globalIgnores } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import prettierConfig from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
+import prettierPlugin from "eslint-plugin-prettier";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
@@ -9,11 +10,10 @@ import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
-    globalIgnores(["dist", "coverage", "src/components/ui/**/*"]),
+export default defineConfig([
+    globalIgnores(["dist", "coverage", "src/components/ui/**/*", "src/lib/**/*"]),
 
     js.configs.recommended,
-
     ...tseslint.configs.recommended,
 
     {
@@ -23,6 +23,7 @@ export default tseslint.config(
             import: importPlugin,
             "simple-import-sort": simpleImportSort,
             "unused-imports": unusedImports,
+            prettier: prettierPlugin,
         },
 
         languageOptions: {
@@ -52,6 +53,22 @@ export default tseslint.config(
 
             "unused-imports/no-unused-imports": "error",
             "unused-imports/no-unused-vars": "error",
+
+            // copied from .prettierrc
+            "prettier/prettier": [
+                "error",
+                {
+                    printWidth: 100,
+                    tabWidth: 4,
+                    useTabs: false,
+                    semi: true,
+                    singleQuote: false,
+                    trailingComma: "all",
+                    bracketSpacing: true,
+                    arrowParens: "always",
+                    endOfLine: "lf",
+                },
+            ],
         },
     },
 
@@ -59,4 +76,4 @@ export default tseslint.config(
     reactRefresh.configs.vite,
 
     prettierConfig,
-);
+]);

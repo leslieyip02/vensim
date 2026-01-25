@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Cloud, Edge, Flow,Node, Stock } from "@/models/graph";
+import type { Cloud, Edge, Flow, Node, Stock } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 
 interface GraphState {
@@ -80,7 +80,7 @@ export const useGraphStore = create<GraphState>((set) => ({
                             [op.id]: { ...state.stocks[op.id], ...op.patch },
                         },
                     };
-                
+
                 case "stock/delete":
                     return {
                         stocks: Object.fromEntries(

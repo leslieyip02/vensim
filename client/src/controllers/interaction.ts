@@ -1,6 +1,15 @@
 import type { KonvaEventObject } from "konva/lib/Node";
 
-import { addCloud, addEdge, addFlow,addNode, addStock, updateCloud, updateNode, updateStock } from "@/actions/graph";
+import {
+    addCloud,
+    addEdge,
+    addFlow,
+    addNode,
+    addStock,
+    updateCloud,
+    updateNode,
+    updateStock,
+} from "@/actions/graph";
 import { SELECTED_STROKE_COLOR, UNSELECTED_STROKE_COLOR } from "@/configs/color";
 import { mouseToWorldSpace, snapToGrid } from "@/models/geometry";
 import { isCloudId, isNodeId, isStockId } from "@/models/graph";
@@ -66,7 +75,10 @@ export function useNodeInteractions(nodeId: string) {
                 return;
             }
 
-            if (selectedIds.length !== 1 || (!selectedIds.every(isNodeId) && !selectedIds.every(isStockId))) {
+            if (
+                selectedIds.length !== 1 ||
+                (!selectedIds.every(isNodeId) && !selectedIds.every(isStockId))
+            ) {
                 return;
             }
 
@@ -183,7 +195,7 @@ export function useCloudInteractions(cloudId: string) {
         onDragEnd: (e: KonvaEventObject<DragEvent, never>) => {
             const position = snapToGrid({ x: e.target.x(), y: e.target.y() });
             e.target.position(position);
-            
+
             updateCloud(cloudId, {
                 ...position,
             });
@@ -215,13 +227,16 @@ export function useFlowInteractions(flowId: string) {
                 return;
             }
 
-            if (selectedIds.length !== 1 || (!selectedIds.every(isNodeId) && !selectedIds.every(isStockId))) {
+            if (
+                selectedIds.length !== 1 ||
+                (!selectedIds.every(isNodeId) && !selectedIds.every(isStockId))
+            ) {
                 return;
             }
 
             const from = selectedIds[0];
             addEdge(from, flowId);
             clearSelectedIds();
-        }
+        },
     };
 }

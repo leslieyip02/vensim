@@ -1,7 +1,7 @@
 import type { Camera } from "@/controllers/camera";
 import { GRID_SIZE } from "@/views/GridView";
 
-import type { Cloud,Node, Stock } from "./graph";
+import type { Cloud, Node, Stock } from "./graph";
 
 interface Vector {
     x: number;
@@ -70,10 +70,7 @@ function insetPoint(point: Vector, direction: Vector, inset: number): Vector {
     };
 }
 
-function getElementBoundary(
-    element: Node | Stock | Cloud | ValveGeometry,
-    target: Vector
-): Vector {
+function getElementBoundary(element: Node | Stock | Cloud | ValveGeometry, target: Vector): Vector {
     const dx = target.x - element.x;
     const dy = target.y - element.y;
 
@@ -134,7 +131,7 @@ function computeLabelGeometry(direction: Vector, tip: Vector, offset: number = 2
 }
 
 export function computeLineGeometry(
-    from: Node| Stock | Cloud,
+    from: Node | Stock | Cloud,
     to: Node | Stock | Cloud | ValveGeometry,
     curvature: number,
 ): LineGeometry {
@@ -150,13 +147,13 @@ export function computeLineGeometry(
     const end = {
         x: (arrow.left.x + arrow.right.x) / 2,
         y: (arrow.left.y + arrow.right.y) / 2,
-    }
+    };
     const label = computeLabelGeometry(direction, end);
 
     const mid = {
         x: 0.25 * start.x + 0.5 * controlPoint.x + 0.25 * end.x,
         y: 0.25 * start.y + 0.5 * controlPoint.y + 0.25 * end.y,
-    }
+    };
 
     return {
         start,

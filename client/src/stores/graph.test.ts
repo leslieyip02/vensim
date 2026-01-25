@@ -1,6 +1,6 @@
-import { beforeEach,describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
-import type { Cloud, Edge, Flow,Node, Stock } from "@/models/graph";
+import type { Cloud, Edge, Flow, Node, Stock } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 
 import { useGraphStore } from "./graph";

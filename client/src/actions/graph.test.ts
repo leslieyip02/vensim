@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { makeCloudId, makeEdgeId, makeFlowId,makeNodeId, makeStockId } from "@/models/graph";
+import { makeCloudId, makeEdgeId, makeFlowId, makeNodeId, makeStockId } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { sendGraphOperation } from "@/sync/graph";
 
