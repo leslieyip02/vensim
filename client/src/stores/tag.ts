@@ -1,6 +1,7 @@
+import { create } from "zustand";
+
 import { getPaletteColor } from "@/configs/color";
 import { makeTagId, type Tag } from "@/models/tag";
-import { create } from "zustand";
 
 interface TagState {
     counter: number;
@@ -55,20 +56,22 @@ export const useTagStore = create<TagState>((set, get) => ({
 
     deleteTag: (tagId) =>
         set((state) => {
-            const { [tagId]: _, ...restTags } = state.tags;
-            const { [tagId]: __, ...restMap } = state.tagToItems;
+            const tags = { ...state.tags };
+            const tagToItems = { ...state.tagToItems };
 
-            return {
-                tags: restTags,
-                tagToItems: restMap,
-            };
+            delete tags[tagId];
+            delete tagToItems[tagId];
+
+            return { tags, tagToItems };
         }),
 
     toggleTag: (tagId, itemId) =>
         set((state) => {
-            const setForTag = state.tagToItems[tagId] ?? new Set();
+            if (!state.tagToItems[tagId]) {
+                return {};
+            }
 
-            const next = new Set(setForTag);
+            const next = new Set(state.tagToItems[tagId]);
             if (next.has(itemId)) {
                 next.delete(itemId);
             } else {
@@ -83,5 +86,5 @@ export const useTagStore = create<TagState>((set, get) => ({
             };
         }),
 
-    isTagged: (tagId, itemId) => get().tagToItems[tagId].has(itemId),
+    isTagged: (tagId, itemId) => get().tagToItems[tagId]?.has(itemId) ?? false,
 }));

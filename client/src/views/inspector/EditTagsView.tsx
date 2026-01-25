@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useTagStore } from "@/stores/tag";
+
 import { TagBadgeView } from "./TagBadgeView";
 
 export function EditTagsView({ targetIds }: { targetIds: string[] }) {

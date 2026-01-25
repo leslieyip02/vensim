@@ -36,7 +36,7 @@ type Operation struct {
 	Patch map[string]any `json:"patch,omitempty"`
 }
 
-func (s *State) Apply(op Operation) {
+func (s *State) Apply(op Operation) *State {
 	switch op.Type {
 	case NodeAdd:
 		s.Nodes[op.Node.ID] = op.Node
@@ -93,6 +93,8 @@ func (s *State) Apply(op Operation) {
 	case FlowDelete:
 		delete(s.Flows, op.ID)
 	}
+
+	return s
 }
 
 func applyPatch(target any, patch map[string]any) {

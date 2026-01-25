@@ -1,14 +1,9 @@
 import { Circle, Group } from "react-konva";
 
-import { useGraphStore } from "../../stores/graph";
 import { useCloudInteractions } from "@/controllers/interaction";
+import type { Cloud } from "@/models/graph";
 
-export function CloudView({ cloudId }: { cloudId: string }) {
-    const cloud = useGraphStore((s) => s.clouds[cloudId]);
-    if (!cloud) {
-        return null;
-    }
-
+export function CloudView({ cloud }: { cloud: Cloud }) {
     const { stroke, opacity, onClick, onDragEnd } = useCloudInteractions(cloud.id);
 
     return (

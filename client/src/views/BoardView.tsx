@@ -1,21 +1,24 @@
+import type { KonvaEventObject } from "konva/lib/Node";
 import { Layer, Stage } from "react-konva";
 
-import { useGraphStore } from "../stores/graph";
-import { EdgeView } from "./graph/EdgeView";
-import { NodeView } from "./graph/NodeView";
-import { StockView } from "./graph/StockView";
-import { CloudView } from "./graph/CloudView";
-import { GridView } from "./GridView";
 import { useCameraController } from "@/controllers/camera";
 import { useInteractionController as useInteractionController } from "@/controllers/interaction";
+
+import { useGraphStore } from "../stores/graph";
+import { CloudView } from "./graph/CloudView";
+import { EdgeView } from "./graph/EdgeView";
 import { FlowView } from "./graph/FlowView";
+import { NodeView } from "./graph/NodeView";
+import { StockView } from "./graph/StockView";
+import { GridView } from "./GridView";
 
 export function BoardView() {
-    const nodeIds = Object.keys(useGraphStore((s) => s.nodes));
-    const edgeIds = Object.keys(useGraphStore((s) => s.edges));
-    const stockIds = Object.keys(useGraphStore((s) => s.stocks));
-    const cloudIds = Object.keys(useGraphStore((s) => s.clouds));
-    const flowIds = Object.keys(useGraphStore((s) => s.flows));
+    const nodes = Object.values(useGraphStore((s) => s.nodes));
+    const edges = Object.values(useGraphStore((s) => s.edges));
+    const stocks = Object.values(useGraphStore((s) => s.stocks));
+    const clouds = Object.values(useGraphStore((s) => s.clouds));
+    const flows = Object.values(useGraphStore((s) => s.flows));
+
     const cameraController = useCameraController({
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
@@ -24,42 +27,44 @@ export function BoardView() {
 
     const interactionController = useInteractionController(cameraController.camera);
 
+    const stageProps = {
+        ref: cameraController.stageRef,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        scaleX: cameraController.camera.zoom,
+        scaleY: cameraController.camera.zoom,
+        x: cameraController.camera.x,
+        y: cameraController.camera.y,
+        onWheel: cameraController.handleWheel,
+        onMouseDown: (e: KonvaEventObject<MouseEvent>) => {
+            const result = interactionController.handleStageMouseDown(e);
+            if (result === "pan") {
+                cameraController.beginPan();
+            }
+        },
+        onMouseMove: cameraController.handlePan,
+        onMouseUp: cameraController.stopPan,
+        onMouseLeave: cameraController.stopPan,
+    };
+
     return (
-        <Stage
-            ref={cameraController.stageRef}
-            width={window.innerWidth}
-            height={window.innerHeight}
-            scaleX={cameraController.camera.zoom}
-            scaleY={cameraController.camera.zoom}
-            x={cameraController.camera.x}
-            y={cameraController.camera.y}
-            onWheel={cameraController.handleWheel}
-            onMouseDown={(e) => {
-                const result = interactionController.handleStageMouseDown(e);
-                if (result === "pan") {
-                    cameraController.beginPan();
-                }
-            }}
-            onMouseMove={cameraController.handlePan}
-            onMouseUp={cameraController.stopPan}
-            onMouseLeave={cameraController.stopPan}
-        >
+        <Stage {...stageProps}>
             <Layer>
                 <GridView />
-                {nodeIds.map((id) => (
-                    <NodeView key={id} nodeId={id} />
+                {nodes.map((node) => (
+                    <NodeView key={node.id} node={node} />
                 ))}
-                {edgeIds.map((id) => (
-                    <EdgeView key={id} edgeId={id} />
+                {edges.map((edge) => (
+                    <EdgeView key={edge.id} edge={edge} />
                 ))}
-                {stockIds.map((id) => (
-                    <StockView key={id} stockId={id} />
+                {stocks.map((stock) => (
+                    <StockView key={stock.id} stock={stock} />
                 ))}
-                {cloudIds.map((id) => (
-                    <CloudView key={id} cloudId={id} />
+                {clouds.map((cloud) => (
+                    <CloudView key={cloud.id} cloud={cloud} />
                 ))}
-                {flowIds.map((id) => (
-                    <FlowView key={id} flowId={id} />
+                {flows.map((flow) => (
+                    <FlowView key={flow.id} flow={flow} />
                 ))}
             </Layer>
         </Stage>

@@ -2,51 +2,85 @@ package ws
 
 import (
 	"server/graph"
+
+	"github.com/gorilla/websocket"
 )
 
-type Hub struct {
-	clients    map[*Client]bool
-	broadcast  chan graph.Operation
-	register   chan *Client
-	unregister chan *Client
-
-	state *graph.State
+type Broadcaster interface {
+	addListener(listener Listener)
+	removeListener(listener Listener)
+	broadcastOperation(op graph.Operation)
 }
 
-func NewHub(state *graph.State) *Hub {
+type Hub struct {
+	id                string
+	listeners         map[Listener]bool
+	registerChannel   chan Listener
+	unregisterChannel chan Listener
+	broadcastChannel  chan graph.Operation
+	state             *graph.State
+}
+
+func NewHub(id string, state *graph.State) *Hub {
 	return &Hub{
-		clients:    make(map[*Client]bool),
-		broadcast:  make(chan graph.Operation),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		state:      state,
+		id:                id,
+		listeners:         make(map[Listener]bool),
+		registerChannel:   make(chan Listener),
+		unregisterChannel: make(chan Listener),
+		broadcastChannel:  make(chan graph.Operation),
+		state:             state,
 	}
 }
 
-func (h *Hub) Register(c *Client) {
-	h.register <- c
-	go c.ReadPump()
+// ============================================================================
+//  Room
+// ============================================================================
+
+func (h *Hub) GetID() string {
+	return h.id
+}
+
+func (h *Hub) Register(conn *websocket.Conn) {
+	c := newClient(conn, h)
+	h.addListener(c)
 }
 
 func (h *Hub) Run() {
 	for {
 		select {
-		case c := <-h.register:
-			h.clients[c] = true
-			c.SendClientID()
-			c.SendSnapshot(h.state)
+		case c := <-h.registerChannel:
+			h.listeners[c] = true
+			c.sendID()
+			c.sendSnapshot(h.state)
 
-		case c := <-h.unregister:
-			delete(h.clients, c)
+		case c := <-h.unregisterChannel:
+			delete(h.listeners, c)
 
-		case op := <-h.broadcast:
+		case op := <-h.broadcastChannel:
 			h.state.Apply(op)
 
-			for c := range h.clients {
-				if c.id != op.SenderId {
-					c.SendOperation(op)
+			for c := range h.listeners {
+				if c.getID() != op.SenderId {
+					c.sendOperation(op)
 				}
 			}
 		}
 	}
+}
+
+// ============================================================================
+//  Broadcaster
+// ============================================================================
+
+func (h *Hub) addListener(listener Listener) {
+	h.registerChannel <- listener
+	go listener.listen()
+}
+
+func (h *Hub) removeListener(listener Listener) {
+	h.unregisterChannel <- listener
+}
+
+func (h *Hub) broadcastOperation(op graph.Operation) {
+	h.broadcastChannel <- op
 }

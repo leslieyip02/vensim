@@ -15,3 +15,10 @@ VITE_WS_ORIGIN=ws://localhost:8080
 npm install
 npm run dev
 ```
+
+3. Testing
+
+```
+npm run test
+npm run test -- --coverage
+```

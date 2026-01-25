@@ -1,8 +1,10 @@
-import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
-import { EditTagsView } from "./EditTagsView";
-import { Button } from "@/components/ui/button";
 import { LuTrash2 } from "react-icons/lu";
+
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { useGroupForm } from "@/controllers/form";
+
+import { EditTagsView } from "./EditTagsView";
 
 export function EditGroupFormView({ targetIds }: { targetIds: string[] }) {
     const { handleCancel, handleDelete } = useGroupForm(targetIds);

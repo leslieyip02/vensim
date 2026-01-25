@@ -1,8 +1,9 @@
+import { LuTrash2 } from "react-icons/lu";
+
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useTagForm } from "@/controllers/form";
-import { LuTrash2 } from "react-icons/lu";
 
 export function EditTagFormView({ tagId }: { tagId: string }) {
     const { tag, handleChange, handleDelete } = useTagForm(tagId);

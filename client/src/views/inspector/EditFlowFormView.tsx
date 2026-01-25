@@ -1,9 +1,11 @@
+import { LuTrash2 } from "react-icons/lu";
+
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { useFlowForm } from "@/controllers/form";
-import { LuTrash2 } from "react-icons/lu";
+
 import { EditTagsView } from "./EditTagsView";
 
 export function EditFlowFormView({ flowId }: { flowId: string }) {

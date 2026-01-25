@@ -1,14 +1,9 @@
 import { Circle, Group, Text } from "react-konva";
 
-import { useGraphStore } from "../../stores/graph";
 import { useNodeInteractions } from "@/controllers/interaction";
+import type { Node } from "@/models/graph";
 
-export function NodeView({ nodeId }: { nodeId: string }) {
-    const node = useGraphStore((s) => s.nodes[nodeId]);
-    if (!node) {
-        return null;
-    }
-
+export function NodeView({ node }: { node: Node }) {
     const { stroke, opacity, onClick, onDragEnd } = useNodeInteractions(node.id);
 
     return (

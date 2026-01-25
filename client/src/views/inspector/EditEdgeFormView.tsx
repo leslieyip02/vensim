@@ -1,3 +1,5 @@
+import { LuTrash2 } from "react-icons/lu";
+
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -11,7 +13,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { useEdgeForm } from "@/controllers/form";
 import type { Polarity } from "@/models/graph";
-import { LuTrash2 } from "react-icons/lu";
+
 import { EditTagsView } from "./EditTagsView";
 
 export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
@@ -27,7 +29,7 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
                     <Field>
                         <FieldLabel>Polarity</FieldLabel>
                         <Select
-                            value={edge.polarity ?? "None"} 
+                            value={edge.polarity ?? "None"}
                             onValueChange={(v) => {
                                 const newValue = v === "None" ? null : (v as Polarity);
                                 handleChange({ polarity: newValue });
