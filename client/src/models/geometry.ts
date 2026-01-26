@@ -1,7 +1,7 @@
 import type { Camera } from "@/controllers/camera";
 import { GRID_SIZE } from "@/views/GridView";
 
-import type { Cloud, Node, Stock } from "./graph";
+import { type Cloud, isCloud, isNode, isStock, type Node, type Stock } from "./graph";
 
 interface Vector {
     x: number;
@@ -29,6 +29,7 @@ interface ArrowGeometry {
 }
 
 export interface ValveGeometry {
+    id: string;
     x: number;
     y: number;
     radius: number;
@@ -74,7 +75,7 @@ function getElementBoundary(element: Node | Stock | Cloud | ValveGeometry, targe
     const dx = target.x - element.x;
     const dy = target.y - element.y;
 
-    if ("width" in element) {
+    if (isStock(element)) {
         const halfWidth = element.width / 2;
         const halfHeight = element.height / 2;
 
@@ -89,12 +90,31 @@ function getElementBoundary(element: Node | Stock | Cloud | ValveGeometry, targe
         };
     }
 
-    if ("radius" in element) {
+    if (isNode(element)) {
         return insetPoint(element, { x: dx, y: dy }, element.radius);
     }
 
-    // should not reach here
-    return insetPoint(element, { x: dx, y: dy }, 32);
+    if (isCloud(element)) {
+        const len = Math.hypot(dx, dy);
+        if (len === 0) {
+            return { x: element.x, y: element.y };
+        }
+
+        const theta = Math.atan2(dy, dx);
+        const rotation = Math.PI / 4;
+
+        const r = element.radius * (1 + 0.25 * Math.cos(4 * (theta + rotation)));
+
+        const scale = r / len;
+
+        return {
+            x: element.x + dx * scale,
+            y: element.y + dy * scale,
+        };
+    }
+
+    // ValveGeometry
+    return insetPoint(element, { x: dx, y: dy }, 12);
 }
 
 function computeArrowGeometry(

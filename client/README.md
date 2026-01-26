@@ -16,7 +16,13 @@ npm install
 npm run dev
 ```
 
-3. Testing
+3. Linting
+
+```
+npm run lint:fix
+```
+
+4. Testing
 
 ```
 npm run test
