@@ -11,6 +11,7 @@ import { EditFlowFormView } from "./EditFlowFormView";
 import { EditGroupFormView } from "./EditGroupFormView";
 import { EditNodeFormView } from "./EditNodeFormView";
 import { EditStockFormView } from "./EditStockFormView";
+import { EditCloudFormView } from "./EditCloudFormView";
 
 type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
 
@@ -38,9 +39,9 @@ const FormHeader = ({ formType, isOpen }: FormProps) => {
         node: "Edit Node",
         edge: "Edit Edge",
         stock: "Edit Stock",
+        cloud: "Edit Cloud",
         flow: "Edit Flow",
         group: "Edit",
-        cloud: null,
     }[formType];
 
     return (
@@ -61,6 +62,8 @@ const FormView = ({ formType, selectedIds }: FormProps) => {
             return <EditEdgeFormView edgeId={selectedIds[0]} />;
         case "stock":
             return <EditStockFormView stockId={selectedIds[0]} />;
+        case "cloud":
+            return <EditCloudFormView cloudId={selectedIds[0]} />;
         case "flow":
             return <EditFlowFormView flowId={selectedIds[0]} />;
         case "group":
