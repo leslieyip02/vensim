@@ -83,3 +83,23 @@ export function isCloudId(id: string): boolean {
 export function isFlowId(id: string): boolean {
     return id.startsWith("flow");
 }
+
+export function isNode(element: any): element is Node {
+    return element.id.startsWith("node");
+}
+
+export function isEdge(element: any): element is Edge {
+    return element.id.startsWith("edge");
+}
+
+export function isStock(element: any): element is Stock {
+    return element.id.startsWith("stock");
+}
+
+export function isCloud(element: any): element is Cloud {
+    return element.id.startsWith("cloud");
+}
+
+export function isFlow(element: any): element is Flow {
+    return element.id.startsWith("flow");
+}
