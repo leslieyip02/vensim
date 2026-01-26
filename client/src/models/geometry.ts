@@ -1,7 +1,7 @@
 import type { Camera } from "@/controllers/camera";
 import { GRID_SIZE } from "@/views/GridView";
 
-import { isCloud, isNode, isStock, type Cloud, type Node, type Stock } from "./graph";
+import { type Cloud, isCloud, isNode, isStock, type Node, type Stock } from "./graph";
 
 interface Vector {
     x: number;
@@ -103,9 +103,7 @@ function getElementBoundary(element: Node | Stock | Cloud | ValveGeometry, targe
         const theta = Math.atan2(dy, dx);
         const rotation = Math.PI / 4;
 
-        const r =
-            element.radius *
-            (1 + 0.25 * Math.cos(4 * (theta + rotation)));
+        const r = element.radius * (1 + 0.25 * Math.cos(4 * (theta + rotation)));
 
         const scale = r / len;
 

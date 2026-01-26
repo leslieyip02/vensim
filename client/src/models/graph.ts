@@ -2,8 +2,11 @@ export type Polarity = "+" | "-";
 
 export type FlowType = "inflow" | "outflow";
 
-export interface Node {
+interface Identifiable {
     id: string;
+}
+
+export interface Node extends Identifiable {
     x: number;
     y: number;
     radius: number;
@@ -11,16 +14,14 @@ export interface Node {
     description: string;
 }
 
-export interface Edge {
-    id: string;
+export interface Edge extends Identifiable {
     from: string;
     to: string;
     polarity: Polarity | null;
     curvature: number;
 }
 
-export interface Stock {
-    id: string;
+export interface Stock extends Identifiable {
     x: number;
     y: number;
     width: number;
@@ -29,15 +30,13 @@ export interface Stock {
     description: string;
 }
 
-export interface Cloud {
-    id: string;
+export interface Cloud extends Identifiable {
     x: number;
     y: number;
     radius: number;
 }
 
-export interface Flow {
-    id: string;
+export interface Flow extends Identifiable {
     stockId: string;
     cloudId: string;
     type: FlowType;
@@ -84,22 +83,22 @@ export function isFlowId(id: string): boolean {
     return id.startsWith("flow");
 }
 
-export function isNode(element: any): element is Node {
-    return element.id.startsWith("node");
+export function isNode(element: Identifiable): element is Node {
+    return isNodeId(element.id);
 }
 
-export function isEdge(element: any): element is Edge {
-    return element.id.startsWith("edge");
+export function isEdge(element: Identifiable): element is Edge {
+    return isEdgeId(element.id);
 }
 
-export function isStock(element: any): element is Stock {
-    return element.id.startsWith("stock");
+export function isStock(element: Identifiable): element is Stock {
+    return isStockId(element.id);
 }
 
-export function isCloud(element: any): element is Cloud {
-    return element.id.startsWith("cloud");
+export function isCloud(element: Identifiable): element is Cloud {
+    return isCloudId(element.id);
 }
 
-export function isFlow(element: any): element is Flow {
-    return element.id.startsWith("flow");
+export function isFlow(element: Identifiable): element is Flow {
+    return isFlowId(element.id);
 }

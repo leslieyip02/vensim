@@ -6,12 +6,12 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useInteractionStore } from "@/stores/interaction";
 
+import { EditCloudFormView } from "./EditCloudFormView";
 import { EditEdgeFormView } from "./EditEdgeFormView";
 import { EditFlowFormView } from "./EditFlowFormView";
 import { EditGroupFormView } from "./EditGroupFormView";
 import { EditNodeFormView } from "./EditNodeFormView";
 import { EditStockFormView } from "./EditStockFormView";
-import { EditCloudFormView } from "./EditCloudFormView";
 
 type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
 

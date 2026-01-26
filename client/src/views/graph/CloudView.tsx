@@ -57,11 +57,7 @@ export function CloudView({ cloud }: { cloud: Cloud }) {
             onDragEnd={onDragEnd}
             opacity={opacity}
         >
-            <ShapeDiv
-                sceneFunc={draw}
-                hitFunc={hit}
-                stroke={stroke}
-            />
+            <ShapeDiv sceneFunc={draw} hitFunc={hit} stroke={stroke} />
         </Group>
     );
 }

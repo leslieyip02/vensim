@@ -1,12 +1,12 @@
+import ClickerIcon from "@/assets/clicker.svg?react";
+import CloudIcon from "@/assets/cloud.svg?react";
+import EdgeIcon from "@/assets/edge.svg?react";
+import FlowIcon from "@/assets/flow.svg?react";
+import NodeIcon from "@/assets/node.svg?react";
+import StockIcon from "@/assets/stock.svg?react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { type InteractionMode, useInteractionStore } from "@/stores/interaction";
-import ClickerIcon from "@/assets/clicker.svg?react";
-import NodeIcon from "@/assets/node.svg?react";
-import EdgeIcon from "@/assets/edge.svg?react";
-import StockIcon from "@/assets/stock.svg?react";
-import CloudIcon from "@/assets/cloud.svg?react";
-import FlowIcon from "@/assets/flow.svg?react";
 
 interface ButtonProps {
     interactionMode: InteractionMode;
