@@ -1,15 +1,12 @@
-import {
-    LuArrowUpRight,
-    LuChevronsRight,
-    LuCircle,
-    LuMousePointer2,
-    LuRectangleHorizontal,
-    LuWaves,
-} from "react-icons/lu";
-
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { type InteractionMode, useInteractionStore } from "@/stores/interaction";
+import ClickerIcon from "@/assets/clicker.svg?react";
+import NodeIcon from "@/assets/node.svg?react";
+import EdgeIcon from "@/assets/edge.svg?react";
+import StockIcon from "@/assets/stock.svg?react";
+import CloudIcon from "@/assets/cloud.svg?react";
+import FlowIcon from "@/assets/flow.svg?react";
 
 interface ButtonProps {
     interactionMode: InteractionMode;
@@ -22,7 +19,7 @@ const SelectButton = ({ interactionMode }: ButtonProps) => (
                 value="select"
                 className={interactionMode === "select" ? "bg-input" : ""}
             >
-                <LuMousePointer2 />
+                <ClickerIcon />
             </ToggleGroupItem>
         </TooltipTrigger>
         <TooltipContent>
@@ -38,7 +35,7 @@ const AddNodeButton = ({ interactionMode }: ButtonProps) => (
                 value="add-node"
                 className={interactionMode === "add-node" ? "bg-input" : ""}
             >
-                <LuCircle />
+                <NodeIcon />
             </ToggleGroupItem>
         </TooltipTrigger>
         <TooltipContent>
@@ -54,7 +51,7 @@ const AddEdgeButton = ({ interactionMode }: ButtonProps) => (
                 value="add-edge"
                 className={interactionMode === "add-edge" ? "bg-input" : ""}
             >
-                <LuArrowUpRight />
+                <EdgeIcon />
             </ToggleGroupItem>
         </TooltipTrigger>
         <TooltipContent>
@@ -70,7 +67,7 @@ const AddStockButton = ({ interactionMode }: ButtonProps) => (
                 value="add-stock"
                 className={interactionMode === "add-stock" ? "bg-input" : ""}
             >
-                <LuRectangleHorizontal />
+                <StockIcon />
             </ToggleGroupItem>
         </TooltipTrigger>
         <TooltipContent>
@@ -86,7 +83,7 @@ const AddCloudButton = ({ interactionMode }: ButtonProps) => (
                 value="add-cloud"
                 className={interactionMode === "add-cloud" ? "bg-input" : ""}
             >
-                <LuWaves />
+                <CloudIcon />
             </ToggleGroupItem>
         </TooltipTrigger>
         <TooltipContent>
@@ -102,7 +99,7 @@ const AddFlowButton = ({ interactionMode }: ButtonProps) => (
                 value="add-flow"
                 className={interactionMode === "add-flow" ? "bg-input" : ""}
             >
-                <LuChevronsRight />
+                <FlowIcon />
             </ToggleGroupItem>
         </TooltipTrigger>
         <TooltipContent>
