@@ -4,6 +4,10 @@ import { useGraphStore } from "@/stores/graph";
 let socket: WebSocket | null = null;
 let clientId: string | null = null;
 
+export function isGraphSocketConnected() {
+    return socket !== null;
+}
+
 export function connectGraphSocket(url: string) {
     socket = new WebSocket(url);
 
