@@ -3,16 +3,16 @@
 import "./App.css";
 
 import { BoardView } from "./BoardView";
-import { InspectorView } from "./inspector/InspectorView";
+import { InspectorPanelView } from "./inspector/InspectorPanelView";
 import { ToolbarView } from "./toolbar/ToolbarView";
 
 function App() {
     return (
-        <>
+        <main>
+            <InspectorPanelView />
             <ToolbarView />
-            <InspectorView />
             <BoardView />
-        </>
+        </main>
     );
 }
 

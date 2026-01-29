@@ -115,7 +115,7 @@ export function ToolbarView() {
         <div className="absolute w-full h-full flex flex-col items-center justify-end">
             <ToggleGroup
                 type="single"
-                className="border-b bg-background drop-shadow px-1 py-1 mb-5 z-100"
+                className="border-b bg-background drop-shadow px-1 py-1 mb-5 z-50"
                 value={interactionMode}
                 onValueChange={(v) => {
                     if (v) {

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useTagStore } from "@/stores/tag";
 
-import { TagBadgeView } from "./TagBadgeView";
+import { TagBadgeView } from "../tag/TagBadgeView";
 
 export function EditTagsView({ targetIds }: { targetIds: string[] }) {
     const { tags, tagToItems, addTag, toggleTag } = useTagStore((s) => s);
