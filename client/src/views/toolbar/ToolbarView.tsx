@@ -109,18 +109,17 @@ const AddFlowButton = ({ interactionMode }: ButtonProps) => (
 );
 
 export function ToolbarView() {
-    const { interactionMode, setInteractionMode } = useInteractionStore((s) => s);
+    const { interactionMode, setInteractionMode, clearSelectedIds } = useInteractionStore((s) => s);
 
     return (
         <div className="absolute w-full h-full flex flex-col items-center justify-end">
             <ToggleGroup
                 type="single"
-                className="border-b bg-background drop-shadow px-1 py-1 mb-5 z-100"
+                className="border-b bg-background drop-shadow px-1 py-1 mb-5 z-50"
                 value={interactionMode}
-                onValueChange={(v) => {
-                    if (v) {
-                        setInteractionMode(v as InteractionMode);
-                    }
+                onValueChange={(value) => {
+                    setInteractionMode(value as InteractionMode);
+                    clearSelectedIds();
                 }}
             >
                 <SelectButton interactionMode={interactionMode} />

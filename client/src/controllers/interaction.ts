@@ -22,23 +22,28 @@ export function useInteractionController(camera: Camera) {
     const { interactionMode, clearSelectedIds } = useInteractionStore((s) => s);
 
     function handleStageMouseDown(e: KonvaEventObject<MouseEvent>) {
-        if (e.target !== e.target.getStage()) return;
+        if (e.target !== e.target.getStage()) {
+            return;
+        }
 
         if (interactionMode === "add-node") {
             const position = snapToGrid(mouseToWorldSpace(e.evt, camera));
             addNode(position.x, position.y);
+            clearSelectedIds();
             return "handled";
         }
 
         if (interactionMode === "add-stock") {
             const position = snapToGrid(mouseToWorldSpace(e.evt, camera));
             addStock(position.x, position.y);
+            clearSelectedIds();
             return "handled";
         }
 
         if (interactionMode === "add-cloud") {
             const position = snapToGrid(mouseToWorldSpace(e.evt, camera));
             addCloud(position.x, position.y);
+            clearSelectedIds();
             return "handled";
         }
 
