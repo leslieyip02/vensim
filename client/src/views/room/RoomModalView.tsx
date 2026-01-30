@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LuClipboard, LuClipboardCheck, LuPlus, LuShare2 } from "react-icons/lu";
+import { LuClipboard, LuClipboardCheck, LuPlus, LuUsers } from "react-icons/lu";
 
 import { createRoom, joinRoom } from "@/actions/room";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export function RoomModalView() {
         >
             <DialogTrigger asChild>
                 <Button variant="outline" className="absolute bottom-8 right-8 z-100">
-                    <LuShare2 />
+                    <LuUsers />
                 </Button>
             </DialogTrigger>
 
