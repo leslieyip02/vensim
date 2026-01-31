@@ -17,7 +17,7 @@ const SelectButton = ({ interactionMode }: ButtonProps) => (
         <TooltipTrigger asChild>
             <ToggleGroupItem
                 value="select"
-                className={interactionMode === "select" ? "bg-input" : ""}
+                className={interactionMode === "select" ? "bg-toolbar" : ""}
             >
                 <ClickerIcon />
             </ToggleGroupItem>
@@ -33,7 +33,7 @@ const AddNodeButton = ({ interactionMode }: ButtonProps) => (
         <TooltipTrigger asChild>
             <ToggleGroupItem
                 value="add-node"
-                className={interactionMode === "add-node" ? "bg-input" : ""}
+                className={interactionMode === "add-node" ? "bg-toolbar" : ""}
             >
                 <NodeIcon />
             </ToggleGroupItem>
@@ -49,7 +49,7 @@ const AddEdgeButton = ({ interactionMode }: ButtonProps) => (
         <TooltipTrigger asChild>
             <ToggleGroupItem
                 value="add-edge"
-                className={interactionMode === "add-edge" ? "bg-input" : ""}
+                className={interactionMode === "add-edge" ? "bg-toolbar" : ""}
             >
                 <EdgeIcon />
             </ToggleGroupItem>
@@ -65,7 +65,7 @@ const AddStockButton = ({ interactionMode }: ButtonProps) => (
         <TooltipTrigger asChild>
             <ToggleGroupItem
                 value="add-stock"
-                className={interactionMode === "add-stock" ? "bg-input" : ""}
+                className={interactionMode === "add-stock" ? "bg-toolbar" : ""}
             >
                 <StockIcon />
             </ToggleGroupItem>
@@ -81,7 +81,7 @@ const AddCloudButton = ({ interactionMode }: ButtonProps) => (
         <TooltipTrigger asChild>
             <ToggleGroupItem
                 value="add-cloud"
-                className={interactionMode === "add-cloud" ? "bg-input" : ""}
+                className={interactionMode === "add-cloud" ? "bg-toolbar" : ""}
             >
                 <CloudIcon />
             </ToggleGroupItem>
@@ -97,7 +97,7 @@ const AddFlowButton = ({ interactionMode }: ButtonProps) => (
         <TooltipTrigger asChild>
             <ToggleGroupItem
                 value="add-flow"
-                className={interactionMode === "add-flow" ? "bg-input" : ""}
+                className={interactionMode === "add-flow" ? "bg-toolbar" : ""}
             >
                 <FlowIcon />
             </ToggleGroupItem>
