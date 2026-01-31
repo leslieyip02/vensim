@@ -276,15 +276,14 @@ describe("graph actions", () => {
 
     describe("addFlow", () => {
         it("creates and sends a flow/add add operation", () => {
-            addFlow("stock-1", "cloud-2", "inflow");
+            addFlow("stock-1", "cloud-2");
 
             const expectedOp: Operation = {
                 type: "flow/add",
                 flow: {
                     id: "flow-3",
-                    stockId: "stock-1",
-                    cloudId: "cloud-2",
-                    type: "inflow",
+                    from: "stock-1",
+                    to: "cloud-2",
                     curvature: 0,
                 },
             };

@@ -37,11 +37,11 @@ export function EdgeView({ edge }: { edge: Edge }) {
                 const flow = s.flows[edge.to];
                 if (!flow) return null;
 
-                const flowFrom =
-                    flow.type === "inflow" ? s.clouds[flow.cloudId] : s.stocks[flow.stockId];
+                const flowFrom = flow.from.startsWith("cloud-")
+                    ? s.clouds[flow.from]
+                    : s.stocks[flow.from];
 
-                const flowTo =
-                    flow.type === "inflow" ? s.stocks[flow.stockId] : s.clouds[flow.cloudId];
+                const flowTo = flow.to.startsWith("cloud-") ? s.clouds[flow.to] : s.stocks[flow.to];
 
                 if (!flowFrom || !flowTo) return null;
                 const flowGeo = computeLineGeometry(flowFrom, flowTo, flow.curvature);

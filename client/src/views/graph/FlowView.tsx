@@ -11,14 +11,16 @@ import { useGraphStore } from "../../stores/graph";
 export function FlowView({ flow }: { flow: Flow }) {
     const { stroke, opacity, onClick } = useFlowInteractions(flow.id);
 
-    const stock = useGraphStore((s) => s.stocks[flow?.stockId ?? ""]);
-    const cloud = useGraphStore((s) => s.clouds[flow?.cloudId ?? ""]);
-    if (!stock || !cloud) {
+    const from = useGraphStore((s) =>
+        flow.from.startsWith("cloud-") ? s.clouds[flow.from] : s.stocks[flow.from],
+    );
+    const to = useGraphStore((s) =>
+        flow.to.startsWith("cloud-") ? s.clouds[flow.to] : s.stocks[flow.to],
+    );
+
+    if (!from || !to) {
         return null;
     }
-
-    const from = flow.type === "inflow" ? cloud : stock;
-    const to = flow.type === "inflow" ? stock : cloud;
 
     const { start, end, controlPoint, mid, arrow } = computeLineGeometry(from, to, flow.curvature);
 
