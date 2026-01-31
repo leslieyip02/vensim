@@ -4,7 +4,7 @@ import { Group, Shape as ShapeDiv } from "react-konva";
 
 import { useFlowInteractions } from "@/controllers/interaction";
 import { computeLineGeometry } from "@/models/geometry";
-import type { Flow } from "@/models/graph";
+import { type Flow, isCloudId } from "@/models/graph";
 
 import { useGraphStore } from "../../stores/graph";
 
@@ -12,11 +12,9 @@ export function FlowView({ flow }: { flow: Flow }) {
     const { stroke, opacity, onClick } = useFlowInteractions(flow.id);
 
     const from = useGraphStore((s) =>
-        flow.from.startsWith("cloud-") ? s.clouds[flow.from] : s.stocks[flow.from],
+        isCloudId(flow.from) ? s.clouds[flow.from] : s.stocks[flow.from],
     );
-    const to = useGraphStore((s) =>
-        flow.to.startsWith("cloud-") ? s.clouds[flow.to] : s.stocks[flow.to],
-    );
+    const to = useGraphStore((s) => (isCloudId(flow.to) ? s.clouds[flow.to] : s.stocks[flow.to]));
 
     if (!from || !to) {
         return null;
