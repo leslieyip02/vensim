@@ -4,21 +4,21 @@ import { Group, Shape as ShapeDiv } from "react-konva";
 
 import { useFlowInteractions } from "@/controllers/interaction";
 import { computeLineGeometry } from "@/models/geometry";
-import type { Flow } from "@/models/graph";
+import { type Flow, isCloudId } from "@/models/graph";
 
 import { useGraphStore } from "../../stores/graph";
 
 export function FlowView({ flow }: { flow: Flow }) {
     const { stroke, opacity, onClick } = useFlowInteractions(flow.id);
 
-    const stock = useGraphStore((s) => s.stocks[flow?.stockId ?? ""]);
-    const cloud = useGraphStore((s) => s.clouds[flow?.cloudId ?? ""]);
-    if (!stock || !cloud) {
+    const from = useGraphStore((s) =>
+        isCloudId(flow.from) ? s.clouds[flow.from] : s.stocks[flow.from],
+    );
+    const to = useGraphStore((s) => (isCloudId(flow.to) ? s.clouds[flow.to] : s.stocks[flow.to]));
+
+    if (!from || !to) {
         return null;
     }
-
-    const from = flow.type === "inflow" ? cloud : stock;
-    const to = flow.type === "inflow" ? stock : cloud;
 
     const { start, end, controlPoint, mid, arrow } = computeLineGeometry(from, to, flow.curvature);
 

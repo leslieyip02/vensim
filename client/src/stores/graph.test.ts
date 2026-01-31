@@ -41,9 +41,8 @@ const DEFAULT_CLOUD: Cloud = {
 
 const DEFAULT_FLOW: Flow = {
     id: "flow-0",
-    stockId: "",
-    cloudId: "",
-    type: "inflow",
+    from: "stock-0",
+    to: "cloud-0",
     curvature: 0,
 };
 

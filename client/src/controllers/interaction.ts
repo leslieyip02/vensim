@@ -146,12 +146,15 @@ export function useStockInteractions(stockId: string) {
                 return;
             }
 
-            if (selectedIds.length !== 1 || !selectedIds.every(isCloudId)) {
+            if (
+                selectedIds.length !== 1 ||
+                (!selectedIds.every(isCloudId) && !selectedIds.every(isStockId))
+            ) {
                 return;
             }
 
-            const cloudId = selectedIds[0];
-            addFlow(stockId, cloudId, "inflow");
+            const from = selectedIds[0];
+            addFlow(from, stockId);
             clearSelectedIds();
         },
         onDragEnd: (e: KonvaEventObject<DragEvent, never>) => {
@@ -189,12 +192,15 @@ export function useCloudInteractions(cloudId: string) {
                 return;
             }
 
-            if (selectedIds.length !== 1 || !selectedIds.every(isStockId)) {
+            if (
+                selectedIds.length !== 1 ||
+                (!selectedIds.every(isStockId) && !selectedIds.every(isCloudId))
+            ) {
                 return;
             }
 
-            const stockId = selectedIds[0];
-            addFlow(stockId, cloudId, "outflow");
+            const from = selectedIds[0];
+            addFlow(from, cloudId);
             clearSelectedIds();
         },
         onDragEnd: (e: KonvaEventObject<DragEvent, never>) => {
