@@ -12,6 +12,7 @@ export interface Node extends Identifiable {
     radius: number;
     label: string;
     description: string;
+    equation: string;
 }
 
 export interface Edge extends Identifiable {

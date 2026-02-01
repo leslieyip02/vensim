@@ -32,6 +32,7 @@ export function addNode(x: number, y: number, radius = 32) {
         radius,
         label: "",
         description: "",
+        equation: "",
     };
 
     const op: Operation = { type: "node/add", node };
