@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useStockForm } from "@/controllers/form";
 
-import { InspectorFormWrapper } from "../form/InspectorFormWrapper";
+import { EquationFormWrapper } from "./EquationFormWrapper";
 
 function EquationFieldSet({ stockId }: { stockId: string }) {
     const { stock, handleChange } = useStockForm(stockId);
@@ -31,13 +31,13 @@ export function EditStockEquationFormView({ stockId }: { stockId: string }) {
     }
 
     return (
-        <InspectorFormWrapper
+        <EquationFormWrapper
             label="Edit Equation"
             onCancel={handleCancel}
             onDelete={handleDelete}
             showDelete
         >
             <EquationFieldSet stockId={stockId} />
-        </InspectorFormWrapper>
+        </EquationFormWrapper>
     );
 }

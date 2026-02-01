@@ -3,50 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useNodeForm } from "@/controllers/form";
-import type { Flow, Node, Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
+import {
+    buildLabelToIdMap,
+    removeInvalidCharacters,
+    replaceEquationIdsWithLabels,
+    replaceEquationLabelsWithIds,
+} from "@/utils/equation";
 
-import { InspectorFormWrapper } from "../form/InspectorFormWrapper";
-
-function renderEquation(equation: string): string {
-    const state = useGraphStore.getState();
-
-    return equation.replace(/\b(node|stock|flow)-\d+\b/g, (id) => {
-        const entity = state.nodes[id] ?? state.stocks[id] ?? state.flows[id];
-
-        return entity?.label ?? id;
-    });
-}
-
-function convertLabelsToIds(renderedEquation: string, labelMap: Record<string, string>): string {
-    const regex = new RegExp(
-        `\\b(${Object.keys(labelMap)
-            .map((l) => escapeRegExp(l))
-            .join("|")})\\b`,
-        "gi",
-    );
-
-    return renderedEquation.replace(regex, (match) => labelMap[match.toLowerCase()] ?? match);
-}
-
-function escapeRegExp(str: string) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function buildLabelMap(parents: Array<Node | Flow | Stock>) {
-    const map: Record<string, string> = {};
-    parents.forEach((entity) => {
-        if (entity.label) {
-            map[entity.label.toLowerCase()] = entity.id;
-        }
-    });
-    return map;
-}
-
-function sanitizeEquationInput(rendered: string) {
-    const tokens = rendered.match(/\b(?:node|flow|stock)-\d+\b|\d+(?:\.\d+)?|[+\-*/]/g);
-    return tokens ? tokens.join(" ") : "";
-}
+import { EquationFormWrapper } from "./EquationFormWrapper";
 
 function EquationFieldSet({ nodeId }: { nodeId: string }) {
     const { node, handleChange } = useNodeForm(nodeId);
@@ -55,7 +20,8 @@ function EquationFieldSet({ nodeId }: { nodeId: string }) {
     }
 
     const parents = getParentEntities(node.id);
-    const labelMap = buildLabelMap(parents);
+    const labelMap = buildLabelToIdMap(parents);
+    const state = useGraphStore.getState();
 
     return (
         <FieldSet>
@@ -63,16 +29,21 @@ function EquationFieldSet({ nodeId }: { nodeId: string }) {
                 <FieldLabel>Equation</FieldLabel>
                 <Input
                     name="equation"
-                    value={renderEquation(node.equation)}
+                    value={replaceEquationIdsWithLabels(
+                        node.equation,
+                        state.nodes,
+                        state.stocks,
+                        state.flows,
+                    )}
                     onChange={(e) => {
                         handleChange({
-                            equation: convertLabelsToIds(e.target.value, labelMap),
+                            equation: replaceEquationLabelsWithIds(e.target.value, labelMap),
                         });
                     }}
                     onBlur={() => {
-                        const sanitized = sanitizeEquationInput(node.equation);
+                        const validEquation = removeInvalidCharacters(node.equation);
 
-                        handleChange({ equation: sanitized });
+                        handleChange({ equation: validEquation });
                     }}
                 />
             </Field>
@@ -81,7 +52,7 @@ function EquationFieldSet({ nodeId }: { nodeId: string }) {
 }
 
 export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
-    const { node, handleCancel, handleDelete, handleChange } = useNodeForm(nodeId);
+    const { node, handleCancel, handleChange } = useNodeForm(nodeId);
     if (!node) {
         return null;
     }
@@ -89,31 +60,33 @@ export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
     const parents = getParentEntities(node.id);
 
     return (
-        <InspectorFormWrapper
+        <EquationFormWrapper
             label="Edit Equation"
             onCancel={handleCancel}
-            onDelete={handleDelete}
+            onDelete={() => handleChange({ equation: "" })}
             showDelete
         >
             <EquationFieldSet nodeId={nodeId} />
-            <div className="flex flex-wrap gap-2">
-                {parents?.map((parent) => {
-                    if (!parent || !parent.label) return null;
-                    const onClick = () =>
-                        handleChange({
-                            equation: node.equation + " " + parent.id,
-                        });
-                    return (
-                        <Badge
-                            key={parent.id}
-                            className="h-9 px-3 flex items-center cursor-pointer rounded-md"
-                            onClick={onClick}
-                        >
-                            {parent.label}
-                        </Badge>
-                    );
-                })}
-            </div>
-        </InspectorFormWrapper>
+            {parents.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                    {parents?.map((parent) => {
+                        if (!parent || !parent.label) return null;
+                        const onClick = () =>
+                            handleChange({
+                                equation: `${node.equation.trim()} ${parent.id}`,
+                            });
+                        return (
+                            <Badge
+                                key={parent.id}
+                                className="h-9 px-3 flex items-center cursor-pointer rounded-md bg-gray-600 hover:bg-gray-300 transition-colors"
+                                onClick={onClick}
+                            >
+                                {parent.label}
+                            </Badge>
+                        );
+                    })}
+                </div>
+            )}
+        </EquationFormWrapper>
     );
 }

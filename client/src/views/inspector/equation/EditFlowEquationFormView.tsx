@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useFlowForm } from "@/controllers/form";
 
-import { InspectorFormWrapper } from "../form/InspectorFormWrapper";
+import { EquationFormWrapper } from "./EquationFormWrapper";
 
 function EquationFieldSet({ flowId }: { flowId: string }) {
     const { flow, handleChange } = useFlowForm(flowId);
@@ -31,13 +31,13 @@ export function EditFlowEquationFormView({ flowId }: { flowId: string }) {
     }
 
     return (
-        <InspectorFormWrapper
+        <EquationFormWrapper
             label="Edit Equation"
             onCancel={handleCancel}
             onDelete={handleDelete}
             showDelete
         >
             <EquationFieldSet flowId={flowId} />
-        </InspectorFormWrapper>
+        </EquationFormWrapper>
     );
 }
