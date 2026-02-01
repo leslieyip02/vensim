@@ -47,7 +47,27 @@ export function buildLabelToIdMap(parents: Array<Node | Flow | Stock>) {
     return map;
 }
 
-export function removeInvalidCharacters(equation: string) {
+export function removeInvalidCharacters(
+    equation: string,
+    nodes: Record<string, Node>,
+    flows: Record<string, Flow>,
+    stocks: Record<string, Stock>,
+) {
     const tokens = equation.match(/\b(?:node|flow|stock)-\d+\b|\d+(?:\.\d+)?|[+\-*/]/g);
-    return tokens ? tokens.join(" ") : "";
+    if (!tokens) return "";
+
+    const tokensWithValidIds = tokens.filter((tok) => {
+        // Keep numbers and operators
+        if (/^\d+(?:\.\d+)?$/.test(tok)) return true;
+        if (/^[+\-*/]$/.test(tok)) return true;
+
+        // Keep ID tokens only if they exist in state
+        if (tok.startsWith("node-")) return nodes[tok] !== undefined;
+        if (tok.startsWith("flow-")) return flows[tok] !== undefined;
+        if (tok.startsWith("stock-")) return stocks[tok] !== undefined;
+
+        return false;
+    });
+
+    return tokensWithValidIds.join(" ");
 }

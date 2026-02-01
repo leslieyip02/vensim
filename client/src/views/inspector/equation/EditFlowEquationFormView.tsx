@@ -47,7 +47,12 @@ function FlowEquationFieldSet({
                         });
                     }}
                     onBlur={() => {
-                        const validEquation = removeInvalidCharacters(flow.equation);
+                        const validEquation = removeInvalidCharacters(
+                            flow.equation,
+                            state.nodes,
+                            state.flows,
+                            state.stocks,
+                        );
 
                         handleChange({ equation: validEquation });
                     }}
