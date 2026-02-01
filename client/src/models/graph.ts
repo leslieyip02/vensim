@@ -11,6 +11,7 @@ export interface Node extends Identifiable {
     label: string;
     description: string;
     equation: string;
+    displayedEquation: string;
 }
 
 export interface Edge extends Identifiable {
