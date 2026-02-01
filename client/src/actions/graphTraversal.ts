@@ -26,6 +26,28 @@ export function getParentEntities(startId: string): Array<Node | Flow | Stock> {
                 queue.push(entity.id);
             }
         }
+
+        const incomingFlows = Object.values(state.flows).filter((flow) => flow.to === currentId);
+        for (const flow of incomingFlows) {
+            const sourceId = flow.from;
+            if (visited.has(sourceId)) continue;
+
+            const entity = state.nodes[sourceId] ?? state.flows[sourceId] ?? state.stocks[sourceId];
+
+            if (entity) {
+                parents.push(entity);
+                queue.push(entity.id);
+            }
+        }
+
+        const currentFlow = state.flows[currentId];
+        if (currentFlow) {
+            const connectedStock = state.stocks[currentFlow.from];
+            if (connectedStock && !visited.has(connectedStock.id)) {
+                parents.push(connectedStock);
+                queue.push(connectedStock.id);
+            }
+        }
     }
     const uniqueParents = Array.from(new Map(parents.map((p) => [p.id, p])).values());
     return uniqueParents;
