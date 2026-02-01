@@ -15,6 +15,14 @@ function FlowFieldSet({ flowId }: { flowId: string }) {
     return (
         <FieldSet>
             <Field>
+                <Field>
+                    <FieldLabel>Label</FieldLabel>
+                    <Input
+                        name="label"
+                        value={flow.label}
+                        onChange={(e) => handleChange({ label: e.target.value })}
+                    />
+                </Field>
                 <FieldLabel>Curvature</FieldLabel>
                 <Input
                     type="number"

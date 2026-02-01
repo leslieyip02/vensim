@@ -284,6 +284,7 @@ describe("graph actions", () => {
                 type: "flow/add",
                 flow: {
                     id: "flow-3",
+                    label: "",
                     from: "stock-1",
                     to: "cloud-2",
                     curvature: 0,

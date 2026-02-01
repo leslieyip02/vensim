@@ -135,6 +135,7 @@ export function addFlow(from: string, to: string, curvature: number = 0) {
 
     const flow: Flow = {
         id: makeFlowId(state.counter),
+        label: "",
         from,
         to,
         curvature,

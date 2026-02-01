@@ -37,6 +37,7 @@ export interface Cloud extends Identifiable {
 }
 
 export interface Flow extends Identifiable {
+    label: string;
     from: string;
     to: string;
     curvature: number;
