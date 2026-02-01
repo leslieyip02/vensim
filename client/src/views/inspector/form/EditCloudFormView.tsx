@@ -48,7 +48,12 @@ export function EditCloudFormView({ cloudId }: { cloudId: string }) {
     }
 
     return (
-        <InspectorFormWrapper onCancel={handleCancel} onDelete={handleDelete} showDelete>
+        <InspectorFormWrapper
+            label="Edit Cloud"
+            onCancel={handleCancel}
+            onDelete={handleDelete}
+            showDelete
+        >
             <CloudFieldSet cloudId={cloudId} />
         </InspectorFormWrapper>
     );

@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { LuTrash2 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
@@ -34,7 +33,7 @@ function InspectorFormContent({
 
                     {showDelete && onDelete && (
                         <Button variant="destructive" type="button" onClick={onDelete}>
-                            <LuTrash2 />
+                            Clear
                         </Button>
                     )}
                 </Field>
@@ -43,7 +42,7 @@ function InspectorFormContent({
     );
 }
 
-export function InspectorFormWrapper(props: InspectorFormProps) {
+export function EquationFormWrapper(props: InspectorFormProps) {
     return (
         <InspectorSectionWrapper label={props.label}>
             <InspectorFormContent {...props} />

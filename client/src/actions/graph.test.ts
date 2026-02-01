@@ -63,6 +63,7 @@ describe("graph actions", () => {
                     radius: 50,
                     label: "",
                     description: "",
+                    equation: "",
                 },
             };
 
@@ -183,6 +184,7 @@ describe("graph actions", () => {
                     height: 64,
                     label: "",
                     description: "",
+                    equation: "",
                 },
             };
 
@@ -282,9 +284,11 @@ describe("graph actions", () => {
                 type: "flow/add",
                 flow: {
                     id: "flow-3",
+                    label: "",
                     from: "stock-1",
                     to: "cloud-2",
                     curvature: 0,
+                    equation: "",
                 },
             };
 

@@ -10,6 +10,7 @@ export interface Node extends Identifiable {
     radius: number;
     label: string;
     description: string;
+    equation: string;
 }
 
 export interface Edge extends Identifiable {
@@ -26,6 +27,7 @@ export interface Stock extends Identifiable {
     height: number;
     label: string;
     description: string;
+    equation: string;
 }
 
 export interface Cloud extends Identifiable {
@@ -35,9 +37,11 @@ export interface Cloud extends Identifiable {
 }
 
 export interface Flow extends Identifiable {
+    label: string;
     from: string;
     to: string;
     curvature: number;
+    equation: string;
 }
 
 export function makeNodeId(counter: number) {

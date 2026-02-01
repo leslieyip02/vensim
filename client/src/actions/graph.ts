@@ -31,6 +31,7 @@ export function addNode(x: number, y: number, radius = 32) {
         radius,
         label: "",
         description: "",
+        equation: "",
     };
 
     const op: Operation = { type: "node/add", node };
@@ -88,6 +89,7 @@ export function addStock(x: number, y: number, width = 128, height = 64) {
         height,
         label: "",
         description: "",
+        equation: "",
     };
 
     const op: Operation = { type: "stock/add", stock };
@@ -133,9 +135,11 @@ export function addFlow(from: string, to: string, curvature: number = 0) {
 
     const flow: Flow = {
         id: makeFlowId(state.counter),
+        label: "",
         from,
         to,
         curvature,
+        equation: "",
     };
 
     const op: Operation = { type: "flow/add", flow };
