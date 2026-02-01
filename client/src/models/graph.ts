@@ -1,7 +1,5 @@
 export type Polarity = "+" | "-";
 
-export type FlowType = "inflow" | "outflow";
-
 interface Identifiable {
     id: string;
 }
@@ -38,9 +36,8 @@ export interface Cloud extends Identifiable {
 }
 
 export interface Flow extends Identifiable {
-    stockId: string;
-    cloudId: string;
-    type: FlowType;
+    from: string;
+    to: string;
     curvature: number;
 }
 

@@ -2,7 +2,6 @@ import {
     type Cloud,
     type Edge,
     type Flow,
-    type FlowType,
     makeCloudId,
     makeEdgeId,
     makeFlowId,
@@ -130,14 +129,13 @@ export function deleteCloud(id: string) {
     dispatch(op);
 }
 
-export function addFlow(stockId: string, cloudId: string, type: FlowType, curvature: number = 0) {
+export function addFlow(from: string, to: string, curvature: number = 0) {
     const state = useGraphStore.getState();
 
     const flow: Flow = {
         id: makeFlowId(state.counter),
-        stockId,
-        cloudId,
-        type,
+        from,
+        to,
         curvature,
     };
 

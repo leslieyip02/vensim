@@ -36,8 +36,7 @@ type Cloud struct {
 
 type Flow struct {
 	ID        string  `json:"id"`
-	StockID   string  `json:"stockId"`
-	CloudID   string  `json:"cloudId"`
-	Type      string  `json:"type"`
+	From      string  `json:"from"`
+	To        string  `json:"to"`
 	Curvature float64 `json:"curvature"`
 }
