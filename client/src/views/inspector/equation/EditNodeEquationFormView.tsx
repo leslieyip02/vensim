@@ -1,24 +1,20 @@
 import { getParentEntities } from "@/actions/graphTraversal";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { useNodeForm } from "@/controllers/form";
+import type { Flow, Node, Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 
 import { InspectorFormWrapper } from "../form/InspectorFormWrapper";
 
-function tokenizeEquation(equation: string) {
+function renderEquation(equation: string): string {
     const state = useGraphStore.getState();
 
-    const parts = equation.split(/\s+/);
+    return equation.replace(/\b(node|stock|flow)-\d+\b/g, (id) => {
+        const entity = state.nodes[id] ?? state.stocks[id] ?? state.flows[id];
 
-    return parts.map((part) => {
-        const entity = state.nodes[part] ?? state.stocks[part] ?? state.flows[part];
-
-        if (entity) {
-            return { type: "variable", id: part, label: entity.label };
-        }
-
-        return { type: "text", value: part };
+        return entity?.label ?? id;
     });
 }
 
@@ -28,55 +24,52 @@ function EquationFieldSet({ nodeId }: { nodeId: string }) {
         return null;
     }
 
-    const tokens = tokenizeEquation(node.equation);
-
-    const removeToken = (tokenIndex: number) => {
-        const newTokens = tokens.filter((_, i) => i !== tokenIndex);
-
-        const newEquation = newTokens
-            .map((t) => (t.type === "variable" ? t.id : t.value))
-            .join(" ");
-
-        handleChange({ equation: newEquation });
-    };
+    const parents = getParentEntities(node.id);
+    const labelMap = buildLabelMap(parents);
 
     return (
         <FieldSet>
             <Field>
                 <FieldLabel>Equation</FieldLabel>
-                <div className="flex flex-wrap items-center gap-1 border p-2 rounded">
-                    {tokens.map((t, i) =>
-                        t.type === "variable" ? (
-                            <Badge
-                                key={t.id}
-                                className="inline-flex px-2 py-1 rounded bg-gray-200 cursor-pointer items-center"
-                                onClick={() => removeToken(i)}
-                            >
-                                {t.label}
-                            </Badge>
-                        ) : (
-                            <input
-                                key={i}
-                                type="text"
-                                value={t.value}
-                                className="inline-block h-full w-auto border-none outline-none"
-                                onChange={(e) => {
-                                    const newTokens = [...tokens];
-                                    newTokens[i] = { type: "text", value: e.target.value };
-                                    const newEquation = newTokens
-                                        .map((tok) =>
-                                            tok.type === "variable" ? tok.id : tok.value,
-                                        )
-                                        .join(" ");
-                                    handleChange({ equation: newEquation });
-                                }}
-                            />
-                        ),
-                    )}
-                </div>
+                <Input
+                    name="equation"
+                    value={renderEquation(node.equation)}
+                    onChange={(e) => {
+                        console.log(node.equation);
+                        handleChange({
+                            equation: convertLabelsToIds(e.target.value, labelMap),
+                        });
+                    }}
+                />
             </Field>
         </FieldSet>
     );
+}
+
+function convertLabelsToIds(renderedEquation: string, labelMap: Record<string, string>): string {
+    // Replace all occurrences of labels with their IDs
+    const regex = new RegExp(
+        `\\b(${Object.keys(labelMap)
+            .map((l) => escapeRegExp(l))
+            .join("|")})\\b`,
+        "gi",
+    );
+
+    return renderedEquation.replace(regex, (match) => labelMap[match.toLowerCase()] ?? match);
+}
+
+function escapeRegExp(str: string) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function buildLabelMap(parents: Array<Node | Flow | Stock>) {
+    const map: Record<string, string> = {};
+    parents.forEach((entity) => {
+        if (entity.label) {
+            map[entity.label.toLowerCase()] = entity.id;
+        }
+    });
+    return map;
 }
 
 export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
