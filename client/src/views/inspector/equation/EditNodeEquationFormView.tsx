@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useNodeForm } from "@/controllers/form";
+import type { Flow, Node, Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 import {
     buildLabelToIdMap,
@@ -13,13 +14,18 @@ import {
 
 import { EquationFormWrapper } from "./EquationFormWrapper";
 
-function EquationFieldSet({ nodeId }: { nodeId: string }) {
+function NodeEquationFieldSet({
+    nodeId,
+    parents,
+}: {
+    nodeId: string;
+    parents: Array<Node | Stock | Flow>;
+}) {
     const { node, handleChange } = useNodeForm(nodeId);
     if (!node) {
         return null;
     }
 
-    const parents = getParentEntities(node.id);
     const labelMap = buildLabelToIdMap(parents);
     const state = useGraphStore.getState();
 
@@ -58,6 +64,9 @@ export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
     }
 
     const parents = getParentEntities(node.id);
+    const parentLabels = parents
+        ?.filter((parent) => parent.label && parent.label.trim() != "")
+        .map((parent) => parent.label);
 
     return (
         <EquationFormWrapper
@@ -66,8 +75,8 @@ export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
             onDelete={() => handleChange({ equation: "" })}
             showDelete
         >
-            <EquationFieldSet nodeId={nodeId} />
-            {parents.length > 0 && (
+            <NodeEquationFieldSet nodeId={nodeId} parents={parents} />
+            {parentLabels.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {parents?.map((parent) => {
                         if (!parent || !parent.label) return null;
