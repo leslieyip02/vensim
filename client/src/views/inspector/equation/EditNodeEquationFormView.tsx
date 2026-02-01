@@ -18,36 +18,7 @@ function renderEquation(equation: string): string {
     });
 }
 
-function EquationFieldSet({ nodeId }: { nodeId: string }) {
-    const { node, handleChange } = useNodeForm(nodeId);
-    if (!node) {
-        return null;
-    }
-
-    const parents = getParentEntities(node.id);
-    const labelMap = buildLabelMap(parents);
-
-    return (
-        <FieldSet>
-            <Field>
-                <FieldLabel>Equation</FieldLabel>
-                <Input
-                    name="equation"
-                    value={renderEquation(node.equation)}
-                    onChange={(e) => {
-                        console.log(node.equation);
-                        handleChange({
-                            equation: convertLabelsToIds(e.target.value, labelMap),
-                        });
-                    }}
-                />
-            </Field>
-        </FieldSet>
-    );
-}
-
 function convertLabelsToIds(renderedEquation: string, labelMap: Record<string, string>): string {
-    // Replace all occurrences of labels with their IDs
     const regex = new RegExp(
         `\\b(${Object.keys(labelMap)
             .map((l) => escapeRegExp(l))
@@ -70,6 +41,43 @@ function buildLabelMap(parents: Array<Node | Flow | Stock>) {
         }
     });
     return map;
+}
+
+function sanitizeEquationInput(rendered: string) {
+    const tokens = rendered.match(/\b(?:node|flow|stock)-\d+\b|\d+(?:\.\d+)?|[+\-*/]/g);
+    return tokens ? tokens.join(" ") : "";
+}
+
+function EquationFieldSet({ nodeId }: { nodeId: string }) {
+    const { node, handleChange } = useNodeForm(nodeId);
+    if (!node) {
+        return null;
+    }
+
+    const parents = getParentEntities(node.id);
+    const labelMap = buildLabelMap(parents);
+
+    return (
+        <FieldSet>
+            <Field>
+                <FieldLabel>Equation</FieldLabel>
+                <Input
+                    name="equation"
+                    value={renderEquation(node.equation)}
+                    onChange={(e) => {
+                        handleChange({
+                            equation: convertLabelsToIds(e.target.value, labelMap),
+                        });
+                    }}
+                    onBlur={() => {
+                        const sanitized = sanitizeEquationInput(node.equation);
+
+                        handleChange({ equation: sanitized });
+                    }}
+                />
+            </Field>
+        </FieldSet>
+    );
 }
 
 export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
