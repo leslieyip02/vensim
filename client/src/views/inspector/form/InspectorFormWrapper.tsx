@@ -7,6 +7,7 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { InspectorSectionWrapper } from "../InspectorSectionWrapper";
 
 interface InspectorFormProps {
+    label: string;
     children: ReactNode;
     onCancel?: () => void;
     onDelete?: () => void;
@@ -44,7 +45,7 @@ function InspectorFormContent({
 
 export function InspectorFormWrapper(props: InspectorFormProps) {
     return (
-        <InspectorSectionWrapper label="Edit">
+        <InspectorSectionWrapper label={props.label}>
             <InspectorFormContent {...props} />
         </InspectorSectionWrapper>
     );

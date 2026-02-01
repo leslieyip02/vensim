@@ -48,7 +48,12 @@ export function EditFlowFormView({ flowId }: { flowId: string }) {
     }
 
     return (
-        <InspectorFormWrapper onCancel={handleCancel} onDelete={handleDelete} showDelete>
+        <InspectorFormWrapper
+            label="Edit Flow"
+            onCancel={handleCancel}
+            onDelete={handleDelete}
+            showDelete
+        >
             <FlowFieldSet flowId={flowId} />
         </InspectorFormWrapper>
     );

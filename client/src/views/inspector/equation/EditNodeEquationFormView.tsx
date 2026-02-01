@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useNodeForm } from "@/controllers/form";
 
-import { InspectorFormWrapper } from "./InspectorFormWrapper";
+import { InspectorFormWrapper } from "../form/InspectorFormWrapper";
 
 function EquationFieldSet({ nodeId }: { nodeId: string }) {
     const { node, handleChange } = useNodeForm(nodeId);
@@ -24,14 +24,19 @@ function EquationFieldSet({ nodeId }: { nodeId: string }) {
     );
 }
 
-export function EditEquationFormView({ nodeId }: { nodeId: string }) {
+export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
     const { node, handleCancel, handleDelete } = useNodeForm(nodeId);
     if (!node) {
         return null;
     }
 
     return (
-        <InspectorFormWrapper onCancel={handleCancel} onDelete={handleDelete} showDelete>
+        <InspectorFormWrapper
+            label="Edit Equation"
+            onCancel={handleCancel}
+            onDelete={handleDelete}
+            showDelete
+        >
             <EquationFieldSet nodeId={nodeId} />
         </InspectorFormWrapper>
     );

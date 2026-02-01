@@ -19,7 +19,12 @@ export function EditGroupFormView({ targetIds }: { targetIds: string[] }) {
     const { handleCancel, handleDelete } = useGroupForm(targetIds);
 
     return (
-        <InspectorFormWrapper onCancel={handleCancel} onDelete={handleDelete} showDelete>
+        <InspectorFormWrapper
+            label="Edit"
+            onCancel={handleCancel}
+            onDelete={handleDelete}
+            showDelete
+        >
             <GroupFieldSet targetIds={targetIds} />
         </InspectorFormWrapper>
     );
