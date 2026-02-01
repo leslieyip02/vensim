@@ -29,6 +29,15 @@ export function getParentEntities(startId: string): Array<Node | Flow | Stock> {
 
         const incomingFlows = Object.values(state.flows).filter((flow) => flow.to === currentId);
         for (const flow of incomingFlows) {
+            if (visited.has(flow.id)) continue;
+            const entity = state.flows[flow.id];
+            if (entity) {
+                parents.push(entity);
+                queue.push(entity.id);
+            }
+        }
+
+        for (const flow of incomingFlows) {
             const sourceId = flow.from;
             if (visited.has(sourceId)) continue;
 
