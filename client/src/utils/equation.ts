@@ -1,4 +1,11 @@
-import type { Flow, Node, Stock } from "@/models/graph";
+import { type Flow, isFlowId, isNodeId, isStockId, type Node, type Stock } from "@/models/graph";
+
+import {
+    VALID_ENTITY_ID_REGEX,
+    VALID_EQUATION_REGEX,
+    VALID_NUMBER,
+    VALID_OPERATOR_REGEX,
+} from "./constants";
 
 export function replaceEquationIdsWithLabels(
     equation: string,
@@ -6,7 +13,7 @@ export function replaceEquationIdsWithLabels(
     stocks: Record<string, Stock>,
     flows: Record<string, Flow>,
 ): string {
-    return equation.replace(/\b(node|stock|flow)-\d+\b/g, (id) => {
+    return equation.replace(VALID_ENTITY_ID_REGEX, (id) => {
         const entity = nodes[id] ?? stocks[id] ?? flows[id];
         return entity?.label ?? id;
     });
@@ -53,18 +60,18 @@ export function removeInvalidCharacters(
     flows: Record<string, Flow>,
     stocks: Record<string, Stock>,
 ) {
-    const tokens = equation.match(/\b(?:node|flow|stock)-\d+\b|\d+(?:\.\d+)?|[+\-*/]/g);
+    const tokens = equation.match(VALID_EQUATION_REGEX);
     if (!tokens) return "";
 
     const tokensWithValidIds = tokens.filter((tok) => {
         // Keep numbers and operators
-        if (/^\d+(?:\.\d+)?$/.test(tok)) return true;
-        if (/^[+\-*/]$/.test(tok)) return true;
+        if (new RegExp(VALID_NUMBER).test(tok)) return true;
+        if (new RegExp(VALID_OPERATOR_REGEX).test(tok)) return true;
 
         // Keep ID tokens only if they exist in state
-        if (tok.startsWith("node-")) return nodes[tok] !== undefined;
-        if (tok.startsWith("flow-")) return flows[tok] !== undefined;
-        if (tok.startsWith("stock-")) return stocks[tok] !== undefined;
+        if (isNodeId(tok)) return nodes[tok] !== undefined;
+        if (isFlowId(tok)) return flows[tok] !== undefined;
+        if (isStockId(tok)) return stocks[tok] !== undefined;
 
         return false;
     });
