@@ -7,6 +7,7 @@ import (
 
 	"server/env"
 	"server/room"
+	"server/sim"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -37,6 +38,8 @@ func main() {
 
 	r.Post("/create", rm.CreateRoom)
 	r.Get("/join/{roomId}", rm.JoinRoom)
+
+	r.Post("/simulate", sim.RunSimulation)
 
 	addr := *host + ":" + *port
 	log.Printf("listening on %s", addr)
