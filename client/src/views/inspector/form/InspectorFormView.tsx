@@ -22,7 +22,7 @@ const getFormType = (selectedIds: string[]): FormType | null => {
     }
 
     const selectedId = selectedIds[0];
-    return selectedId.split("-")[0] as FormType | null;
+    return selectedId.split("_")[0] as FormType | null;
 };
 
 const FormView = ({ formType, selectedIds }: FormProps) => {
