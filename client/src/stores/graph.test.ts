@@ -78,7 +78,7 @@ describe("useGraphStore", () => {
     it("updates a node", () => {
         useGraphStore.setState({
             nodes: {
-                "node_1": { ...DEFAULT_NODE, id: "node_1", label: "old" },
+                node_1: { ...DEFAULT_NODE, id: "node_1", label: "old" },
             },
         });
 
@@ -96,8 +96,8 @@ describe("useGraphStore", () => {
     it("deletes a node", () => {
         useGraphStore.setState({
             nodes: {
-                "node_1": { ...DEFAULT_NODE, id: "node_1" },
-                "node_2": { ...DEFAULT_NODE, id: "node_2" },
+                node_1: { ...DEFAULT_NODE, id: "node_1" },
+                node_2: { ...DEFAULT_NODE, id: "node_2" },
             },
         });
 
@@ -109,7 +109,7 @@ describe("useGraphStore", () => {
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().nodes).toEqual({
-            "node_2": { ...DEFAULT_NODE, id: "node_2" },
+            node_2: { ...DEFAULT_NODE, id: "node_2" },
         });
     });
 
@@ -137,7 +137,7 @@ describe("useGraphStore", () => {
     it("updates an edge", () => {
         useGraphStore.setState({
             edges: {
-                "edge_1": { ...DEFAULT_EDGE, id: "edge_1", from: "a", to: "b" },
+                edge_1: { ...DEFAULT_EDGE, id: "edge_1", from: "a", to: "b" },
             },
         });
 
@@ -155,8 +155,8 @@ describe("useGraphStore", () => {
     it("deletes an edge", () => {
         useGraphStore.setState({
             edges: {
-                "edge_1": { ...DEFAULT_EDGE, id: "edge_1" },
-                "edge_2": { ...DEFAULT_EDGE, id: "edge_2" },
+                edge_1: { ...DEFAULT_EDGE, id: "edge_1" },
+                edge_2: { ...DEFAULT_EDGE, id: "edge_2" },
             },
         });
 
@@ -168,7 +168,7 @@ describe("useGraphStore", () => {
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().edges).toEqual({
-            "edge_2": { ...DEFAULT_EDGE, id: "edge_2" },
+            edge_2: { ...DEFAULT_EDGE, id: "edge_2" },
         });
     });
 
@@ -194,7 +194,7 @@ describe("useGraphStore", () => {
     it("updates a stock", () => {
         useGraphStore.setState({
             stocks: {
-                "stock_1": { ...DEFAULT_STOCK, id: "stock_1" },
+                stock_1: { ...DEFAULT_STOCK, id: "stock_1" },
             },
         });
 
@@ -212,8 +212,8 @@ describe("useGraphStore", () => {
     it("deletes a stock", () => {
         useGraphStore.setState({
             stocks: {
-                "stock_1": { ...DEFAULT_STOCK, id: "stock_1" },
-                "stock_2": { ...DEFAULT_STOCK, id: "stock_2" },
+                stock_1: { ...DEFAULT_STOCK, id: "stock_1" },
+                stock_2: { ...DEFAULT_STOCK, id: "stock_2" },
             },
         });
 
@@ -225,7 +225,7 @@ describe("useGraphStore", () => {
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().stocks).toEqual({
-            "stock_2": { ...DEFAULT_STOCK, id: "stock_2" },
+            stock_2: { ...DEFAULT_STOCK, id: "stock_2" },
         });
     });
 
@@ -251,7 +251,7 @@ describe("useGraphStore", () => {
     it("updates a cloud", () => {
         useGraphStore.setState({
             clouds: {
-                "cloud_1": { ...DEFAULT_CLOUD, id: "cloud_1" },
+                cloud_1: { ...DEFAULT_CLOUD, id: "cloud_1" },
             },
         });
 
@@ -269,8 +269,8 @@ describe("useGraphStore", () => {
     it("deletes a cloud", () => {
         useGraphStore.setState({
             clouds: {
-                "cloud_1": { ...DEFAULT_CLOUD, id: "cloud_1" },
-                "cloud_2": { ...DEFAULT_CLOUD, id: "cloud_2" },
+                cloud_1: { ...DEFAULT_CLOUD, id: "cloud_1" },
+                cloud_2: { ...DEFAULT_CLOUD, id: "cloud_2" },
             },
         });
 
@@ -282,7 +282,7 @@ describe("useGraphStore", () => {
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().clouds).toEqual({
-            "cloud_2": { ...DEFAULT_CLOUD, id: "cloud_2" },
+            cloud_2: { ...DEFAULT_CLOUD, id: "cloud_2" },
         });
     });
 
@@ -308,7 +308,7 @@ describe("useGraphStore", () => {
     it("updates a flow", () => {
         useGraphStore.setState({
             flows: {
-                "flow_1": { ...DEFAULT_FLOW, id: "flow_1" },
+                flow_1: { ...DEFAULT_FLOW, id: "flow_1" },
             },
         });
 
@@ -326,8 +326,8 @@ describe("useGraphStore", () => {
     it("deletes a flow", () => {
         useGraphStore.setState({
             flows: {
-                "flow_1": { ...DEFAULT_FLOW, id: "flow_1" },
-                "flow_2": { ...DEFAULT_FLOW, id: "flow_2" },
+                flow_1: { ...DEFAULT_FLOW, id: "flow_1" },
+                flow_2: { ...DEFAULT_FLOW, id: "flow_2" },
             },
         });
 
@@ -339,7 +339,7 @@ describe("useGraphStore", () => {
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().flows).toEqual({
-            "flow_2": { ...DEFAULT_FLOW, id: "flow_2" },
+            flow_2: { ...DEFAULT_FLOW, id: "flow_2" },
         });
     });
 
@@ -347,7 +347,7 @@ describe("useGraphStore", () => {
         useGraphStore.setState({
             counter: 5,
             nodes: {
-                "node_1": { ...DEFAULT_NODE, id: "node_1", label: "old" },
+                node_1: { ...DEFAULT_NODE, id: "node_1", label: "old" },
             },
         });
 
