@@ -13,16 +13,16 @@ type VariableInitial struct {
 	Dependencies []string `json:"dependencies"`
 }
 
-type SimulationSettings struct {
+type Settings struct {
 	StartTime float64 `json:"startTime"`
 	EndTime   float64 `json:"endTime"`
 	Delta     float64 `json:"delta"`
 }
 
 type SimulationRequest struct {
-	Settings  SimulationSettings `json:"settings"`
-	Stocks    []StockInitial     `json:"stocks"`
-	Variables []VariableInitial  `json:"variables"`
+	Settings  Settings          `json:"settings"`
+	Stocks    []StockInitial    `json:"stocks"`
+	Variables []VariableInitial `json:"variables"`
 }
 
 type Item struct {
