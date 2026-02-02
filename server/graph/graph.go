@@ -1,5 +1,7 @@
 package graph
 
+const ID_SEPARATOR string = "_"
+
 type Node struct {
 	ID          string  `json:"id"`
 	X           float64 `json:"x"`

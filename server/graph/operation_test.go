@@ -1,11 +1,14 @@
 package graph
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
 
 func TestState_Apply_NodeOperations(t *testing.T) {
+	node1ID := fmt.Sprintf("node%s1", ID_SEPARATOR)
+
 	tests := map[string]struct {
 		op      Operation
 		initial State
@@ -14,7 +17,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 		"NodeAdd": {
 			op: Operation{
 				Type: NodeAdd,
-				Node: &Node{ID: "node-1"},
+				Node: &Node{ID: node1ID},
 			},
 			initial: State{
 				Nodes:   map[string]*Node{},
@@ -22,7 +25,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 			},
 			want: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1"},
+					node1ID: {ID: node1ID},
 				},
 				Counter: 2,
 			},
@@ -30,18 +33,18 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 		"NodeUpdate": {
 			op: Operation{
 				Type:  NodeUpdate,
-				ID:    "node-1",
-				Patch: map[string]any{"x": 30},
+				ID:    node1ID,
+				Patch: map[string]any{"x": 30.0},
 			},
 			initial: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1"},
+					node1ID: {ID: node1ID},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1", X: 30},
+					node1ID: {ID: node1ID, X: 30.0},
 				},
 				Counter: 1,
 			},
@@ -49,11 +52,11 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 		"NodeDelete": {
 			op: Operation{
 				Type: NodeDelete,
-				ID:   "node-1",
+				ID:   node1ID,
 			},
 			initial: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1"},
+					node1ID: {ID: node1ID},
 				},
 				Counter: 1,
 			},
@@ -78,6 +81,8 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 }
 
 func TestState_Apply_EdgeOperations(t *testing.T) {
+	edge1ID := fmt.Sprintf("edge%s1", ID_SEPARATOR)
+
 	tests := map[string]struct {
 		op      Operation
 		initial State
@@ -86,7 +91,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 		"EdgeAdd": {
 			op: Operation{
 				Type: EdgeAdd,
-				Edge: &Edge{ID: "edge-1"},
+				Edge: &Edge{ID: edge1ID},
 			},
 			initial: State{
 				Edges:   map[string]*Edge{},
@@ -94,7 +99,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 			},
 			want: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1"},
+					edge1ID: {ID: edge1ID},
 				},
 				Counter: 2,
 			},
@@ -102,18 +107,18 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 		"EdgeUpdate": {
 			op: Operation{
 				Type:  EdgeUpdate,
-				ID:    "edge-1",
+				ID:    edge1ID,
 				Patch: map[string]any{"to": "c"},
 			},
 			initial: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1", From: "a", To: "b"},
+					edge1ID: {ID: edge1ID, From: "a", To: "b"},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1", From: "a", To: "c"},
+					edge1ID: {ID: edge1ID, From: "a", To: "c"},
 				},
 				Counter: 1,
 			},
@@ -121,11 +126,11 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 		"EdgeDelete": {
 			op: Operation{
 				Type: EdgeDelete,
-				ID:   "edge-1",
+				ID:   edge1ID,
 			},
 			initial: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1"},
+					edge1ID: {ID: edge1ID},
 				},
 				Counter: 1,
 			},
@@ -150,6 +155,8 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 }
 
 func TestState_Apply_StockOperations(t *testing.T) {
+	stock1ID := fmt.Sprintf("stock%s1", ID_SEPARATOR)
+
 	tests := map[string]struct {
 		op      Operation
 		initial State
@@ -158,7 +165,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		"StockAdd": {
 			op: Operation{
 				Type:  StockAdd,
-				Stock: &Stock{ID: "stock-1"},
+				Stock: &Stock{ID: stock1ID},
 			},
 			initial: State{
 				Stocks:  map[string]*Stock{},
@@ -166,7 +173,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 			},
 			want: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1"},
+					stock1ID: {ID: stock1ID},
 				},
 				Counter: 2,
 			},
@@ -174,18 +181,18 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		"StockUpdate": {
 			op: Operation{
 				Type:  StockUpdate,
-				ID:    "stock-1",
-				Patch: map[string]any{"x": 30},
+				ID:    stock1ID,
+				Patch: map[string]any{"x": 30.0},
 			},
 			initial: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1"},
+					stock1ID: {ID: stock1ID},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1", X: 30},
+					stock1ID: {ID: stock1ID, X: 30.0},
 				},
 				Counter: 1,
 			},
@@ -193,11 +200,11 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		"StockDelete": {
 			op: Operation{
 				Type: StockDelete,
-				ID:   "stock-1",
+				ID:   stock1ID,
 			},
 			initial: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1"},
+					stock1ID: {ID: stock1ID},
 				},
 				Counter: 1,
 			},
@@ -222,6 +229,8 @@ func TestState_Apply_StockOperations(t *testing.T) {
 }
 
 func TestState_Apply_CloudOperations(t *testing.T) {
+	cloud1ID := fmt.Sprintf("cloud%s1", ID_SEPARATOR)
+
 	tests := map[string]struct {
 		op      Operation
 		initial State
@@ -230,7 +239,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		"CloudAdd": {
 			op: Operation{
 				Type:  CloudAdd,
-				Cloud: &Cloud{ID: "cloud-1"},
+				Cloud: &Cloud{ID: cloud1ID},
 			},
 			initial: State{
 				Clouds:  map[string]*Cloud{},
@@ -238,7 +247,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 			},
 			want: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1"},
+					cloud1ID: {ID: cloud1ID},
 				},
 				Counter: 2,
 			},
@@ -246,18 +255,18 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		"CloudUpdate": {
 			op: Operation{
 				Type:  CloudUpdate,
-				ID:    "cloud-1",
-				Patch: map[string]any{"x": 30},
+				ID:    cloud1ID,
+				Patch: map[string]any{"x": 30.0},
 			},
 			initial: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1"},
+					cloud1ID: {ID: cloud1ID},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1", X: 30},
+					cloud1ID: {ID: cloud1ID, X: 30.0},
 				},
 				Counter: 1,
 			},
@@ -265,11 +274,11 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		"CloudDelete": {
 			op: Operation{
 				Type: CloudDelete,
-				ID:   "cloud-1",
+				ID:   cloud1ID,
 			},
 			initial: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1"},
+					cloud1ID: {ID: cloud1ID},
 				},
 				Counter: 1,
 			},
@@ -294,6 +303,8 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 }
 
 func TestState_Apply_FlowOperations(t *testing.T) {
+	flow1ID := fmt.Sprintf("flow%s1", ID_SEPARATOR)
+
 	tests := map[string]struct {
 		op      Operation
 		initial State
@@ -302,7 +313,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		"FlowAdd": {
 			op: Operation{
 				Type: FlowAdd,
-				Flow: &Flow{ID: "flow-1"},
+				Flow: &Flow{ID: flow1ID},
 			},
 			initial: State{
 				Flows:   map[string]*Flow{},
@@ -310,7 +321,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 			},
 			want: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1"},
+					flow1ID: {ID: flow1ID},
 				},
 				Counter: 2,
 			},
@@ -318,18 +329,18 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		"FlowUpdate": {
 			op: Operation{
 				Type:  FlowUpdate,
-				ID:    "flow-1",
+				ID:    flow1ID,
 				Patch: map[string]any{"curvature": 0.5},
 			},
 			initial: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1"},
+					flow1ID: {ID: flow1ID},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1", Curvature: 0.5},
+					flow1ID: {ID: flow1ID, Curvature: 0.5},
 				},
 				Counter: 1,
 			},
@@ -337,11 +348,11 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		"FlowDelete": {
 			op: Operation{
 				Type: FlowDelete,
-				ID:   "flow-1",
+				ID:   flow1ID,
 			},
 			initial: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1"},
+					flow1ID: {ID: flow1ID},
 				},
 				Counter: 1,
 			},
