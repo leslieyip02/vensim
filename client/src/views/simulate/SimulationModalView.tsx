@@ -17,6 +17,8 @@ import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { SimulationResult, SimulationSettings } from "@/models/simulation";
 
+import { chartHeight, SimulationChartView } from "./SimulationChartView";
+
 export function SimulationModalView() {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -24,8 +26,13 @@ export function SimulationModalView() {
     const [endTime, setEndTime] = useState("");
     const [delta, setDelta] = useState("");
 
+    const [simulationData, setSimulationData] = useState<SimulationResult | null>(null);
+
+    const [isChartLoading, setIsChartLoading] = useState(false);
+
     const handleSimulate = async () => {
         try {
+            setIsChartLoading(true);
             const settings: SimulationSettings = {
                 startTime: parseFloat(startTime),
                 endTime: parseFloat(endTime),
@@ -33,9 +40,11 @@ export function SimulationModalView() {
             };
 
             const data: SimulationResult = await runSimulation(settings);
-            console.log(data);
+            setSimulationData(data);
         } catch (error) {
             console.error(error);
+        } finally {
+            setIsChartLoading(false);
         }
     };
 
@@ -50,7 +59,7 @@ export function SimulationModalView() {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[1000px]">
+            <DialogContent className="sm:max-w-[600px] md:max-w-[800px] lg:max-w-[1000px]">
                 <DialogHeader>
                     <DialogTitle>Simulate</DialogTitle>
                     <DialogDescription>Run a time-series simulation</DialogDescription>
@@ -87,6 +96,20 @@ export function SimulationModalView() {
                         </Field>
                     </div>
                 </FieldSet>
+
+                <div
+                    className={`py-4 border rounded-md bg-slate-50 min-h-[${chartHeight}] flex items-center justify-center`}
+                >
+                    {simulationData ? (
+                        <SimulationChartView data={simulationData} />
+                    ) : (
+                        <p className="text-muted-foreground text-sm">
+                            {isChartLoading
+                                ? "Running simulation..."
+                                : "No data to display. Click 'Run' to start."}
+                        </p>
+                    )}
+                </div>
 
                 <DialogFooter className="flex gap-2">
                     <DialogClose asChild>
