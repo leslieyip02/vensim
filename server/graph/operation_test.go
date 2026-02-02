@@ -14,7 +14,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 		"NodeAdd": {
 			op: Operation{
 				Type: NodeAdd,
-				Node: &Node{ID: "node-1"},
+				Node: &Node{ID: "node_1"},
 			},
 			initial: State{
 				Nodes:   map[string]*Node{},
@@ -22,7 +22,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 			},
 			want: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1"},
+					"node_1": {ID: "node_1"},
 				},
 				Counter: 2,
 			},
@@ -30,18 +30,18 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 		"NodeUpdate": {
 			op: Operation{
 				Type:  NodeUpdate,
-				ID:    "node-1",
+				ID:    "node_1",
 				Patch: map[string]any{"x": 30},
 			},
 			initial: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1"},
+					"node_1": {ID: "node_1"},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1", X: 30},
+					"node_1": {ID: "node_1", X: 30},
 				},
 				Counter: 1,
 			},
@@ -49,11 +49,11 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 		"NodeDelete": {
 			op: Operation{
 				Type: NodeDelete,
-				ID:   "node-1",
+				ID:   "node_1",
 			},
 			initial: State{
 				Nodes: map[string]*Node{
-					"node-1": {ID: "node-1"},
+					"node_1": {ID: "node_1"},
 				},
 				Counter: 1,
 			},
@@ -86,7 +86,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 		"EdgeAdd": {
 			op: Operation{
 				Type: EdgeAdd,
-				Edge: &Edge{ID: "edge-1"},
+				Edge: &Edge{ID: "edge_1"},
 			},
 			initial: State{
 				Edges:   map[string]*Edge{},
@@ -94,7 +94,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 			},
 			want: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1"},
+					"edge_1": {ID: "edge_1"},
 				},
 				Counter: 2,
 			},
@@ -102,18 +102,18 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 		"EdgeUpdate": {
 			op: Operation{
 				Type:  EdgeUpdate,
-				ID:    "edge-1",
+				ID:    "edge_1",
 				Patch: map[string]any{"to": "c"},
 			},
 			initial: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1", From: "a", To: "b"},
+					"edge_1": {ID: "edge_1", From: "a", To: "b"},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1", From: "a", To: "c"},
+					"edge_1": {ID: "edge_1", From: "a", To: "c"},
 				},
 				Counter: 1,
 			},
@@ -121,11 +121,11 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 		"EdgeDelete": {
 			op: Operation{
 				Type: EdgeDelete,
-				ID:   "edge-1",
+				ID:   "edge_1",
 			},
 			initial: State{
 				Edges: map[string]*Edge{
-					"edge-1": {ID: "edge-1"},
+					"edge_1": {ID: "edge_1"},
 				},
 				Counter: 1,
 			},
@@ -158,7 +158,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		"StockAdd": {
 			op: Operation{
 				Type:  StockAdd,
-				Stock: &Stock{ID: "stock-1"},
+				Stock: &Stock{ID: "stock_1"},
 			},
 			initial: State{
 				Stocks:  map[string]*Stock{},
@@ -166,7 +166,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 			},
 			want: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1"},
+					"stock_1": {ID: "stock_1"},
 				},
 				Counter: 2,
 			},
@@ -174,18 +174,18 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		"StockUpdate": {
 			op: Operation{
 				Type:  StockUpdate,
-				ID:    "stock-1",
+				ID:    "stock_1",
 				Patch: map[string]any{"x": 30},
 			},
 			initial: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1"},
+					"stock_1": {ID: "stock_1"},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1", X: 30},
+					"stock_1": {ID: "stock_1", X: 30},
 				},
 				Counter: 1,
 			},
@@ -193,11 +193,11 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		"StockDelete": {
 			op: Operation{
 				Type: StockDelete,
-				ID:   "stock-1",
+				ID:   "stock_1",
 			},
 			initial: State{
 				Stocks: map[string]*Stock{
-					"stock-1": {ID: "stock-1"},
+					"stock_1": {ID: "stock_1"},
 				},
 				Counter: 1,
 			},
@@ -230,7 +230,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		"CloudAdd": {
 			op: Operation{
 				Type:  CloudAdd,
-				Cloud: &Cloud{ID: "cloud-1"},
+				Cloud: &Cloud{ID: "cloud_1"},
 			},
 			initial: State{
 				Clouds:  map[string]*Cloud{},
@@ -238,7 +238,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 			},
 			want: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1"},
+					"cloud_1": {ID: "cloud_1"},
 				},
 				Counter: 2,
 			},
@@ -246,18 +246,18 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		"CloudUpdate": {
 			op: Operation{
 				Type:  CloudUpdate,
-				ID:    "cloud-1",
+				ID:    "cloud_1",
 				Patch: map[string]any{"x": 30},
 			},
 			initial: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1"},
+					"cloud_1": {ID: "cloud_1"},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1", X: 30},
+					"cloud_1": {ID: "cloud_1", X: 30},
 				},
 				Counter: 1,
 			},
@@ -265,11 +265,11 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		"CloudDelete": {
 			op: Operation{
 				Type: CloudDelete,
-				ID:   "cloud-1",
+				ID:   "cloud_1",
 			},
 			initial: State{
 				Clouds: map[string]*Cloud{
-					"cloud-1": {ID: "cloud-1"},
+					"cloud_1": {ID: "cloud_1"},
 				},
 				Counter: 1,
 			},
@@ -302,7 +302,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		"FlowAdd": {
 			op: Operation{
 				Type: FlowAdd,
-				Flow: &Flow{ID: "flow-1"},
+				Flow: &Flow{ID: "flow_1"},
 			},
 			initial: State{
 				Flows:   map[string]*Flow{},
@@ -310,7 +310,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 			},
 			want: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1"},
+					"flow_1": {ID: "flow_1"},
 				},
 				Counter: 2,
 			},
@@ -318,18 +318,18 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		"FlowUpdate": {
 			op: Operation{
 				Type:  FlowUpdate,
-				ID:    "flow-1",
+				ID:    "flow_1",
 				Patch: map[string]any{"curvature": 0.5},
 			},
 			initial: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1"},
+					"flow_1": {ID: "flow_1"},
 				},
 				Counter: 1,
 			},
 			want: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1", Curvature: 0.5},
+					"flow_1": {ID: "flow_1", Curvature: 0.5},
 				},
 				Counter: 1,
 			},
@@ -337,11 +337,11 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		"FlowDelete": {
 			op: Operation{
 				Type: FlowDelete,
-				ID:   "flow-1",
+				ID:   "flow_1",
 			},
 			initial: State{
 				Flows: map[string]*Flow{
-					"flow-1": {ID: "flow-1"},
+					"flow_1": {ID: "flow_1"},
 				},
 				Counter: 1,
 			},

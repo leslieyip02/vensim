@@ -44,7 +44,7 @@ export function EdgeView({ edge }: { edge: Edge }) {
                 const flowGeo = computeLineGeometry(flowFrom, flowTo, flow.curvature);
 
                 return {
-                    id: "valve-" + flow.id.slice(5),
+                    id: "valve_" + flow.id.slice(5),
                     x: flowGeo.mid.x,
                     y: flowGeo.mid.y,
                     radius: 12,

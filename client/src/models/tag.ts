@@ -5,5 +5,5 @@ export interface Tag {
 }
 
 export function makeTagId(counter: number) {
-    return `tag-${counter}`;
+    return `tag_${counter}`;
 }
