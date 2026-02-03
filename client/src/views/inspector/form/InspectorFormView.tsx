@@ -8,6 +8,7 @@ import { EditFlowFormView } from "./EditFlowFormView";
 import { EditGroupFormView } from "./EditGroupFormView";
 import { EditNodeFormView } from "./EditNodeFormView";
 import { EditStockFormView } from "./EditStockFormView";
+import { ID_SEPARATOR } from "@/models/graph";
 
 type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
 
@@ -22,7 +23,7 @@ const getFormType = (selectedIds: string[]): FormType | null => {
     }
 
     const selectedId = selectedIds[0];
-    return selectedId.split("-")[0] as FormType | null;
+    return selectedId.split(ID_SEPARATOR)[0] as FormType | null;
 };
 
 const FormView = ({ formType, selectedIds }: FormProps) => {
