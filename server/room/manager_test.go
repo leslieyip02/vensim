@@ -2,13 +2,14 @@ package room
 
 import (
 	"fmt"
-	"os"
 	"server/graph"
 	"server/ws"
 	"testing"
 )
 
-func TestMain(m *testing.M) {
+func setupTest(t *testing.T) (teardownFunc func()) {
+	t.Helper()
+
 	originalNewRoom := newRoom
 	originalNewRoomID := newRoomID
 
@@ -23,15 +24,18 @@ func TestMain(m *testing.M) {
 		return id, nil
 	}
 
-	code := m.Run()
+	return func() {
+		t.Helper()
 
-	newRoom = originalNewRoom
-	newRoomID = originalNewRoomID
-
-	os.Exit(code)
+		newRoom = originalNewRoom
+		newRoomID = originalNewRoomID
+	}
 }
 
 func TestGetRoom_Exists(t *testing.T) {
+	tearDown := setupTest(t)
+	defer func() { tearDown() }()
+
 	sut := NewRoomManager()
 	sut.createRoom(nil)
 
@@ -39,14 +43,16 @@ func TestGetRoom_Exists(t *testing.T) {
 		t.Error("expected 1 room to be created")
 	}
 
-	want := "room-1"
 	got := sut.getRoom("room-1")
-	if got.GetID() != want {
-		t.Errorf("want %v but got %v", want, got.GetID())
+	if got == nil || got.GetID() != "room-1" {
+		t.Errorf("want room-1 but got %v", got)
 	}
 }
 
 func TestGetRoom_NotExists(t *testing.T) {
+	tearDown := setupTest(t)
+	defer func() { tearDown() }()
+
 	sut := NewRoomManager()
 
 	if len(sut.rooms) != 0 {
@@ -60,6 +66,9 @@ func TestGetRoom_NotExists(t *testing.T) {
 }
 
 func TestDestroyRoom(t *testing.T) {
+	tearDown := setupTest(t)
+	defer func() { tearDown() }()
+
 	sut := NewRoomManager()
 	sut.createRoom(nil)
 
@@ -67,10 +76,9 @@ func TestDestroyRoom(t *testing.T) {
 		t.Error("expected 1 room to be created")
 	}
 
-	want := "room-1"
 	got := sut.getRoom("room-1")
-	if got.GetID() != want {
-		t.Errorf("want %v but got %v", want, got.GetID())
+	if got == nil || got.GetID() != "room-1" {
+		t.Errorf("want room-1 but got %v", got)
 	}
 
 	sut.destroyRoom("room-1")
