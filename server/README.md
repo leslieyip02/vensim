@@ -21,5 +21,5 @@ go run main.go
 
 ```
 go test ./...
-go test -cover ./env ./graph ./id ./room ./ws -coverprofile=coverage.out
+go test -cover ./env ./graph ./id ./room ./timeout ./ws -coverprofile=coverage.out
 ```
