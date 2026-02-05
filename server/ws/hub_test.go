@@ -63,8 +63,9 @@ func TestHub_BroadcastSkipsSender(t *testing.T) {
 		return c
 	}
 
-	hub := NewHub("room-1", state)
+	hub := NewHub("room-1", state, func() {})
 	go hub.Run()
+	t.Cleanup(func() { hub.close() })
 
 	hub.Register(nil)
 	select {
@@ -94,5 +95,38 @@ func TestHub_BroadcastSkipsSender(t *testing.T) {
 
 	if len(c1.operationsSent) != 0 {
 		t.Fatal("sender should not receive op")
+	}
+}
+
+func TestHub_DoesNotAutoCloseWhenNotEmpty(t *testing.T) {
+	// mock
+	autoCloseDuration = 100 * time.Millisecond
+
+	state := graph.NewState()
+
+	closed := make(chan struct{})
+	hub := NewHub("room-1", state, func() {
+		close(closed)
+	})
+
+	go hub.Run()
+	t.Cleanup(func() { hub.close() })
+
+	c := newMockClient("client-1")
+
+	originalNewClient := newClient
+	defer func() { newClient = originalNewClient }()
+	newClient = func(_ *websocket.Conn, _ Broadcaster) Listener {
+		return c
+	}
+
+	hub.Register(nil)
+	<-c.listenCalled
+
+	select {
+	case <-closed:
+		t.Fatal("hub closed while client was still connected")
+	case <-time.After(autoCloseDuration + 50*time.Millisecond):
+		// success
 	}
 }
