@@ -1,3 +1,5 @@
+import { ID_SEPARATOR } from "./graph";
+
 export interface Tag {
     id: string;
     label: string;
@@ -5,5 +7,5 @@ export interface Tag {
 }
 
 export function makeTagId(counter: number) {
-    return `tag-${counter}`;
+    return `tag${ID_SEPARATOR}${counter}`;
 }

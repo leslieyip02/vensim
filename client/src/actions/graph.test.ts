@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { makeCloudId, makeEdgeId, makeFlowId, makeNodeId, makeStockId } from "@/models/graph";
+import {
+    ID_SEPARATOR,
+    makeCloudId,
+    makeEdgeId,
+    makeFlowId,
+    makeNodeId,
+    makeStockId,
+} from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { sendGraphOperation } from "@/sync/graph";
 
@@ -37,13 +44,17 @@ vi.mock("@/sync/graph", () => ({
     sendGraphOperation: vi.fn(),
 }));
 
-vi.mock("@/models/graph", () => ({
-    makeNodeId: vi.fn((counter: number) => `node-${counter}`),
-    makeEdgeId: vi.fn((counter: number) => `edge-${counter}`),
-    makeStockId: vi.fn((counter: number) => `stock-${counter}`),
-    makeCloudId: vi.fn((counter: number) => `cloud-${counter}`),
-    makeFlowId: vi.fn((counter: number) => `flow-${counter}`),
-}));
+vi.mock("@/models/graph", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("@/models/graph")>();
+    return {
+        ID_SEPARATOR: actual.ID_SEPARATOR,
+        makeNodeId: vi.fn((counter: number) => `node${actual.ID_SEPARATOR}${counter}`),
+        makeEdgeId: vi.fn((counter: number) => `edge${actual.ID_SEPARATOR}${counter}`),
+        makeStockId: vi.fn((counter: number) => `stock${actual.ID_SEPARATOR}${counter}`),
+        makeCloudId: vi.fn((counter: number) => `cloud${actual.ID_SEPARATOR}${counter}`),
+        makeFlowId: vi.fn((counter: number) => `flow${actual.ID_SEPARATOR}${counter}`),
+    };
+});
 
 describe("graph actions", () => {
     beforeEach(() => {
@@ -57,7 +68,7 @@ describe("graph actions", () => {
             const expectedOp: Operation = {
                 type: "node/add",
                 node: {
-                    id: "node-3",
+                    id: `node${ID_SEPARATOR}3`,
                     x: 10,
                     y: 20,
                     radius: 50,
@@ -74,11 +85,11 @@ describe("graph actions", () => {
 
     describe("updateNode", () => {
         it("creates and sends a node/update operation", () => {
-            updateNode("node-1", { label: "Updated" });
+            updateNode(`node${ID_SEPARATOR}1`, { label: "Updated" });
 
             const expectedOp: Operation = {
                 type: "node/update",
-                id: "node-1",
+                id: `node${ID_SEPARATOR}1`,
                 patch: { label: "Updated" },
             };
 
@@ -89,11 +100,11 @@ describe("graph actions", () => {
 
     describe("deleteNode", () => {
         it("creates and sends a node/delete operation", () => {
-            deleteNode("node-1");
+            deleteNode(`node${ID_SEPARATOR}1`);
 
             const expectedOp: Operation = {
                 type: "node/delete",
-                id: "node-1",
+                id: `node${ID_SEPARATOR}1`,
             };
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -103,14 +114,14 @@ describe("graph actions", () => {
 
     describe("addEdge", () => {
         it("creates and sends an edge/add operation with defaults", () => {
-            addEdge("node-1", "node-2");
+            addEdge(`node${ID_SEPARATOR}1`, `node${ID_SEPARATOR}2`);
 
             const expectedOp: Operation = {
                 type: "edge/add",
                 edge: {
-                    id: "edge-3",
-                    from: "node-1",
-                    to: "node-2",
+                    id: `edge${ID_SEPARATOR}3`,
+                    from: `node${ID_SEPARATOR}1`,
+                    to: `node${ID_SEPARATOR}2`,
                     polarity: null,
                     curvature: 0.25,
                 },
@@ -127,7 +138,7 @@ describe("graph actions", () => {
             const expectedOp: Operation = {
                 type: "edge/add",
                 edge: {
-                    id: "edge-3",
+                    id: `edge${ID_SEPARATOR}3`,
                     from: "a",
                     to: "b",
                     polarity: "+",
@@ -142,11 +153,11 @@ describe("graph actions", () => {
 
     describe("updateEdge", () => {
         it("creates and sends an edge/update operation", () => {
-            updateEdge("edge-1", { curvature: 0.9 });
+            updateEdge(`edge${ID_SEPARATOR}1`, { curvature: 0.9 });
 
             const expectedOp: Operation = {
                 type: "edge/update",
-                id: "edge-1",
+                id: `edge${ID_SEPARATOR}1`,
                 patch: { curvature: 0.9 },
             };
 
@@ -157,11 +168,11 @@ describe("graph actions", () => {
 
     describe("deleteEdge", () => {
         it("creates and sends an edge/delete operation", () => {
-            deleteEdge("edge-1");
+            deleteEdge(`edge${ID_SEPARATOR}1`);
 
             const expectedOp: Operation = {
                 type: "edge/delete",
-                id: "edge-1",
+                id: `edge${ID_SEPARATOR}1`,
             };
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -176,7 +187,7 @@ describe("graph actions", () => {
             const expectedOp: Operation = {
                 type: "stock/add",
                 stock: {
-                    id: "stock-3",
+                    id: `stock${ID_SEPARATOR}3`,
                     x: 10,
                     y: 20,
                     width: 128,
@@ -194,11 +205,11 @@ describe("graph actions", () => {
 
     describe("updateStock", () => {
         it("creates and sends a stock/update add operation", () => {
-            updateStock("stock-1", { x: 30 });
+            updateStock(`stock${ID_SEPARATOR}1`, { x: 30 });
 
             const expectedOp: Operation = {
                 type: "stock/update",
-                id: "stock-1",
+                id: `stock${ID_SEPARATOR}1`,
                 patch: {
                     x: 30,
                 },
@@ -211,11 +222,11 @@ describe("graph actions", () => {
 
     describe("deleteStock", () => {
         it("creates and sends a stock/update add operation", () => {
-            deleteStock("stock-1");
+            deleteStock(`stock${ID_SEPARATOR}1`);
 
             const expectedOp: Operation = {
                 type: "stock/delete",
-                id: "stock-1",
+                id: `stock${ID_SEPARATOR}1`,
             };
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -230,7 +241,7 @@ describe("graph actions", () => {
             const expectedOp: Operation = {
                 type: "cloud/add",
                 cloud: {
-                    id: "cloud-3",
+                    id: `cloud${ID_SEPARATOR}3`,
                     x: 10,
                     y: 20,
                     radius: 32,
@@ -245,11 +256,11 @@ describe("graph actions", () => {
 
     describe("updateCloud", () => {
         it("creates and sends a cloud/update add operation", () => {
-            updateCloud("cloud-1", { x: 30 });
+            updateCloud(`cloud${ID_SEPARATOR}1`, { x: 30 });
 
             const expectedOp: Operation = {
                 type: "cloud/update",
-                id: "cloud-1",
+                id: `cloud${ID_SEPARATOR}1`,
                 patch: {
                     x: 30,
                 },
@@ -262,11 +273,11 @@ describe("graph actions", () => {
 
     describe("deleteCloud", () => {
         it("creates and sends a cloud/update add operation", () => {
-            deleteCloud("cloud-1");
+            deleteCloud(`cloud${ID_SEPARATOR}1`);
 
             const expectedOp: Operation = {
                 type: "cloud/delete",
-                id: "cloud-1",
+                id: `cloud${ID_SEPARATOR}1`,
             };
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -276,14 +287,14 @@ describe("graph actions", () => {
 
     describe("addFlow", () => {
         it("creates and sends a flow/add add operation", () => {
-            addFlow("stock-1", "cloud-2");
+            addFlow(`stock${ID_SEPARATOR}1`, `cloud${ID_SEPARATOR}2`);
 
             const expectedOp: Operation = {
                 type: "flow/add",
                 flow: {
-                    id: "flow-3",
-                    from: "stock-1",
-                    to: "cloud-2",
+                    id: `flow${ID_SEPARATOR}3`,
+                    from: `stock${ID_SEPARATOR}1`,
+                    to: `cloud${ID_SEPARATOR}2`,
                     curvature: 0,
                 },
             };
@@ -296,11 +307,11 @@ describe("graph actions", () => {
 
     describe("updateFlow", () => {
         it("creates and sends a flow/update add operation", () => {
-            updateFlow("flow-1", { curvature: 0.5 });
+            updateFlow(`flow${ID_SEPARATOR}1`, { curvature: 0.5 });
 
             const expectedOp: Operation = {
                 type: "flow/update",
-                id: "flow-1",
+                id: `flow${ID_SEPARATOR}1`,
                 patch: {
                     curvature: 0.5,
                 },
@@ -313,11 +324,11 @@ describe("graph actions", () => {
 
     describe("deleteflow", () => {
         it("creates and sends a flow/update add operation", () => {
-            deleteFlow("flow-1");
+            deleteFlow(`flow${ID_SEPARATOR}1`);
 
             const expectedOp: Operation = {
                 type: "flow/delete",
-                id: "flow-1",
+                id: `flow${ID_SEPARATOR}1`,
             };
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);

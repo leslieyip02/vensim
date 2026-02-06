@@ -1,15 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { ID_SEPARATOR } from "@/models/graph";
 import type { Tag } from "@/models/tag";
 
 import { useTagStore } from "./tag";
 
 vi.mock("@/configs/color", () => ({
-    getPaletteColor: vi.fn((i: number) => `color-${i}`),
+    getPaletteColor: vi.fn((i: number) => `color${ID_SEPARATOR}${i}`),
 }));
 
 vi.mock("@/models/tag", () => ({
-    makeTagId: vi.fn((counter: number) => `tag-${counter}`),
+    makeTagId: vi.fn((counter: number) => `tag${ID_SEPARATOR}${counter}`),
 }));
 
 describe("useTagStore", () => {
@@ -37,13 +38,13 @@ describe("useTagStore", () => {
         const state = useTagStore.getState();
         const tag = state.tags[tagId];
 
-        expect(tagId).toBe("tag-1");
+        expect(tagId).toBe(`tag${ID_SEPARATOR}1`);
         expect(state.counter).toBe(2);
 
         expect(tag).toEqual<Tag>({
-            id: "tag-1",
-            label: "#tag-1",
-            color: "color-0",
+            id: `tag${ID_SEPARATOR}1`,
+            label: `#tag${ID_SEPARATOR}1`,
+            color: `color${ID_SEPARATOR}0`,
         });
 
         expect(useTagStore.getState().tagToItems[tagId]).toBeInstanceOf(Set);
@@ -85,34 +86,36 @@ describe("useTagStore", () => {
     it("toggles a tag on for an item", () => {
         const tagId = useTagStore.getState().addTag();
 
-        useTagStore.getState().toggleTag(tagId, "item-1");
+        useTagStore.getState().toggleTag(tagId, `item${ID_SEPARATOR}1`);
 
-        expect(useTagStore.getState().tagToItems[tagId].has("item-1")).toBe(true);
+        expect(useTagStore.getState().tagToItems[tagId].has(`item${ID_SEPARATOR}1`)).toBe(true);
     });
 
     it("toggles a tag off for an item if already tagged", () => {
         const tagId = useTagStore.getState().addTag();
 
         const store = useTagStore.getState();
-        store.toggleTag(tagId, "item-1");
-        store.toggleTag(tagId, "item-1");
+        store.toggleTag(tagId, `item${ID_SEPARATOR}1`);
+        store.toggleTag(tagId, `item${ID_SEPARATOR}1`);
 
-        expect(useTagStore.getState().tagToItems[tagId].has("item-1")).toBe(false);
+        expect(useTagStore.getState().tagToItems[tagId].has(`item${ID_SEPARATOR}1`)).toBe(false);
     });
 
     it("supports tagging multiple items with the same tag", () => {
         const tagId = useTagStore.getState().addTag();
 
         const store = useTagStore.getState();
-        store.toggleTag(tagId, "item-1");
-        store.toggleTag(tagId, "item-2");
+        store.toggleTag(tagId, `item${ID_SEPARATOR}1`);
+        store.toggleTag(tagId, `item${ID_SEPARATOR}2`);
 
-        expect(useTagStore.getState().tagToItems[tagId]).toEqual(new Set(["item-1", "item-2"]));
+        expect(useTagStore.getState().tagToItems[tagId]).toEqual(
+            new Set([`item${ID_SEPARATOR}1`, `item${ID_SEPARATOR}2`]),
+        );
     });
 
     it("does nothing when toggling a non-existant tag", () => {
-        const tagId = "tag-1";
-        useTagStore.getState().toggleTag(tagId, "item-1");
+        const tagId = `tag${ID_SEPARATOR}1`;
+        useTagStore.getState().toggleTag(tagId, `item${ID_SEPARATOR}1`);
 
         expect(useTagStore.getState().tagToItems[tagId]).not.toBeDefined();
     });
@@ -121,27 +124,29 @@ describe("useTagStore", () => {
         it("returns true when item is tagged", () => {
             const tagId = useTagStore.getState().addTag();
 
-            useTagStore.getState().toggleTag(tagId, "item-1");
+            useTagStore.getState().toggleTag(tagId, `item${ID_SEPARATOR}1`);
 
-            expect(useTagStore.getState().isTagged(tagId, "item-1")).toBe(true);
+            expect(useTagStore.getState().isTagged(tagId, `item${ID_SEPARATOR}1`)).toBe(true);
         });
 
         it("returns false when item is not tagged", () => {
             const tagId = useTagStore.getState().addTag();
 
-            useTagStore.getState().addTag("item-1");
+            useTagStore.getState().addTag(`item${ID_SEPARATOR}1`);
 
-            expect(useTagStore.getState().isTagged(tagId, "item-1")).toBe(false);
+            expect(useTagStore.getState().isTagged(tagId, `item${ID_SEPARATOR}1`)).toBe(false);
         });
 
         it("returns false when tag does not exist", () => {
-            expect(useTagStore.getState().isTagged("tag-1", "item-1")).toBe(false);
+            expect(
+                useTagStore.getState().isTagged(`tag${ID_SEPARATOR}1`, `item${ID_SEPARATOR}1`),
+            ).toBe(false);
         });
 
         it("returns false when item does not exist", () => {
             const tagId = useTagStore.getState().addTag();
 
-            expect(useTagStore.getState().isTagged(tagId, "item-1")).toBe(false);
+            expect(useTagStore.getState().isTagged(tagId, `item${ID_SEPARATOR}1`)).toBe(false);
         });
     });
 });

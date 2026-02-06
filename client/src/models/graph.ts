@@ -1,3 +1,5 @@
+export const ID_SEPARATOR = "_";
+
 export type Polarity = "+" | "-";
 
 interface Identifiable {
@@ -41,23 +43,23 @@ export interface Flow extends Identifiable {
 }
 
 export function makeNodeId(counter: number) {
-    return `node-${counter}`;
+    return `node${ID_SEPARATOR}${counter}`;
 }
 
 export function makeEdgeId(counter: number) {
-    return `edge-${counter}`;
+    return `edge${ID_SEPARATOR}${counter}`;
 }
 
 export function makeStockId(counter: number) {
-    return `stock-${counter}`;
+    return `stock${ID_SEPARATOR}${counter}`;
 }
 
 export function makeCloudId(counter: number) {
-    return `cloud-${counter}`;
+    return `cloud${ID_SEPARATOR}${counter}`;
 }
 
 export function makeFlowId(counter: number) {
-    return `flow-${counter}`;
+    return `flow${ID_SEPARATOR}${counter}`;
 }
 
 export function isNodeId(id: string): boolean {

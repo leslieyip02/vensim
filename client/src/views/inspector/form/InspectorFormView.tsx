@@ -1,4 +1,5 @@
 import ClickerIcon from "@/assets/clicker.svg?react";
+import { ID_SEPARATOR } from "@/models/graph";
 import { useInteractionStore } from "@/stores/interaction";
 
 import { InspectorSectionWrapper } from "../InspectorSectionWrapper";
@@ -22,7 +23,7 @@ const getFormType = (selectedIds: string[]): FormType | null => {
     }
 
     const selectedId = selectedIds[0];
-    return selectedId.split("-")[0] as FormType | null;
+    return selectedId.split(ID_SEPARATOR)[0] as FormType | null;
 };
 
 const FormView = ({ formType, selectedIds }: FormProps) => {
