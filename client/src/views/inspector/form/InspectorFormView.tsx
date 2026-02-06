@@ -1,4 +1,5 @@
 import ClickerIcon from "@/assets/clicker.svg?react";
+import { ID_SEPARATOR } from "@/models/graph";
 import { useInteractionStore } from "@/stores/interaction";
 
 import { InspectorSectionWrapper } from "../InspectorSectionWrapper";
@@ -8,7 +9,6 @@ import { EditFlowFormView } from "./EditFlowFormView";
 import { EditGroupFormView } from "./EditGroupFormView";
 import { EditNodeFormView } from "./EditNodeFormView";
 import { EditStockFormView } from "./EditStockFormView";
-import { ID_SEPARATOR } from "@/models/graph";
 
 type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
 
