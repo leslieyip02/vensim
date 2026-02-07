@@ -34,7 +34,10 @@ export function RoomModalView() {
             }}
         >
             <DialogTrigger asChild>
-                <Button variant="outline" className="absolute bottom-8 right-8 z-100">
+                <Button
+                    variant="outline"
+                    className={`absolute bottom-8 right-8 ${isOpen ? "z-100" : "z-10"}`}
+                >
                     <LuUsers />
                 </Button>
             </DialogTrigger>
