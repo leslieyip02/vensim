@@ -8,24 +8,36 @@ export function isGraphSocketConnected() {
     return socket !== null;
 }
 
-export function connectGraphSocket(url: string) {
-    socket = new WebSocket(url);
+export function connectGraphSocket(url: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        socket = new WebSocket(url);
 
-    socket.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
+        socket.onopen = () => {
+            resolve();
+        };
 
-        if (msg.type === "clientId") {
-            clientId = msg.clientId;
-            return;
-        }
+        socket.onerror = () => {
+            socket = null;
+            const roomId = url.split("/").at(-1);
+            reject(new Error(`Failed to join room ID:${roomId}`));
+        };
 
-        if (msg.type === "snapshot") {
-            useGraphStore.setState(msg.state);
-            return;
-        }
+        socket.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
 
-        useGraphStore.getState().apply(msg);
-    };
+            if (msg.type === "clientId") {
+                clientId = msg.clientId;
+                return;
+            }
+
+            if (msg.type === "snapshot") {
+                useGraphStore.setState(msg.state);
+                return;
+            }
+
+            useGraphStore.getState().apply(msg);
+        };
+    });
 }
 
 export function sendGraphOperation(op: Operation) {
