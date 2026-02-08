@@ -13,9 +13,9 @@ export function replaceEquationIdsWithLabels(
     stocks: Record<string, Stock>,
     flows: Record<string, Flow>,
 ): string {
-    return equation.replace(VALID_ENTITY_ID_REGEX, (id) => {
+    return equation.replace(new RegExp(VALID_ENTITY_ID_REGEX, "g"), (id) => {
         const entity = nodes[id] ?? stocks[id] ?? flows[id];
-        return entity?.label ?? id;
+        return entity?.label ?? "??";
     });
 }
 
@@ -52,6 +52,37 @@ export function buildLabelToIdMap(parents: Array<Node | Flow | Stock>) {
         }
     });
     return map;
+}
+
+export function validateEquation(
+    equation: string,
+    nodes: Record<string, Node>,
+    flows: Record<string, Flow>,
+    stocks: Record<string, Stock>,
+) {
+    equation = equation.trim();
+    if (equation.length < 1) return true;
+    const tokens = equation.match(VALID_EQUATION_REGEX);
+    if (!tokens) return false;
+
+    const reconstructed = tokens.join("");
+    const stripped = equation.replace(/\s+/g, "");
+
+    if (reconstructed !== stripped) return false;
+
+    const tokensWithValidIds = tokens.filter((tok) => {
+        // Keep numbers and operators
+        if (new RegExp(VALID_NUMBER).test(tok)) return true;
+        if (new RegExp(VALID_OPERATOR_REGEX).test(tok)) return true;
+
+        // Keep ID tokens only if they exist in state
+        if (isNodeId(tok)) return nodes[tok] !== undefined;
+        if (isFlowId(tok)) return flows[tok] !== undefined;
+        if (isStockId(tok)) return stocks[tok] !== undefined;
+
+        return false;
+    });
+    return tokensWithValidIds.length === tokens.length;
 }
 
 export function removeInvalidCharacters(
