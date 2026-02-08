@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { getParentEntities } from "@/actions/graphTraversal";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
@@ -10,6 +12,7 @@ import {
     removeInvalidCharacters,
     replaceEquationIdsWithLabels,
     replaceEquationLabelsWithIds,
+    validateEquation,
 } from "@/utils/equation";
 
 import { EquationFormWrapper } from "./EquationFormWrapper";
@@ -22,6 +25,7 @@ function NodeEquationFieldSet({
     parents: Array<Node | Stock | Flow>;
 }) {
     const { node, handleChange } = useNodeForm(nodeId);
+    const [equationError, setEquationError] = useState(false);
     if (!node) {
         return null;
     }
@@ -35,6 +39,9 @@ function NodeEquationFieldSet({
                 <FieldLabel>Equation</FieldLabel>
                 <Textarea
                     name="equation"
+                    className={`
+                        ${equationError ? "border-red-500 ring-2 ring-red-500" : ""}
+                    `}
                     value={replaceEquationIdsWithLabels(
                         node.equation,
                         state.nodes,
@@ -47,14 +54,24 @@ function NodeEquationFieldSet({
                         });
                     }}
                     onBlur={() => {
-                        const validEquation = removeInvalidCharacters(
+                        const isValidEquation = validateEquation(
                             node.equation,
                             state.nodes,
                             state.flows,
                             state.stocks,
                         );
-
-                        handleChange({ equation: validEquation });
+                        if (!isValidEquation) {
+                            setEquationError(true);
+                            return;
+                        }
+                        setEquationError(false);
+                        const cleanedEquation = removeInvalidCharacters(
+                            node.equation,
+                            state.nodes,
+                            state.flows,
+                            state.stocks,
+                        );
+                        handleChange({ equation: cleanedEquation });
                     }}
                 />
             </Field>
