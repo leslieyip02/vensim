@@ -7,7 +7,7 @@ const WS_ORIGIN = import.meta.env.VITE_WS_ORIGIN;
 export async function createRoom() {
     const state = useGraphStore.getState();
     const path = `${API_ORIGIN}/create`;
-    
+
     const params = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -33,11 +33,11 @@ export async function createRoom() {
 
 export async function joinRoom(roomId: string) {
     const checkPath = `${API_ORIGIN}/check/${roomId}`;
-    const response = await fetch(checkPath)
+    const response = await fetch(checkPath);
 
     if (!response.ok) {
         const text = await response.text();
-        throw new Error(text || `Server error: ${response.status}`)
+        throw new Error(text || `Server error: ${response.status}`);
     }
 
     const wsPath = `${WS_ORIGIN}/join/${roomId}`;

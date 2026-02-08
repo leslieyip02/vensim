@@ -1,4 +1,5 @@
 import type { FallbackProps } from "react-error-boundary";
+import { LuCircleAlert } from "react-icons/lu";
 
 import {
     AlertDialog,
@@ -10,8 +11,6 @@ import {
     AlertDialogMedia,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-import { LuCircleAlert } from "react-icons/lu";
 
 export function ErrorModalView({ error, resetErrorBoundary }: FallbackProps) {
     if (!error) return null;
