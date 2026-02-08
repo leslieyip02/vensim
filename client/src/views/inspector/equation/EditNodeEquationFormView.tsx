@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { getParentEntities } from "@/actions/graphTraversal";
 import { Badge } from "@/components/ui/badge";
@@ -26,12 +26,29 @@ function NodeEquationFieldSet({
 }) {
     const { node, handleChange } = useNodeForm(nodeId);
     const [equationError, setEquationError] = useState(false);
+    const state = useGraphStore.getState();
+    const committedLabelEquation = replaceEquationIdsWithLabels(
+        node.equation,
+        state.nodes,
+        state.stocks,
+        state.flows,
+    );
+    const [draftEquation, setDraftEquation] = useState(committedLabelEquation);
+    const labelMap = buildLabelToIdMap(parents);
+
+    useEffect(() => {
+        setDraftEquation(committedLabelEquation);
+    }, [committedLabelEquation]);
+
+    useEffect(() => {
+        const isValid = validateEquation(node.equation, state.nodes, state.flows, state.stocks);
+
+        setEquationError(!isValid);
+    }, [node.equation, state.nodes, state.flows, state.stocks]);
+
     if (!node) {
         return null;
     }
-
-    const labelMap = buildLabelToIdMap(parents);
-    const state = useGraphStore.getState();
 
     return (
         <FieldSet>
@@ -42,20 +59,17 @@ function NodeEquationFieldSet({
                     className={`
                         ${equationError ? "border-red-500 ring-2 ring-red-500" : ""}
                     `}
-                    value={replaceEquationIdsWithLabels(
-                        node.equation,
-                        state.nodes,
-                        state.stocks,
-                        state.flows,
-                    )}
+                    value={draftEquation}
                     onChange={(e) => {
-                        handleChange({
-                            equation: replaceEquationLabelsWithIds(e.target.value, labelMap),
-                        });
+                        setDraftEquation(e.target.value);
                     }}
                     onBlur={() => {
+                        const equationWithIds = replaceEquationLabelsWithIds(
+                            draftEquation,
+                            labelMap,
+                        );
                         const isValidEquation = validateEquation(
-                            node.equation,
+                            equationWithIds,
                             state.nodes,
                             state.flows,
                             state.stocks,
@@ -66,7 +80,7 @@ function NodeEquationFieldSet({
                         }
                         setEquationError(false);
                         const cleanedEquation = removeInvalidCharacters(
-                            node.equation,
+                            equationWithIds,
                             state.nodes,
                             state.flows,
                             state.stocks,

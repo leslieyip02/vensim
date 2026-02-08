@@ -79,7 +79,6 @@ export function validateEquation(
         if (isNodeId(tok)) return nodes[tok] !== undefined;
         if (isFlowId(tok)) return flows[tok] !== undefined;
         if (isStockId(tok)) return stocks[tok] !== undefined;
-
         return false;
     });
     return tokensWithValidIds.length === tokens.length;
