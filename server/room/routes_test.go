@@ -50,7 +50,7 @@ func TestCreateRoom_Success(t *testing.T) {
 	newRoomID = func() (string, error) {
 		return "room-1", nil
 	}
-	newRoom = func(id string, state *graph.State) Room {
+	newRoom = func(id string, state *graph.State, onClose func()) Room {
 		if state == nil {
 			t.Fatal("expected non-nil state")
 		}
@@ -174,7 +174,7 @@ func TestJoinRoom_WebSocketSuccess(t *testing.T) {
 		return "room-1", nil
 	}
 	room := &MockRoom{}
-	newRoom = func(id string, state *graph.State) Room {
+	newRoom = func(id string, state *graph.State, onClose func()) Room {
 		if state == nil {
 			t.Fatal("expected non-nil state")
 		}

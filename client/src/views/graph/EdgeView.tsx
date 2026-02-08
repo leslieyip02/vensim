@@ -5,7 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useEdgeInteractions } from "@/controllers/interaction";
 import { computeLineGeometry } from "@/models/geometry";
-import { type Edge, isCloudId, isFlowId, isNodeId, isStockId } from "@/models/graph";
+import { type Edge, ID_SEPARATOR, isCloudId, isFlowId, isNodeId, isStockId } from "@/models/graph";
 
 import { useGraphStore } from "../../stores/graph";
 
@@ -44,7 +44,7 @@ export function EdgeView({ edge }: { edge: Edge }) {
                 const flowGeo = computeLineGeometry(flowFrom, flowTo, flow.curvature);
 
                 return {
-                    id: "valve-" + flow.id.slice(5),
+                    id: "valve" + ID_SEPARATOR + flow.id.slice(5),
                     x: flowGeo.mid.x,
                     y: flowGeo.mid.y,
                     radius: 12,

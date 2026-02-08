@@ -1,6 +1,7 @@
 package room
 
 import (
+	"log"
 	"server/graph"
 	"server/id"
 	"sync"
@@ -37,11 +38,21 @@ func (rm *RoomManager) createRoom(state *graph.State) (Room, error) {
 		return nil, err
 	}
 
-	room := newRoom(roomID, state)
+	room := newRoom(roomID, state, func() {
+		rm.destroyRoom(roomID)
+	})
 
 	rm.mu.Lock()
 	rm.rooms[roomID] = &room
 	rm.mu.Unlock()
 
 	return room, nil
+}
+
+func (rm *RoomManager) destroyRoom(roomID string) {
+	log.Printf("Destroying room %s", roomID)
+
+	rm.mu.Lock()
+	delete(rm.rooms, roomID)
+	rm.mu.Unlock()
 }

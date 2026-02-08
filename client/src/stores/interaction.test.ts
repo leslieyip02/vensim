@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { ID_SEPARATOR } from "@/models/graph";
+
 import { type InteractionMode, useInteractionStore } from "./interaction";
 
 describe("useInteractionStore", () => {
@@ -28,17 +30,17 @@ describe("useInteractionStore", () => {
     });
 
     it("toggles selected id on", () => {
-        useInteractionStore.getState().toggleSelectId("node-1");
+        useInteractionStore.getState().toggleSelectId(`node${ID_SEPARATOR}1`);
 
-        expect(useInteractionStore.getState().selectedIds).toEqual(["node-1"]);
+        expect(useInteractionStore.getState().selectedIds).toEqual([`node${ID_SEPARATOR}1`]);
     });
 
     it("toggles selected id off if already selected", () => {
         useInteractionStore.setState({
-            selectedIds: ["node-1"],
+            selectedIds: [`node${ID_SEPARATOR}1`],
         });
 
-        useInteractionStore.getState().toggleSelectId("node-1");
+        useInteractionStore.getState().toggleSelectId(`node${ID_SEPARATOR}1`);
 
         expect(useInteractionStore.getState().selectedIds).toEqual([]);
     });
@@ -46,15 +48,18 @@ describe("useInteractionStore", () => {
     it("supports toggling multiple selected ids", () => {
         const store = useInteractionStore.getState();
 
-        store.toggleSelectId("node-1");
-        store.toggleSelectId("node-2");
+        store.toggleSelectId(`node${ID_SEPARATOR}1`);
+        store.toggleSelectId(`node${ID_SEPARATOR}2`);
 
-        expect(useInteractionStore.getState().selectedIds).toEqual(["node-1", "node-2"]);
+        expect(useInteractionStore.getState().selectedIds).toEqual([
+            `node${ID_SEPARATOR}1`,
+            `node${ID_SEPARATOR}2`,
+        ]);
     });
 
     it("clears selected ids", () => {
         useInteractionStore.setState({
-            selectedIds: ["node-1", "node-2"],
+            selectedIds: [`node${ID_SEPARATOR}1`, `node${ID_SEPARATOR}2`],
         });
 
         useInteractionStore.getState().clearSelectedIds();
@@ -63,17 +68,17 @@ describe("useInteractionStore", () => {
     });
 
     it("toggles selected tag on", () => {
-        useInteractionStore.getState().toggleSelectedTag("tag-a");
+        useInteractionStore.getState().toggleSelectedTag(`tag${ID_SEPARATOR}a`);
 
-        expect(useInteractionStore.getState().selectedTags).toEqual(["tag-a"]);
+        expect(useInteractionStore.getState().selectedTags).toEqual([`tag${ID_SEPARATOR}a`]);
     });
 
     it("toggles selected tag off if already selected", () => {
         useInteractionStore.setState({
-            selectedTags: ["tag-a"],
+            selectedTags: [`tag${ID_SEPARATOR}a`],
         });
 
-        useInteractionStore.getState().toggleSelectedTag("tag-a");
+        useInteractionStore.getState().toggleSelectedTag(`tag${ID_SEPARATOR}a`);
 
         expect(useInteractionStore.getState().selectedTags).toEqual([]);
     });
@@ -81,20 +86,23 @@ describe("useInteractionStore", () => {
     it("supports toggling multiple selected tags", () => {
         const store = useInteractionStore.getState();
 
-        store.toggleSelectedTag("tag-a");
-        store.toggleSelectedTag("tag-b");
+        store.toggleSelectedTag(`tag${ID_SEPARATOR}a`);
+        store.toggleSelectedTag(`tag${ID_SEPARATOR}b`);
 
-        expect(useInteractionStore.getState().selectedTags).toEqual(["tag-a", "tag-b"]);
+        expect(useInteractionStore.getState().selectedTags).toEqual([
+            `tag${ID_SEPARATOR}a`,
+            `tag${ID_SEPARATOR}b`,
+        ]);
     });
 
     it("does not affect selectedIds when toggling tags", () => {
         useInteractionStore.setState({
-            selectedIds: ["node-1"],
+            selectedIds: [`node${ID_SEPARATOR}1`],
         });
 
-        useInteractionStore.getState().toggleSelectedTag("tag-a");
+        useInteractionStore.getState().toggleSelectedTag(`tag${ID_SEPARATOR}a`);
 
-        expect(useInteractionStore.getState().selectedIds).toEqual(["node-1"]);
-        expect(useInteractionStore.getState().selectedTags).toEqual(["tag-a"]);
+        expect(useInteractionStore.getState().selectedIds).toEqual([`node${ID_SEPARATOR}1`]);
+        expect(useInteractionStore.getState().selectedTags).toEqual([`tag${ID_SEPARATOR}a`]);
     });
 });

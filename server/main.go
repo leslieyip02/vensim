@@ -17,7 +17,7 @@ import (
 func main() {
 	_ = godotenv.Load()
 
-	host := flag.String("host", env.GetOrDefault("HOST", "localhost"), "host")
+	host := flag.String("host", env.GetOrDefault("HOST", "0.0.0.0"), "host")
 	port := flag.String("port", env.GetOrDefault("PORT", "8080"), "port")
 	flag.Parse()
 

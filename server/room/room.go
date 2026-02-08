@@ -13,6 +13,6 @@ type Room interface {
 	Register(conn *websocket.Conn)
 }
 
-var newRoom = func(id string, state *graph.State) Room {
-	return ws.NewHub(id, state)
+var newRoom = func(id string, state *graph.State, onClose func()) Room {
+	return ws.NewHub(id, state, onClose)
 }

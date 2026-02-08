@@ -57,7 +57,7 @@ jobs:
 
       - name: Run server tests with coverage
         working-directory: server
-        run: go test -cover ./env ./graph ./id ./room ./ws -coverprofile=coverage.out
+        run: go test -cover ./env ./graph ./id ./room ./timeout ./ws -coverprofile=coverage.out
 
       - name: Upload server coverage
         uses: codecov/codecov-action@v4
