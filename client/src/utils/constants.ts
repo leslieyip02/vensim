@@ -6,3 +6,12 @@ export const VALID_EQUATION_REGEX = new RegExp(
     `${VALID_ENTITY_ID_REGEX}|${VALID_NUMBER}|${VALID_OPERATOR_REGEX}`,
     "g",
 );
+
+function getValidOperators(): string {
+    // Remove ^, $ and brackets
+    const stripped = VALID_OPERATOR_REGEX.replace(/[\^$[\]]/g, "");
+    // Remove backslashes used for escaping
+    return stripped.replace(/\\/g, "").split("").join(" ");
+}
+
+export const VALID_OPERATOR_STRING = getValidOperators();

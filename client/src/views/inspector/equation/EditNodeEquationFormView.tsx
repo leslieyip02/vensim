@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useNodeForm } from "@/controllers/form";
 import type { Flow, Node, Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
+import { VALID_OPERATOR_STRING } from "@/utils/constants";
 import {
     buildLabelToIdMap,
     removeInvalidCharacters,
@@ -88,6 +89,12 @@ function NodeEquationFieldSet({
                         handleChange({ equation: cleanedEquation });
                     }}
                 />
+                {equationError && (
+                    <p className="text-sm text-red-600 mt-1">
+                        Equation can only contain numbers, operators ({VALID_OPERATOR_STRING}) and
+                        valid node, stock or flow labels.
+                    </p>
+                )}
             </Field>
         </FieldSet>
     );
