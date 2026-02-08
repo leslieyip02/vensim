@@ -7,8 +7,11 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
+    AlertDialogMedia,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+import { LuCircleAlert } from "react-icons/lu";
 
 export function ErrorModalView({ error, resetErrorBoundary }: FallbackProps) {
     if (!error) return null;
@@ -19,6 +22,9 @@ export function ErrorModalView({ error, resetErrorBoundary }: FallbackProps) {
         <AlertDialog open={Boolean(error)}>
             <AlertDialogContent className="sm:max-w-[425px] border-destructive">
                 <AlertDialogHeader>
+                    <AlertDialogMedia className="bg-transparent text-red-500 size-12">
+                        <LuCircleAlert />
+                    </AlertDialogMedia>
                     <AlertDialogTitle className="text-destructive">Error</AlertDialogTitle>
                     <AlertDialogDescription className="text-foreground pt-2">
                         {errorMessage}
