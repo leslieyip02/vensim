@@ -1,66 +1,9 @@
 import { getParentEntities } from "@/actions/graphTraversal";
 import { Badge } from "@/components/ui/badge";
-import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { useStockForm } from "@/controllers/form";
-import type { Flow, Node, Stock } from "@/models/graph";
-import { useGraphStore } from "@/stores/graph";
-import {
-    buildLabelToIdMap,
-    removeInvalidCharacters,
-    replaceEquationIdsWithLabels,
-    replaceEquationLabelsWithIds,
-} from "@/utils/equation";
 
+import { EquationFieldSet } from "./EquationFieldSet";
 import { EquationFormWrapper } from "./EquationFormWrapper";
-
-function StockEquationFieldSet({
-    stockId,
-    parents,
-}: {
-    stockId: string;
-    parents: Array<Node | Stock | Flow>;
-}) {
-    const { stock, handleChange } = useStockForm(stockId);
-    if (!stock) {
-        return null;
-    }
-
-    const labelMap = buildLabelToIdMap(parents);
-    const state = useGraphStore.getState();
-
-    return (
-        <FieldSet>
-            <Field>
-                <FieldLabel>Equation</FieldLabel>
-                <Input
-                    name="equation"
-                    value={replaceEquationIdsWithLabels(
-                        stock.equation,
-                        state.nodes,
-                        state.stocks,
-                        state.flows,
-                    )}
-                    onChange={(e) => {
-                        handleChange({
-                            equation: replaceEquationLabelsWithIds(e.target.value, labelMap),
-                        });
-                    }}
-                    onBlur={() => {
-                        const validEquation = removeInvalidCharacters(
-                            stock.equation,
-                            state.nodes,
-                            state.flows,
-                            state.stocks,
-                        );
-
-                        handleChange({ equation: validEquation });
-                    }}
-                />
-            </Field>
-        </FieldSet>
-    );
-}
 
 export function EditStockEquationFormView({ stockId }: { stockId: string }) {
     const { stock, handleCancel, handleChange } = useStockForm(stockId);
@@ -77,7 +20,7 @@ export function EditStockEquationFormView({ stockId }: { stockId: string }) {
             onDelete={() => handleChange({ equation: "" })}
             showDelete
         >
-            <StockEquationFieldSet stockId={stockId} parents={parents} />
+            <EquationFieldSet entity={stock} handleChange={handleChange} parents={parents} />
             {parents.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {parents?.map((parent) => {

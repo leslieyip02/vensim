@@ -1,104 +1,9 @@
-import { useEffect, useState } from "react";
-
 import { getParentEntities } from "@/actions/graphTraversal";
 import { Badge } from "@/components/ui/badge";
-import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
-import { Textarea } from "@/components/ui/textarea";
 import { useNodeForm } from "@/controllers/form";
-import type { Flow, Node, Stock } from "@/models/graph";
-import { useGraphStore } from "@/stores/graph";
-import { VALID_OPERATOR_STRING } from "@/utils/constants";
-import {
-    buildLabelToIdMap,
-    removeInvalidCharacters,
-    replaceEquationIdsWithLabels,
-    replaceEquationLabelsWithIds,
-    validateEquation,
-} from "@/utils/equation";
 
+import { EquationFieldSet } from "./EquationFieldSet";
 import { EquationFormWrapper } from "./EquationFormWrapper";
-
-function NodeEquationFieldSet({
-    nodeId,
-    parents,
-}: {
-    nodeId: string;
-    parents: Array<Node | Stock | Flow>;
-}) {
-    const { node, handleChange } = useNodeForm(nodeId);
-    const [equationError, setEquationError] = useState(false);
-    const state = useGraphStore.getState();
-    const committedLabelEquation = replaceEquationIdsWithLabels(
-        node.equation,
-        state.nodes,
-        state.stocks,
-        state.flows,
-    );
-    const [draftEquation, setDraftEquation] = useState(committedLabelEquation);
-    const labelMap = buildLabelToIdMap(parents);
-
-    useEffect(() => {
-        setDraftEquation(committedLabelEquation);
-    }, [committedLabelEquation]);
-
-    useEffect(() => {
-        const isValid = validateEquation(node.equation, state.nodes, state.flows, state.stocks);
-
-        setEquationError(!isValid);
-    }, [node.equation, state.nodes, state.flows, state.stocks]);
-
-    if (!node) {
-        return null;
-    }
-
-    return (
-        <FieldSet>
-            <Field>
-                <FieldLabel>Equation</FieldLabel>
-                <Textarea
-                    name="equation"
-                    className={`
-                        ${equationError ? "border-red-500 ring-2 ring-red-500" : ""}
-                    `}
-                    value={draftEquation}
-                    onChange={(e) => {
-                        setDraftEquation(e.target.value);
-                    }}
-                    onBlur={() => {
-                        const equationWithIds = replaceEquationLabelsWithIds(
-                            draftEquation,
-                            labelMap,
-                        );
-                        const isValidEquation = validateEquation(
-                            equationWithIds,
-                            state.nodes,
-                            state.flows,
-                            state.stocks,
-                        );
-                        if (!isValidEquation) {
-                            setEquationError(true);
-                            return;
-                        }
-                        setEquationError(false);
-                        const cleanedEquation = removeInvalidCharacters(
-                            equationWithIds,
-                            state.nodes,
-                            state.flows,
-                            state.stocks,
-                        );
-                        handleChange({ equation: cleanedEquation });
-                    }}
-                />
-                {equationError && (
-                    <p className="text-sm text-red-600 mt-1">
-                        Equation can only contain numbers, operators ({VALID_OPERATOR_STRING}) and
-                        valid node, stock or flow labels.
-                    </p>
-                )}
-            </Field>
-        </FieldSet>
-    );
-}
 
 export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
     const { node, handleChange } = useNodeForm(nodeId);
@@ -113,7 +18,7 @@ export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
 
     return (
         <EquationFormWrapper label="Edit Equation" showDelete>
-            <NodeEquationFieldSet nodeId={nodeId} parents={parents} />
+            <EquationFieldSet entity={node} handleChange={handleChange} parents={parents} />
             {parentLabels.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {parents?.map((parent) => {
