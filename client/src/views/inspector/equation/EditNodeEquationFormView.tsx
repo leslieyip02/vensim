@@ -1,7 +1,7 @@
 import { getParentEntities } from "@/actions/graphTraversal";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useNodeForm } from "@/controllers/form";
 import type { Flow, Node, Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
@@ -33,7 +33,7 @@ function NodeEquationFieldSet({
         <FieldSet>
             <Field>
                 <FieldLabel>Equation</FieldLabel>
-                <Input
+                <Textarea
                     name="equation"
                     value={replaceEquationIdsWithLabels(
                         node.equation,
