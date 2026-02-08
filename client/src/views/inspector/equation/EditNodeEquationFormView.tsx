@@ -101,7 +101,7 @@ function NodeEquationFieldSet({
 }
 
 export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
-    const { node, handleCancel, handleChange } = useNodeForm(nodeId);
+    const { node, handleChange } = useNodeForm(nodeId);
     if (!node) {
         return null;
     }
@@ -112,12 +112,7 @@ export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
         .map((parent) => parent.label);
 
     return (
-        <EquationFormWrapper
-            label="Edit Equation"
-            onCancel={handleCancel}
-            onDelete={() => handleChange({ equation: "" })}
-            showDelete
-        >
+        <EquationFormWrapper label="Edit Equation" showDelete>
             <NodeEquationFieldSet nodeId={nodeId} parents={parents} />
             {parentLabels.length > 0 && (
                 <div className="flex flex-wrap gap-2">
