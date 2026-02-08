@@ -72,7 +72,7 @@ export function validateEquation(
 
     const tokensWithValidIds = tokens.filter((tok) => {
         // Keep numbers and operators
-        if (new RegExp(VALID_NUMBER).test(tok)) return true;
+        if (new RegExp(`^${VALID_NUMBER}$`).test(tok)) return true;
         if (new RegExp(`^${VALID_OPERATOR_REGEX}$`).test(tok)) return true;
 
         // Keep ID tokens only if they exist in state
@@ -81,7 +81,6 @@ export function validateEquation(
         if (isStockId(tok)) return stocks[tok] !== undefined;
         return false;
     });
-    tokens.forEach((tok) => nodes[tok])
     return tokensWithValidIds.length === tokens.length;
 }
 
