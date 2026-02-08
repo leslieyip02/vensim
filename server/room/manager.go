@@ -10,13 +10,13 @@ import (
 var newRoomID = id.NewShortId
 
 type RoomManager struct {
-	rooms map[string]*Room
+	rooms map[string]Room
 	mu    sync.RWMutex
 }
 
 func NewRoomManager() *RoomManager {
 	return &RoomManager{
-		rooms: make(map[string]*Room),
+		rooms: make(map[string]Room),
 	}
 }
 
@@ -29,7 +29,7 @@ func (rm *RoomManager) getRoom(roomID string) Room {
 		return nil
 	}
 
-	return *room
+	return room
 }
 
 func (rm *RoomManager) createRoom(state *graph.State) (Room, error) {
@@ -43,7 +43,7 @@ func (rm *RoomManager) createRoom(state *graph.State) (Room, error) {
 	})
 
 	rm.mu.Lock()
-	rm.rooms[roomID] = &room
+	rm.rooms[roomID] = room
 	rm.mu.Unlock()
 
 	return room, nil

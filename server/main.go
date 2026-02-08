@@ -37,6 +37,7 @@ func main() {
 
 	r.Post("/create", rm.CreateRoom)
 	r.Get("/join/{roomId}", rm.JoinRoom)
+	r.Get("/check/{roomId}", rm.CheckRoom)
 
 	addr := *host + ":" + *port
 	log.Printf("listening on %s", addr)
