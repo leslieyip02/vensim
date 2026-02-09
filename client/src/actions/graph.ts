@@ -29,7 +29,7 @@ export function addNode(x: number, y: number, radius = 32) {
         x,
         y,
         radius,
-        label: "",
+        label: makeNodeId(state.counter),
         description: "",
         equation: "",
     };
@@ -93,7 +93,7 @@ export function addStock(x: number, y: number, width = 128, height = 64, initial
         y,
         width,
         height,
-        label: "",
+        label: makeStockId(state.counter),
         description: "",
         initialValue,
     };
@@ -157,7 +157,7 @@ export function addFlow(from: string, to: string, curvature: number = 0) {
 
     const flow: Flow = {
         id: makeFlowId(state.counter),
-        label: "",
+        label: makeFlowId(state.counter),
         from,
         to,
         curvature,
