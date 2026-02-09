@@ -19,6 +19,7 @@ const DEFAULT_NODE: Node = {
     radius: 0,
     label: "",
     description: "",
+    equation: "",
 };
 
 const DEFAULT_EDGE: Edge = {

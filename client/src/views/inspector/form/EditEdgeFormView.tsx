@@ -76,7 +76,12 @@ export function EditEdgeFormView({ edgeId }: { edgeId: string }) {
     }
 
     return (
-        <InspectorFormWrapper onCancel={handleCancel} onDelete={handleDelete} showDelete>
+        <InspectorFormWrapper
+            label="Edit Edge"
+            onCancel={handleCancel}
+            onDelete={handleDelete}
+            showDelete
+        >
             <EdgeFieldSet edgeId={edgeId} />
         </InspectorFormWrapper>
     );

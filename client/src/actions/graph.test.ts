@@ -74,6 +74,7 @@ describe("graph actions", () => {
                     radius: 50,
                     label: "",
                     description: "",
+                    equation: "",
                 },
             };
 
@@ -194,6 +195,7 @@ describe("graph actions", () => {
                     height: 64,
                     label: "",
                     description: "",
+                    equation: "",
                 },
             };
 
@@ -295,7 +297,9 @@ describe("graph actions", () => {
                     id: `flow${ID_SEPARATOR}3`,
                     from: `stock${ID_SEPARATOR}1`,
                     to: `cloud${ID_SEPARATOR}2`,
+                    label: "",
                     curvature: 0,
+                    equation: "",
                 },
             };
 

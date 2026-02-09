@@ -15,6 +15,14 @@ function FlowFieldSet({ flowId }: { flowId: string }) {
     return (
         <FieldSet>
             <Field>
+                <Field>
+                    <FieldLabel>Label</FieldLabel>
+                    <Input
+                        name="label"
+                        value={flow.label}
+                        onChange={(e) => handleChange({ label: e.target.value })}
+                    />
+                </Field>
                 <FieldLabel>Curvature</FieldLabel>
                 <Input
                     type="number"
@@ -48,7 +56,12 @@ export function EditFlowFormView({ flowId }: { flowId: string }) {
     }
 
     return (
-        <InspectorFormWrapper onCancel={handleCancel} onDelete={handleDelete} showDelete>
+        <InspectorFormWrapper
+            label="Edit Flow"
+            onCancel={handleCancel}
+            onDelete={handleDelete}
+            showDelete
+        >
             <FlowFieldSet flowId={flowId} />
         </InspectorFormWrapper>
     );

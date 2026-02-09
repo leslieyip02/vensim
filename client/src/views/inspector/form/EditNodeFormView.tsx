@@ -66,7 +66,12 @@ export function EditNodeFormView({ nodeId }: { nodeId: string }) {
     }
 
     return (
-        <InspectorFormWrapper onCancel={handleCancel} onDelete={handleDelete} showDelete>
+        <InspectorFormWrapper
+            label="Edit Node"
+            onCancel={handleCancel}
+            onDelete={handleDelete}
+            showDelete
+        >
             <NodeFieldSet nodeId={nodeId} />
         </InspectorFormWrapper>
     );
