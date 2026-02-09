@@ -71,6 +71,16 @@ function StockFieldSet({ stockId }: { stockId: string }) {
             </Field>
 
             <Field>
+                <FieldLabel>Initial Value</FieldLabel>
+                <Input
+                    type="number"
+                    min={0}
+                    value={stock.initialValue}
+                    onChange={(e) => handleChange({ initialValue: Number(e.target.value) })}
+                />
+            </Field>
+
+            <Field>
                 <FieldLabel>Tags</FieldLabel>
                 <ToggleTagsView targetIds={[stockId]} />
             </Field>

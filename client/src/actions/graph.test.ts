@@ -227,7 +227,7 @@ describe("graph actions", () => {
                     height: 64,
                     label: "",
                     description: "",
-                    equation: "",
+                    initialValue: 0,
                 },
             };
 
