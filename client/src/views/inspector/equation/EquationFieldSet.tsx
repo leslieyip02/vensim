@@ -63,7 +63,7 @@ export function EquationFieldSet({
     handleChange,
     parents,
 }: {
-    entity: Node | Stock | Flow;
+    entity: Node | Flow;
     handleChange: (patch: Partial<Node>) => void;
     parents: Array<Node | Stock | Flow>;
 }) {

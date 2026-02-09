@@ -36,6 +36,7 @@ const DEFAULT_STOCK: Stock = {
     y: 0,
     width: 0,
     height: 0,
+    initialValue: 0,
     label: "",
     description: "",
 };
@@ -48,9 +49,11 @@ const DEFAULT_CLOUD: Cloud = {
 };
 
 const DEFAULT_FLOW: Flow = {
+    label: `flow`,
     id: `flow${ID_SEPARATOR}0`,
     from: `stock${ID_SEPARATOR}0`,
     to: `cloud${ID_SEPARATOR}0`,
+    equation: "",
     curvature: 0,
 };
 

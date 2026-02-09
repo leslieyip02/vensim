@@ -84,7 +84,7 @@ export function deleteEdge(id: string) {
     dispatch(op);
 }
 
-export function addStock(x: number, y: number, width = 128, height = 64) {
+export function addStock(x: number, y: number, width = 128, height = 64, initialValue = 0) {
     const state = useGraphStore.getState();
 
     const stock: Stock = {
@@ -95,7 +95,7 @@ export function addStock(x: number, y: number, width = 128, height = 64) {
         height,
         label: "",
         description: "",
-        equation: "",
+        initialValue,
     };
 
     const op: Operation = { type: "stock/add", stock };
