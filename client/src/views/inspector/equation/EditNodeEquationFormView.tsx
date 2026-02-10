@@ -1,4 +1,4 @@
-import { getParentEntities } from "@/actions/graphTraversal";
+import { getParentEntities } from "@/utils/graphTraversal";
 import { Badge } from "@/components/ui/badge";
 import { useNodeForm } from "@/controllers/form";
 
