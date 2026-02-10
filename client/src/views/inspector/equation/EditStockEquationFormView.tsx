@@ -1,17 +1,17 @@
 import { getParentEntities } from "@/actions/graphTraversal";
 import { Badge } from "@/components/ui/badge";
-import { useFlowForm } from "@/controllers/form";
+import { useStockForm } from "@/controllers/form";
 
 import { EquationFieldSet } from "./EquationFieldSet";
 import { EquationFormWrapper } from "./EquationFormWrapper";
 
-export function EditFlowEquationFormView({ flowId }: { flowId: string }) {
-    const { flow, handleCancel, handleChange } = useFlowForm(flowId);
-    if (!flow) {
+export function EditStockEquationFormView({ stockId }: { stockId: string }) {
+    const { stock, handleCancel, handleChange } = useStockForm(stockId);
+    if (!stock) {
         return null;
     }
 
-    const parents = getParentEntities(flow.id);
+    const parents = getParentEntities(stock.id);
     const parentLabels = parents
         ?.filter((parent) => parent.label && parent.label.trim() != "")
         .map((parent) => parent.label);
@@ -23,14 +23,14 @@ export function EditFlowEquationFormView({ flowId }: { flowId: string }) {
             onDelete={() => handleChange({ equation: "" })}
             showDelete
         >
-            <EquationFieldSet entity={flow} handleChange={handleChange} parents={parents} />
+            <EquationFieldSet entity={stock} handleChange={handleChange} parents={parents} />
             {parentLabels.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {parents?.map((parent) => {
                         if (!parent || !parent.label) return null;
                         const onClick = () =>
                             handleChange({
-                                equation: `${flow.equation.trim()} ${parent.id}`,
+                                equation: `${stock.equation.trim()} ${parent.id}`,
                             });
                         return (
                             <Badge
