@@ -6,13 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
+import { ExportView } from "./export/ExportView";
 import { InspectorFormView } from "./form/InspectorFormView";
 import { TagSelectorView } from "./tag/TagSelectorView";
 
 export function InspectorPanelView() {
     const [open, setOpen] = useState(false);
 
-    const sections = [<InspectorFormView key="form" />, <TagSelectorView key="tags" />];
+    const sections = [
+        <InspectorFormView key="form" />,
+        <TagSelectorView key="tags" />,
+        <ExportView key="export" />,
+    ];
 
     return (
         <aside
