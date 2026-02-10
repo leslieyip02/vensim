@@ -1,4 +1,4 @@
-import { isFlowId, isStockId, type Flow, type Node, type Stock } from "@/models/graph";
+import { type Flow, isFlowId, isStockId, type Node, type Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 
 export function getParentEntities(id: string): Array<Node | Flow | Stock> {
@@ -13,7 +13,7 @@ export function getParentEntities(id: string): Array<Node | Flow | Stock> {
         const outgoingFlows = Object.values(state.flows).filter((flow) => flow.from === id);
         incomingFlows.forEach((flow) => parentSet.add(flow));
         outgoingFlows.forEach((flow) => parentSet.add(flow));
-        parentSet.delete(thisEntity);
+        parentSet.add(thisEntity);
         return [...parentSet];
     }
 
