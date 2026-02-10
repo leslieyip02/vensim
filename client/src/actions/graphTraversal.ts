@@ -1,63 +1,41 @@
-import type { Flow, Node, Stock } from "@/models/graph";
+import { isFlowId, isStockId, type Flow, type Node, type Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 
-export function getParentEntities(startId: string): Array<Node | Flow | Stock> {
+export function getParentEntities(id: string): Array<Node | Flow | Stock> {
     const state = useGraphStore.getState();
-    const visited = new Set<string>();
-    const parents: Array<Node | Flow | Stock> = [];
+    const parentSet: Set<Node | Flow | Stock> = new Set<Node | Flow | Stock>();
 
-    const queue: string[] = [startId];
+    const thisEntity = state.nodes[id] ?? state.flows[id] ?? state.stocks[id];
 
-    while (queue.length > 0) {
-        const currentId = queue.shift()!;
-        if (visited.has(currentId)) continue;
-        visited.add(currentId);
+    if (isStockId(id)) {
+        const incomingFlows = Object.values(state.flows).filter((flow) => flow.to === id);
+        // Not a parent but referenced in equation
+        const outgoingFlows = Object.values(state.flows).filter((flow) => flow.from === id);
+        incomingFlows.forEach((flow) => parentSet.add(flow));
+        outgoingFlows.forEach((flow) => parentSet.add(flow));
+        parentSet.delete(thisEntity);
+        return [...parentSet];
+    }
 
-        const incomingEdges = Object.values(state.edges).filter((edge) => edge.to === currentId);
-
-        for (const edge of incomingEdges) {
-            const sourceId = edge.from;
-            if (visited.has(sourceId)) continue;
-
-            const entity = state.nodes[sourceId] ?? state.flows[sourceId] ?? state.stocks[sourceId];
-
-            if (entity) {
-                parents.push(entity);
-                queue.push(entity.id);
-            }
-        }
-
-        const incomingFlows = Object.values(state.flows).filter((flow) => flow.to === currentId);
-        for (const flow of incomingFlows) {
-            if (visited.has(flow.id)) continue;
-            const entity = state.flows[flow.id];
-            if (entity) {
-                parents.push(entity);
-                queue.push(entity.id);
-            }
-        }
-
-        for (const flow of incomingFlows) {
-            const sourceId = flow.from;
-            if (visited.has(sourceId)) continue;
-
-            const entity = state.nodes[sourceId] ?? state.flows[sourceId] ?? state.stocks[sourceId];
-
-            if (entity) {
-                parents.push(entity);
-                queue.push(entity.id);
-            }
-        }
-
-        const currentFlow = state.flows[currentId];
-        if (currentFlow) {
-            const connectedStock = state.stocks[currentFlow.from];
-            if (connectedStock && !visited.has(connectedStock.id)) {
-                parents.push(connectedStock);
-                queue.push(connectedStock.id);
-            }
+    const incomingEdges = Object.values(state.edges).filter((edge) => edge.to === id);
+    for (const edge of incomingEdges) {
+        const sourceId = edge.from;
+        const entity = state.nodes[sourceId] ?? state.flows[sourceId] ?? state.stocks[sourceId];
+        if (entity) {
+            parentSet.add(entity);
         }
     }
-    const uniqueParents = Array.from(new Map(parents.map((p) => [p.id, p])).values());
-    return uniqueParents;
+
+    if (isFlowId(id)) {
+        const parentId = state.flows[id].from;
+        if (!isStockId(parentId)) {
+            return [...parentSet];
+        }
+        const parent = state.stocks[parentId];
+        parentSet.add(parent);
+        parentSet.delete(thisEntity);
+        return [...parentSet];
+    }
+    parentSet.delete(thisEntity);
+    return [...parentSet];
 }
