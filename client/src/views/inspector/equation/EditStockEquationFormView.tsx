@@ -1,12 +1,42 @@
-import { getParentEntities } from "@/utils/graphTraversal";
+import { useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { useStockForm } from "@/controllers/form";
+import type { Stock } from "@/models/graph";
+import { VALID_NUMBER } from "@/utils/constants";
+import { getParentEntities } from "@/utils/graphTraversal";
 
 import { EquationFieldSet } from "./EquationFieldSet";
 import { EquationFormWrapper } from "./EquationFormWrapper";
 
+interface handleValueBlurParams {
+    draftInitialValue: string;
+    handleChange: (patch: Partial<Stock>) => void;
+    setInitialValueError: (error: boolean) => void;
+}
+
+function handleValueBlur({
+    draftInitialValue,
+    handleChange,
+    setInitialValueError,
+}: handleValueBlurParams) {
+    if (new RegExp(`^${VALID_NUMBER}$`).test(draftInitialValue)) {
+        setInitialValueError(false);
+        handleChange({
+            initialValue: Number(draftInitialValue),
+        });
+    } else {
+        setInitialValueError(true);
+    }
+}
+
 export function EditStockEquationFormView({ stockId }: { stockId: string }) {
     const { stock, handleCancel, handleChange } = useStockForm(stockId);
+    const [initialValueError, setInitialValueError] = useState(false);
+    const [draftInitialValue, setDraftInitialValue] = useState("");
+
     if (!stock) {
         return null;
     }
@@ -44,6 +74,27 @@ export function EditStockEquationFormView({ stockId }: { stockId: string }) {
                     })}
                 </div>
             )}
+            <Field>
+                <FieldLabel>Initial value</FieldLabel>
+                <Input
+                    name="initial value"
+                    className={`
+                        ${initialValueError ? "border-red-500 ring-2 ring-red-500" : ""}
+                    `}
+                    value={draftInitialValue}
+                    onChange={(e) => {
+                        setDraftInitialValue(e.target.value);
+                    }}
+                    onBlur={() => {
+                        handleValueBlur({ draftInitialValue, handleChange, setInitialValueError });
+                    }}
+                />
+                {initialValueError && (
+                    <p className="text-sm text-red-600 mt-1">
+                        Initial value can only contain numbers
+                    </p>
+                )}
+            </Field>
         </EquationFormWrapper>
     );
 }
