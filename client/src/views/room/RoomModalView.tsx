@@ -39,7 +39,7 @@ export function RoomModalView() {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] z-100">
                 <DialogHeader>
                     <DialogTitle>Room</DialogTitle>
                     <DialogDescription>

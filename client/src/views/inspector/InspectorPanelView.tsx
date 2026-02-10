@@ -17,7 +17,7 @@ export function InspectorPanelView() {
     return (
         <aside
             className={cn(
-                "fixed top-0 left-0 z-100 h-screen bg-background border-r shadow-sm",
+                "fixed top-0 left-0 z-50 h-screen bg-background border-r shadow-sm",
                 "w-96 transition-transform duration-200 ease-in-out",
                 open ? "translate-x-0" : "-translate-x-full",
             )}
