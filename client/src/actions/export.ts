@@ -5,7 +5,7 @@ export async function importState(file: File) {
     useGraphStore.setState(state);
 }
 
-export async function exportState() {
+export function exportState() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
     const { apply, ...state } = useGraphStore.getState();
 
