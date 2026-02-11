@@ -74,7 +74,11 @@ func simulate(req SimulationRequest) (SimulationResult, error) {
 			for _, flowId := range s.Outflow {
 				netFlow -= currValues[flowId]
 			}
-			currValues[s.ID] = currValues[s.ID] + (netFlow * delta)
+			result := currValues[s.ID] + (netFlow * delta)
+			if result < 0 {
+				result = 0
+			}
+			currValues[s.ID] = result
 		}
 
 		// increment timestamp
