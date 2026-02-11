@@ -44,6 +44,12 @@ export function updateNode(id: string, patch: Partial<Node>) {
 }
 
 export function deleteNode(id: string) {
+    const state = useGraphStore.getState();
+
+    Object.values(state.edges)
+        .filter((edge) => edge.from === id || edge.to === id)
+        .forEach((edge) => deleteEdge(edge.id));
+
     const op: Operation = { type: "node/delete", id };
     dispatch(op);
 }
@@ -102,6 +108,16 @@ export function updateStock(id: string, patch: Partial<Stock>) {
 }
 
 export function deleteStock(id: string) {
+    const state = useGraphStore.getState();
+
+    Object.values(state.edges)
+        .filter((edge) => edge.from === id)
+        .forEach((edge) => deleteEdge(edge.id));
+
+    Object.values(state.flows)
+        .filter((flow) => flow.from === id || flow.to === id)
+        .forEach((flow) => deleteFlow(flow.id));
+
     const op: Operation = { type: "stock/delete", id };
     dispatch(op);
 }
@@ -126,6 +142,12 @@ export function updateCloud(id: string, patch: Partial<Cloud>) {
 }
 
 export function deleteCloud(id: string) {
+    const state = useGraphStore.getState();
+
+    Object.values(state.flows)
+        .filter((flow) => flow.from === id || flow.to === id)
+        .forEach((flow) => deleteFlow(flow.id));
+
     const op: Operation = { type: "cloud/delete", id };
     dispatch(op);
 }
@@ -152,6 +174,12 @@ export function updateFlow(id: string, patch: Partial<Flow>) {
 }
 
 export function deleteFlow(id: string) {
+    const state = useGraphStore.getState();
+
+    Object.values(state.edges)
+        .filter((edge) => edge.to === id)
+        .forEach((edge) => deleteEdge(edge.id));
+
     const op: Operation = { type: "flow/delete", id };
     dispatch(op);
 }
