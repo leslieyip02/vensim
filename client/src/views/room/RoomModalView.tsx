@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useErrorBoundary } from "react-error-boundary";
 import { LuClipboard, LuClipboardCheck, LuPlus, LuUsers } from "react-icons/lu";
 
 import { createRoom, joinRoom } from "@/actions/room";
@@ -22,6 +23,26 @@ export function RoomModalView() {
     const [isOpen, setIsOpen] = useState(false);
     const [roomId, setRoomId] = useState("");
     const [isCopied, setIsCopied] = useState(false);
+
+    const { showBoundary } = useErrorBoundary();
+
+    const handleCreate = async () => {
+        try {
+            const id = await createRoom();
+            setRoomId(id);
+        } catch (error) {
+            showBoundary(error);
+        }
+    };
+
+    const handleJoin = async () => {
+        try {
+            await joinRoom(roomId);
+            setIsOpen(false);
+        } catch (error) {
+            showBoundary(error);
+        }
+    };
 
     const alreadyJoined = isGraphSocketConnected();
 
@@ -80,10 +101,7 @@ export function RoomModalView() {
                                         <Button
                                             variant="secondary"
                                             disabled={!!roomId || alreadyJoined}
-                                            onClick={async () => {
-                                                const id = await createRoom();
-                                                setRoomId(id);
-                                            }}
+                                            onClick={handleCreate}
                                         >
                                             <LuPlus />
                                         </Button>
@@ -100,10 +118,7 @@ export function RoomModalView() {
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
 
-                    <Button
-                        disabled={!roomId || alreadyJoined}
-                        onClick={async () => joinRoom(roomId).then(() => setIsOpen(false))}
-                    >
+                    <Button disabled={!roomId || alreadyJoined} onClick={handleJoin}>
                         {alreadyJoined ? "Joined!" : "Join Room"}
                     </Button>
                 </DialogFooter>

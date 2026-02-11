@@ -39,24 +39,35 @@ func (rm *RoomManager) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (rm *RoomManager) JoinRoom(w http.ResponseWriter, r *http.Request) {
+func (rm *RoomManager) findRoom(w http.ResponseWriter, r *http.Request) Room {
 	roomID := chi.URLParam(r, "roomId")
 	if roomID == "" {
-		http.Error(w, "missing roomId", http.StatusBadRequest)
-		return
+		http.Error(w, "Room ID is required", http.StatusBadRequest)
+		return nil
 	}
-
 	room := rm.getRoom(roomID)
 	if room == nil {
-		http.Error(w, "room not found", http.StatusNotFound)
+		http.Error(w, "This room does not exist or has been closed", http.StatusNotFound)
+		return nil
+	}
+	return room
+}
+
+func (rm *RoomManager) CheckRoom(w http.ResponseWriter, r *http.Request) {
+	if room := rm.findRoom(w, r); room != nil {
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (rm *RoomManager) JoinRoom(w http.ResponseWriter, r *http.Request) {
+	room := rm.findRoom(w, r)
+	if room == nil {
 		return
 	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		http.Error(w, "could not connect", http.StatusInternalServerError)
 		return
 	}
-
 	room.Register(conn)
 }
