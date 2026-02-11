@@ -23,15 +23,15 @@ export function SimulationChartView({ data }: { data: SimulationResult }) {
         const idToLabel: Record<string, string> = {};
         const selectedMap: Record<string, boolean> = {};
 
-        Object.values(state.nodes).forEach(n => {
+        Object.values(state.nodes).forEach((n) => {
             idToLabel[n.id] = n.label;
             selectedMap[n.label] = false;
         });
-        Object.values(state.flows).forEach(f => {
+        Object.values(state.flows).forEach((f) => {
             idToLabel[f.id] = f.label;
             selectedMap[f.label] = false;
         });
-        Object.values(state.stocks).forEach(s => {
+        Object.values(state.stocks).forEach((s) => {
             idToLabel[s.id] = s.label;
             selectedMap[s.label] = true;
         });
@@ -44,28 +44,28 @@ export function SimulationChartView({ data }: { data: SimulationResult }) {
             showSymbol: false,
         }));
 
-        const legendData = allKeys.map(id => idToLabel[id] || id);
+        const legendData = allKeys.map((id) => idToLabel[id] || id);
 
         return {
             tooltip: { trigger: "axis" },
-            legend: { 
+            legend: {
                 data: legendData,
                 selected: selectedMap,
-                bottom: 0 
+                bottom: 0,
             },
-            grid: { 
+            grid: {
                 bottom: 80,
-                containLabel: true 
+                containLabel: true,
             },
             xAxis: {
                 name: "Time",
                 type: "value",
-                splitLine: { show: true }
+                splitLine: { show: true },
             },
             yAxis: {
                 name: "Value",
                 type: "value",
-                splitLine: { show: true }
+                splitLine: { show: true },
             },
             series: series,
         };
