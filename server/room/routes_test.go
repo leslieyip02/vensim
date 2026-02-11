@@ -17,9 +17,10 @@ import (
 )
 
 type MockRoom struct {
-	id             string
-	runCalled      chan struct{}
-	registerCalled bool
+	id              string
+	registerCalled  bool
+	registerChannel chan struct{}
+	runChannel      chan struct{}
 }
 
 func (r *MockRoom) GetID() string {
@@ -28,10 +29,11 @@ func (r *MockRoom) GetID() string {
 
 func (r *MockRoom) Register(_ *websocket.Conn) {
 	r.registerCalled = true
+	close(r.registerChannel)
 }
 
 func (r *MockRoom) Run() {
-	close(r.runCalled)
+	close(r.runChannel)
 }
 
 func TestCreateRoom_Success(t *testing.T) {
@@ -45,7 +47,7 @@ func TestCreateRoom_Success(t *testing.T) {
 	}()
 
 	room := &MockRoom{
-		runCalled: make(chan struct{}),
+		runChannel: make(chan struct{}),
 	}
 	newRoomID = func() (string, error) {
 		return "room-1", nil
@@ -82,7 +84,7 @@ func TestCreateRoom_Success(t *testing.T) {
 	}
 
 	select {
-	case <-room.runCalled:
+	case <-room.runChannel:
 		// ok
 	case <-time.After(time.Second):
 		t.Fatal("room.Run was not called")
@@ -173,7 +175,9 @@ func TestJoinRoom_WebSocketSuccess(t *testing.T) {
 	newRoomID = func() (string, error) {
 		return "room-1", nil
 	}
-	room := &MockRoom{}
+	room := &MockRoom{
+		registerChannel: make(chan struct{}),
+	}
 	newRoom = func(id string, state *graph.State, onClose func()) Room {
 		if state == nil {
 			t.Fatal("expected non-nil state")
@@ -199,7 +203,10 @@ func TestJoinRoom_WebSocketSuccess(t *testing.T) {
 		t.Fatalf("websocket dial failed: %v", err)
 	}
 
-	if !room.registerCalled {
-		t.Fatal("expected client to be registered")
+	select {
+	case <-room.registerChannel:
+		// ok
+	case <-time.After(time.Second):
+		t.Fatal("timeout waiting for register")
 	}
 }
