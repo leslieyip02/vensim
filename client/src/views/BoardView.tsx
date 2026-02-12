@@ -3,6 +3,7 @@ import { Layer, Stage } from "react-konva";
 
 import { useCameraController } from "@/controllers/camera";
 import { useInteractionController as useInteractionController } from "@/controllers/interaction";
+import { useKeyboardShortcuts } from "@/controllers/keyboard";
 
 import { useGraphStore } from "../stores/graph";
 import { CloudView } from "./graph/CloudView";
@@ -26,6 +27,7 @@ export function BoardView() {
     });
 
     const interactionController = useInteractionController(cameraController.camera);
+    useKeyboardShortcuts();
 
     const stageProps = {
         ref: cameraController.stageRef,
