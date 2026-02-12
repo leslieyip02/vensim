@@ -52,8 +52,8 @@ export const useInteractionStore = create<InteractionState>((set) => ({
         })),
 
     inspectorOpen: false,
-    toggleInspectorOpen: () => 
+    toggleInspectorOpen: () =>
         set((state) => ({
             inspectorOpen: !state.inspectorOpen,
-        }))
+        })),
 }));

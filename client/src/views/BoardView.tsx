@@ -3,6 +3,7 @@ import { Layer, Stage } from "react-konva";
 
 import { useCameraController } from "@/controllers/camera";
 import { useInteractionController as useInteractionController } from "@/controllers/interaction";
+import { useKeyboardShortcuts } from "@/controllers/keyboard";
 
 import { useGraphStore } from "../stores/graph";
 import { CloudView } from "./graph/CloudView";
@@ -11,7 +12,6 @@ import { FlowView } from "./graph/FlowView";
 import { NodeView } from "./graph/NodeView";
 import { StockView } from "./graph/StockView";
 import { GridView } from "./GridView";
-import { useKeyboardShortcuts } from "@/controllers/keyboard";
 
 export function BoardView() {
     const nodes = Object.values(useGraphStore((s) => s.nodes));

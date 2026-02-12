@@ -1,15 +1,15 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { LuPanelLeftClose } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useInteractionStore } from "@/stores/interaction";
 
 import { ExportView } from "./export/ExportView";
 import { InspectorFormView } from "./form/InspectorFormView";
 import { TagSelectorView } from "./tag/TagSelectorView";
-import { useInteractionStore } from "@/stores/interaction";
 
 export function InspectorPanelView() {
     const { inspectorOpen, toggleInspectorOpen } = useInteractionStore();
