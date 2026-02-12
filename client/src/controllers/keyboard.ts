@@ -1,12 +1,15 @@
-import { useInteractionStore } from "@/stores/interaction";
 import { useEffect } from "react";
 
+import { useInteractionStore } from "@/stores/interaction";
+import { useCommands } from "./command";
+
 export function useKeyboardShortcuts() {
-    const { setInteractionMode, clearSelectedIds, toggleInspectorOpen } = useInteractionStore();
+    const { setInteractionMode, toggleInspectorOpen } = useInteractionStore();
+    const { deleteSelectedIds, cancelSelection } = useCommands();
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // ctrl + ... commands
+            // commands from anywhere
             if (e.ctrlKey || e.metaKey) {
                 switch (e.key) {
                     case "\\":
@@ -16,23 +19,26 @@ export function useKeyboardShortcuts() {
                 }
             }
 
-            const isTyping = 
-                e.target instanceof HTMLInputElement || 
+            const isTyping =
+                e.target instanceof HTMLInputElement ||
                 e.target instanceof HTMLTextAreaElement ||
                 (e.target as HTMLElement).isContentEditable;
 
             if (isTyping) return;
-            
-            // single key commands, should ignore if typing
+
+            // should ignore these commands if inside text box
             switch (e.key) {
                 case "Escape":
-                    clearSelectedIds();
+                    cancelSelection();
                     setInteractionMode("select");
+                    break;
+                case "Delete":
+                    deleteSelectedIds();
                     break;
             }
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [clearSelectedIds, setInteractionMode]);
+    }, [deleteSelectedIds, cancelSelection, setInteractionMode]);
 }
