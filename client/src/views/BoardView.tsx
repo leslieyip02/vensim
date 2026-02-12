@@ -11,6 +11,7 @@ import { FlowView } from "./graph/FlowView";
 import { NodeView } from "./graph/NodeView";
 import { StockView } from "./graph/StockView";
 import { GridView } from "./GridView";
+import { useKeyboardShortcuts } from "@/controllers/keyboard";
 
 export function BoardView() {
     const nodes = Object.values(useGraphStore((s) => s.nodes));
@@ -26,6 +27,7 @@ export function BoardView() {
     });
 
     const interactionController = useInteractionController(cameraController.camera);
+    useKeyboardShortcuts();
 
     const stageProps = {
         ref: cameraController.stageRef,
