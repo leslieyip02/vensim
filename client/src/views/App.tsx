@@ -6,6 +6,7 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import { BoardView } from "./BoardView";
 import { ErrorModalView } from "./error/ErrorModalView";
+import { HelpModalView } from "./help/HelpModalView";
 import { InspectorPanelView } from "./inspector/InspectorPanelView";
 import { RoomModalView } from "./room/RoomModalView";
 import { ToolbarView } from "./toolbar/ToolbarView";
@@ -15,6 +16,7 @@ function App() {
         <main>
             <InspectorPanelView />
             <ToolbarView />
+            <HelpModalView />
             <ErrorBoundary FallbackComponent={ErrorModalView}>
                 <RoomModalView />
             </ErrorBoundary>

@@ -41,5 +41,5 @@ export function useKeyboardShortcuts() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [deleteSelectedIds, cancelSelection, setInteractionMode]);
+    }, [deleteSelectedIds, cancelSelection, setInteractionMode, toggleInspectorOpen]);
 }
