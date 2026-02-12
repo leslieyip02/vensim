@@ -6,6 +6,13 @@ export function useKeyboardShortcuts() {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            const isTyping = 
+                e.target instanceof HTMLInputElement || 
+                e.target instanceof HTMLTextAreaElement ||
+                (e.target as HTMLElement).isContentEditable;
+
+            if (isTyping) return;
+
             switch (e.key) {
                 case "Escape":
                     clearSelectedIds();
