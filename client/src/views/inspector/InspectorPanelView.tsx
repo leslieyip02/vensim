@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 import { ExportView } from "./export/ExportView";
 import { InspectorFormView } from "./form/InspectorFormView";
 import { TagSelectorView } from "./tag/TagSelectorView";
+import { useInteractionStore } from "@/stores/interaction";
 
 export function InspectorPanelView() {
-    const [open, setOpen] = useState(false);
+    const { inspectorOpen, toggleInspectorOpen } = useInteractionStore();
 
     const sections = [
         <InspectorFormView key="form" />,
@@ -24,16 +25,16 @@ export function InspectorPanelView() {
             className={cn(
                 "fixed top-0 left-0 z-50 h-screen bg-background border-r shadow-sm",
                 "w-96 transition-transform duration-200 ease-in-out",
-                open ? "translate-x-0" : "-translate-x-full",
+                inspectorOpen ? "translate-x-0" : "-translate-x-full",
             )}
         >
             <Button
                 size="icon-lg"
                 variant="ghost"
-                onClick={() => setOpen((o) => !o)}
+                onClick={toggleInspectorOpen}
                 className="absolute top-2 right-[-3rem] z-50"
             >
-                {open ? <LuPanelLeftClose /> : <AiOutlineEdit />}
+                {inspectorOpen ? <LuPanelLeftClose /> : <AiOutlineEdit />}
             </Button>
 
             <div className="h-full overflow-y-auto p-4 flex flex-col">

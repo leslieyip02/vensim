@@ -9,6 +9,9 @@ interface InteractionState {
     toggleSelectId: (id: string) => void;
     clearSelectedIds: () => void;
     toggleSelectedTag: (id: string) => void;
+
+    inspectorOpen: boolean;
+    toggleInspectorOpen: () => void;
 }
 
 export type InteractionMode =
@@ -47,4 +50,10 @@ export const useInteractionStore = create<InteractionState>((set) => ({
                 ? state.selectedTags.filter((selectedTag) => selectedTag !== id)
                 : [...state.selectedTags, id],
         })),
+
+    inspectorOpen: false,
+    toggleInspectorOpen: () => 
+        set((state) => ({
+            inspectorOpen: !state.inspectorOpen,
+        }))
 }));
