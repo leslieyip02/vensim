@@ -16,7 +16,7 @@ function GroupFieldSet({ targetIds }: { targetIds: string[] }) {
 }
 
 export function EditGroupFormView({ targetIds }: { targetIds: string[] }) {
-    const { handleCancel, handleDelete } = useGroupForm(targetIds);
+    const { handleCancel, handleDelete } = useGroupForm();
 
     return (
         <InspectorFormWrapper
