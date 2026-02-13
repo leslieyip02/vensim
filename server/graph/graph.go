@@ -40,3 +40,9 @@ type Flow struct {
 	To        string  `json:"to"`
 	Curvature float64 `json:"curvature"`
 }
+
+type Loop struct {
+	ID       string   `json:"id"`
+	EdgeIds  []string `json:"edgeids"`
+	Polarity string   `json:"polarity"`
+}

@@ -9,6 +9,7 @@ import { useGraphStore } from "../stores/graph";
 import { CloudView } from "./graph/CloudView";
 import { EdgeView } from "./graph/EdgeView";
 import { FlowView } from "./graph/FlowView";
+import { LoopView } from "./graph/LoopView";
 import { NodeView } from "./graph/NodeView";
 import { StockView } from "./graph/StockView";
 import { GridView } from "./GridView";
@@ -19,6 +20,7 @@ export function BoardView() {
     const stocks = Object.values(useGraphStore((s) => s.stocks));
     const clouds = Object.values(useGraphStore((s) => s.clouds));
     const flows = Object.values(useGraphStore((s) => s.flows));
+    const loops = Object.values(useGraphStore((s) => s.loops));
 
     const cameraController = useCameraController({
         x: window.innerWidth / 2,
@@ -67,6 +69,9 @@ export function BoardView() {
                 ))}
                 {flows.map((flow) => (
                     <FlowView key={flow.id} flow={flow} />
+                ))}
+                {loops.map((loop) => (
+                    <LoopView key={loop.id} loop={loop} />
                 ))}
             </Layer>
         </Stage>

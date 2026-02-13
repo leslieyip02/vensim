@@ -2,6 +2,8 @@ export const ID_SEPARATOR = "_";
 
 export type Polarity = "+" | "-";
 
+export type LoopPolarity = "R" | "B" | "";
+
 interface Identifiable {
     id: string;
 }
@@ -46,6 +48,11 @@ export interface Flow extends Identifiable {
     equation: string;
 }
 
+export interface Loop extends Identifiable {
+    edgeIds: string[];
+    polarity: LoopPolarity;
+}
+
 export function makeNodeId(counter: number) {
     return `node${ID_SEPARATOR}${counter}`;
 }
@@ -64,6 +71,10 @@ export function makeCloudId(counter: number) {
 
 export function makeFlowId(counter: number) {
     return `flow${ID_SEPARATOR}${counter}`;
+}
+
+export function makeLoopId(counter: number) {
+    return `loop${ID_SEPARATOR}${counter}`;
 }
 
 export function isNodeId(id: string): boolean {
@@ -86,6 +97,10 @@ export function isFlowId(id: string): boolean {
     return id.startsWith("flow");
 }
 
+export function isLoopId(id: string): boolean {
+    return id.startsWith("loop");
+}
+
 export function isNode(element: Identifiable): element is Node {
     return isNodeId(element.id);
 }
@@ -104,4 +119,8 @@ export function isCloud(element: Identifiable): element is Cloud {
 
 export function isFlow(element: Identifiable): element is Flow {
     return isFlowId(element.id);
+}
+
+export function isLoop(element: Identifiable): element is Loop {
+    return isLoopId(element.id);
 }

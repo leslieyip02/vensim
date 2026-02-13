@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Cloud, Edge, Flow, Node, Stock } from "@/models/graph";
+import type { Cloud, Edge, Flow, Loop, Node, Stock } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 
 interface GraphState {
@@ -10,6 +10,7 @@ interface GraphState {
     stocks: Record<string, Stock>;
     clouds: Record<string, Cloud>;
     flows: Record<string, Flow>;
+    loops: Record<string, Loop>;
 
     apply: (op: Operation) => void;
 }
@@ -21,6 +22,7 @@ export const useGraphStore = create<GraphState>((set) => ({
     stocks: {},
     clouds: {},
     flows: {},
+    loops: {},
 
     apply: (op) =>
         set((state) => {
@@ -127,6 +129,19 @@ export const useGraphStore = create<GraphState>((set) => ({
                     return {
                         flows: Object.fromEntries(
                             Object.entries(state.flows).filter(([id]) => id !== op.id),
+                        ),
+                    };
+
+                case "loop/add":
+                    return {
+                        counter: state.counter + 1,
+                        loops: { ...state.loops, [op.loop.id]: op.loop },
+                    };
+
+                case "loop/delete":
+                    return {
+                        loops: Object.fromEntries(
+                            Object.entries(state.loops).filter(([id]) => id !== op.id),
                         ),
                     };
             }

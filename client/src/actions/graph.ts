@@ -2,9 +2,12 @@ import {
     type Cloud,
     type Edge,
     type Flow,
+    type Loop,
+    type LoopPolarity,
     makeCloudId,
     makeEdgeId,
     makeFlowId,
+    makeLoopId,
     makeNodeId,
     makeStockId,
     type Node,
@@ -14,6 +17,7 @@ import {
 import type { Operation } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/graph";
+import { detectCycleFromEdge } from "@/utils/loop";
 
 function dispatch(op: Operation) {
     const state = useGraphStore.getState();
@@ -70,8 +74,15 @@ export function addEdge(
         curvature,
     };
 
+    const cycle = detectCycleFromEdge(state.edges, edge);
+
     const op: Operation = { type: "edge/add", edge };
     dispatch(op);
+
+    if (cycle) {
+        const { edgeIds, polarity } = cycle;
+        addLoop(edgeIds, polarity);
+    }
 }
 
 export function updateEdge(id: string, patch: Partial<Edge>) {
@@ -80,8 +91,14 @@ export function updateEdge(id: string, patch: Partial<Edge>) {
 }
 
 export function deleteEdge(id: string) {
+    const state = useGraphStore.getState();
+
+    const toDeleteLoops = Object.values(state.loops).filter((loop) => loop.edgeIds.includes(id));
+
     const op: Operation = { type: "edge/delete", id };
     dispatch(op);
+
+    toDeleteLoops.forEach((loop) => deleteLoop(loop.id));
 }
 
 export function addStock(x: number, y: number, width = 128, height = 64) {
@@ -181,5 +198,23 @@ export function deleteFlow(id: string) {
         .forEach((edge) => deleteEdge(edge.id));
 
     const op: Operation = { type: "flow/delete", id };
+    dispatch(op);
+}
+
+function addLoop(edgeIds: string[], polarity: LoopPolarity) {
+    const state = useGraphStore.getState();
+
+    const loop: Loop = {
+        id: makeLoopId(state.counter),
+        edgeIds,
+        polarity,
+    };
+
+    const op: Operation = { type: "loop/add", loop };
+    dispatch(op);
+}
+
+function deleteLoop(id: string) {
+    const op: Operation = { type: "loop/delete", id };
     dispatch(op);
 }
