@@ -3,7 +3,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { UNSELECTED_STROKE_COLOR } from "@/configs/color";
 import { computeLineGeometry, generateLoopPoints } from "@/models/geometry";
-import { isNodeId, type Loop } from "@/models/graph";
+import { ID_SEPARATOR, isNodeId, type Loop } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 
 export function LoopView({ loop }: { loop: Loop }) {
@@ -71,6 +71,16 @@ export function LoopView({ loop }: { loop: Loop }) {
                 fontSize={16}
                 fontStyle="bold"
             />
+            {loop.polarity && (
+                <Text
+                    text={loop.id.split(ID_SEPARATOR)[1]}
+                    width={14}
+                    height={14}
+                    align="right"
+                    verticalAlign="bottom"
+                    fontStyle="bold"
+                />
+            )}
         </Group>
     );
 }
