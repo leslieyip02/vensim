@@ -61,14 +61,14 @@ export function LoopView({ loop }: { loop: Loop }) {
                 pointerAtEnding={loopGeometry.direction === "cw"}
             />
             <Text
-                text={"hi"}
-                width={30}
-                height={30}
-                offsetX={15}
-                offsetY={15}
+                text={loop.polarity}
+                width={20}
+                height={20}
+                offsetX={10}
+                offsetY={10}
                 align="center"
                 verticalAlign="middle"
-                fontSize={12}
+                fontSize={16}
                 fontStyle="bold"
             />
         </Group>

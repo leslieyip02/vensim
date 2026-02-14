@@ -138,6 +138,14 @@ export const useGraphStore = create<GraphState>((set) => ({
                         loops: { ...state.loops, [op.loop.id]: op.loop },
                     };
 
+                case "loop/update":
+                    return {
+                        loops: {
+                            ...state.loops,
+                            [op.id]: { ...state.loops[op.id], ...op.patch },
+                        },
+                    };
+
                 case "loop/delete":
                     return {
                         loops: Object.fromEntries(

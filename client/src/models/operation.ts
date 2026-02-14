@@ -17,4 +17,5 @@ export type Operation =
     | { type: "flow/update"; id: string; patch: Partial<Flow> }
     | { type: "flow/delete"; id: string }
     | { type: "loop/add"; loop: Loop }
+    | { type: "loop/update"; id: string; patch: Partial<Loop> }
     | { type: "loop/delete"; id: string };

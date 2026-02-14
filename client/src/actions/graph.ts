@@ -17,7 +17,7 @@ import {
 import type { Operation } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/graph";
-import { detectCycleFromEdge } from "@/utils/loop";
+import { computeLoopPolarity, detectCycleFromEdge } from "@/utils/loop";
 
 function dispatch(op: Operation) {
     const state = useGraphStore.getState();
@@ -88,6 +88,24 @@ export function addEdge(
 export function updateEdge(id: string, patch: Partial<Edge>) {
     const op: Operation = { type: "edge/update", id, patch };
     dispatch(op);
+
+    const state = useGraphStore.getState();
+
+    const possiblyChangedLoops = Object.values(state.loops).filter((loop) =>
+        loop.edgeIds.includes(id),
+    );
+    const toUpdateLoops: [string, Partial<Loop>][] = [];
+    possiblyChangedLoops.forEach((loop) => {
+        const prevPol = loop.polarity;
+        const loopEdges = loop.edgeIds.map((edgeId) => state.edges[edgeId]);
+        const newPol = computeLoopPolarity(loopEdges);
+
+        if (newPol !== prevPol) {
+            toUpdateLoops.push([loop.id, { polarity: newPol }]);
+        }
+    });
+
+    toUpdateLoops.forEach(([loopId, patch]) => updateLoop(loopId, patch));
 }
 
 export function deleteEdge(id: string) {
@@ -211,6 +229,11 @@ function addLoop(edgeIds: string[], polarity: LoopPolarity) {
     };
 
     const op: Operation = { type: "loop/add", loop };
+    dispatch(op);
+}
+
+function updateLoop(id: string, patch: Partial<Loop>) {
+    const op: Operation = { type: "loop/update", id, patch };
     dispatch(op);
 }
 

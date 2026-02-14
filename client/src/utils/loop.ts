@@ -55,7 +55,7 @@ export function detectCycleFromEdge(
     return found;
 }
 
-function computeLoopPolarity(edges: Edge[]): LoopPolarity {
+export function computeLoopPolarity(edges: Edge[]): LoopPolarity {
     if (edges.some((e) => e.polarity == null)) return "";
 
     const negativeCount = edges.filter((e) => e.polarity === "-").length;
