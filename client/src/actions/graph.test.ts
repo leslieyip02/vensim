@@ -10,6 +10,7 @@ import {
 } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { sendGraphOperation } from "@/sync/graph";
+import { computeLoopPolarity, detectCycleFromEdge } from "@/utils/loop";
 
 import {
     addCloud,
@@ -40,8 +41,14 @@ vi.mock("@/models/graph", async (importOriginal) => {
         makeStockId: vi.fn((counter: number) => `stock${actual.ID_SEPARATOR}${counter}`),
         makeCloudId: vi.fn((counter: number) => `cloud${actual.ID_SEPARATOR}${counter}`),
         makeFlowId: vi.fn((counter: number) => `flow${actual.ID_SEPARATOR}${counter}`),
+        makeLoopId: vi.fn((counter: number) => `loop${actual.ID_SEPARATOR}${counter}`),
     };
 });
+
+vi.mock("@/utils/loop", () => ({
+    computeLoopPolarity: vi.fn(() => "R"),
+    detectCycleFromEdge: vi.fn(() => null),
+}));
 
 vi.mock("@/stores/graph", () => ({
     useGraphStore: {
@@ -56,16 +63,19 @@ vi.mock("@/stores/graph", () => ({
                     id: `edge${ID_SEPARATOR}1`,
                     from: `node${ID_SEPARATOR}1`,
                     to: `stock${ID_SEPARATOR}1`,
+                    polarity: "+",
                 },
                 [`edge${ID_SEPARATOR}2`]: {
                     id: `edge${ID_SEPARATOR}2`,
                     from: `stock${ID_SEPARATOR}1`,
                     to: `node${ID_SEPARATOR}1`,
+                    polarity: "+",
                 },
                 [`edge${ID_SEPARATOR}3`]: {
                     id: `edge${ID_SEPARATOR}3`,
                     from: `node${ID_SEPARATOR}1`,
                     to: `flow${ID_SEPARATOR}1`,
+                    polarity: "-",
                 },
             },
             flows: {
@@ -73,6 +83,13 @@ vi.mock("@/stores/graph", () => ({
                     id: `flow${ID_SEPARATOR}1`,
                     from: `stock${ID_SEPARATOR}1`,
                     to: `cloud${ID_SEPARATOR}1`,
+                },
+            },
+            loops: {
+                [`loop${ID_SEPARATOR}1`]: {
+                    id: `loop${ID_SEPARATOR}1`,
+                    edgeIds: [`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}2`],
+                    polarity: "R",
                 },
             },
         })),
@@ -127,7 +144,7 @@ describe("graph actions", () => {
     });
 
     describe("deleteNode", () => {
-        it("deletes node and cascades to edges where node is from or to", () => {
+        it("deletes node and cascades to edges where node is from or to, and their loops", () => {
             deleteNode(`node${ID_SEPARATOR}1`);
 
             const expectedOp: Operation = { type: "node/delete", id: `node${ID_SEPARATOR}1` };
@@ -135,6 +152,10 @@ describe("graph actions", () => {
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/delete",
                 id: `edge${ID_SEPARATOR}1`,
+            });
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "loop/delete",
+                id: `loop${ID_SEPARATOR}1`,
             });
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/delete",
@@ -146,7 +167,10 @@ describe("graph actions", () => {
     });
 
     describe("addEdge", () => {
-        it("creates and sends an edge/add operation with defaults", () => {
+        it("creates and sends an edge/add operation with defaults, detects and add loops", () => {
+            const mockCycle = { edgeIds: ["e1", "e2"], polarity: "B" as const };
+            vi.mocked(detectCycleFromEdge).mockReturnValue(mockCycle);
+
             addEdge(`node${ID_SEPARATOR}1`, `node${ID_SEPARATOR}2`);
 
             const expectedOp: Operation = {
@@ -161,7 +185,14 @@ describe("graph actions", () => {
             };
 
             expect(makeEdgeId).toHaveBeenCalledWith(3);
+            expect(detectCycleFromEdge).toHaveBeenCalled();
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
+            expect(applyMock).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: "loop/add",
+                    loop: expect.objectContaining({ polarity: "B" }),
+                }),
+            );
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
 
@@ -185,7 +216,8 @@ describe("graph actions", () => {
     });
 
     describe("updateEdge", () => {
-        it("creates and sends an edge/update operation", () => {
+        it("creates and sends an edge/update operation and updates loop polarity", () => {
+            vi.mocked(computeLoopPolarity).mockReturnValue("B");
             updateEdge(`edge${ID_SEPARATOR}1`, { curvature: 0.9 });
 
             const expectedOp: Operation = {
@@ -195,12 +227,18 @@ describe("graph actions", () => {
             };
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
+            expect(computeLoopPolarity).toHaveBeenCalled();
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "loop/update",
+                id: `loop${ID_SEPARATOR}1`,
+                patch: { polarity: "B" },
+            });
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
     });
 
     describe("deleteEdge", () => {
-        it("creates and sends an edge/delete operation", () => {
+        it("creates and sends an edge/delete operation and associated loop deletions", () => {
             deleteEdge(`edge${ID_SEPARATOR}1`);
 
             const expectedOp: Operation = {
@@ -209,6 +247,10 @@ describe("graph actions", () => {
             };
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "loop/delete",
+                id: `loop${ID_SEPARATOR}1`,
+            });
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
     });
