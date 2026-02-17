@@ -26,16 +26,6 @@ export function getParentEntities(id: string): Array<Node | Flow | Stock> {
         }
     }
 
-    if (isFlowId(id)) {
-        const parentId = state.flows[id].from;
-        if (!isStockId(parentId)) {
-            return [...parentSet];
-        }
-        const parent = state.stocks[parentId];
-        parentSet.add(parent);
-        parentSet.delete(thisEntity);
-        return [...parentSet];
-    }
     parentSet.delete(thisEntity);
     return [...parentSet];
 }
