@@ -32,6 +32,7 @@ export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
                                 key={parent.id}
                                 className="h-9 px-3 flex items-center cursor-pointer rounded-md bg-gray-600 hover:bg-gray-300 transition-colors"
                                 onClick={onClick}
+                                onMouseDown={(e) => e.preventDefault()}
                             >
                                 {parent.label}
                             </Badge>
