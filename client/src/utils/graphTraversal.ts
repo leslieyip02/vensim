@@ -1,9 +1,9 @@
-import { type Flow, isStockId, type Node } from "@/models/graph";
+import { type Flow, type Node } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 
 export function getParentEntities(id: string): Array<Node | Flow> {
     const state = useGraphStore.getState();
-    const parentSet: Set<Node | Flow > = new Set<Node | Flow >();
+    const parentSet: Set<Node | Flow> = new Set<Node | Flow>();
 
     const thisEntity = state.nodes[id] ?? state.flows[id] ?? state.stocks[id];
 
