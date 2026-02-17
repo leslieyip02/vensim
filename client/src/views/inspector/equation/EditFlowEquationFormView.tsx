@@ -1,12 +1,12 @@
-import { getParentEntities } from "@/utils/graphTraversal";
 import { Badge } from "@/components/ui/badge";
 import { useFlowForm } from "@/controllers/form";
+import { getParentEntities } from "@/utils/graphTraversal";
 
 import { EquationFieldSet } from "./EquationFieldSet";
 import { EquationFormWrapper } from "./EquationFormWrapper";
 
 export function EditFlowEquationFormView({ flowId }: { flowId: string }) {
-    const { flow, handleCancel, handleChange } = useFlowForm(flowId);
+    const { flow, handleChange } = useFlowForm(flowId);
     if (!flow) {
         return null;
     }
@@ -17,12 +17,7 @@ export function EditFlowEquationFormView({ flowId }: { flowId: string }) {
         .map((parent) => parent.label);
 
     return (
-        <EquationFormWrapper
-            label="Edit Equation"
-            onCancel={handleCancel}
-            onDelete={() => handleChange({ equation: "" })}
-            showDelete
-        >
+        <EquationFormWrapper label="Edit Equation">
             <EquationFieldSet entity={flow} handleChange={handleChange} parents={parents} />
             {parentLabels.length > 0 && (
                 <div className="flex flex-wrap gap-2">

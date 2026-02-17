@@ -33,7 +33,7 @@ function handleValueBlur({
 }
 
 export function EditStockEquationFormView({ stockId }: { stockId: string }) {
-    const { stock, handleCancel, handleChange } = useStockForm(stockId);
+    const { stock, handleChange } = useStockForm(stockId);
     const [initialValueError, setInitialValueError] = useState(false);
     const [draftInitialValue, setDraftInitialValue] = useState("");
 
@@ -47,12 +47,7 @@ export function EditStockEquationFormView({ stockId }: { stockId: string }) {
         .map((parent) => parent.label);
 
     return (
-        <EquationFormWrapper
-            label="Edit Equation"
-            onCancel={handleCancel}
-            onDelete={() => handleChange({ equation: "" })}
-            showDelete
-        >
+        <EquationFormWrapper label="Edit Equation">
             <EquationFieldSet entity={stock} handleChange={handleChange} parents={parents} />
             {parentLabels.length > 0 && (
                 <div className="flex flex-wrap gap-2">

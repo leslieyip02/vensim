@@ -1,6 +1,6 @@
-import { getParentEntities } from "@/utils/graphTraversal";
 import { Badge } from "@/components/ui/badge";
 import { useNodeForm } from "@/controllers/form";
+import { getParentEntities } from "@/utils/graphTraversal";
 
 import { EquationFieldSet } from "./EquationFieldSet";
 import { EquationFormWrapper } from "./EquationFormWrapper";
@@ -17,7 +17,7 @@ export function EditNodeEquationFormView({ nodeId }: { nodeId: string }) {
         .map((parent) => parent.label);
 
     return (
-        <EquationFormWrapper label="Edit Equation" showDelete>
+        <EquationFormWrapper label="Edit Equation">
             <EquationFieldSet entity={node} handleChange={handleChange} parents={parents} />
             {parentLabels.length > 0 && (
                 <div className="flex flex-wrap gap-2">
