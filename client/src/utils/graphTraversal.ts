@@ -1,4 +1,4 @@
-import { type Flow, isFlowId, isStockId, type Node, type Stock } from "@/models/graph";
+import { type Flow, isStockId, type Node, type Stock } from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 
 export function getParentEntities(id: string): Array<Node | Flow | Stock> {
