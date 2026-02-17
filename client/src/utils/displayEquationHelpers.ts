@@ -1,11 +1,10 @@
 import { type Flow, isFlowId, isNodeId, isStockId, type Node, type Stock } from "@/models/graph";
-
 import {
     VALID_ENTITY_ID_REGEX,
     VALID_EQUATION_REGEX,
     VALID_NUMBER,
     VALID_OPERATOR_REGEX,
-} from "./constants";
+} from "@/utils/equationValidationRegex";
 
 export function replaceEquationIdsWithLabels(
     equation: string,
@@ -68,7 +67,6 @@ export function validateEquation(
     const stripped = equation.replace(/\s+/g, "");
 
     if (reconstructed !== stripped) return false;
-
     const tokensWithValidIds = tokens.filter((tok) => {
         // Keep numbers and operators
         if (new RegExp(`^${VALID_NUMBER}$`).test(tok)) return true;

@@ -1,6 +1,6 @@
 import { ID_SEPARATOR } from "@/models/graph";
 
-export const VALID_ENTITY_ID_REGEX = String.raw`\b(node|stock|flow)${ID_SEPARATOR}\d+\b`;
+export const VALID_ENTITY_ID_REGEX = String.raw`(node|stock|flow)${ID_SEPARATOR}\d+\b`;
 export const VALID_OPERATOR_REGEX = String.raw`[+\-*/]`;
 export const VALID_NUMBER = String.raw`\d+(?:\.\d+)?`;
 
