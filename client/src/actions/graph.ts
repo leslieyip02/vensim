@@ -29,7 +29,7 @@ export function addNode(x: number, y: number, radius = 32) {
         x,
         y,
         radius,
-        label: "",
+        label: makeNodeId(state.counter),
         description: "",
         equation: "",
     };
@@ -84,7 +84,7 @@ export function deleteEdge(id: string) {
     dispatch(op);
 }
 
-export function addStock(x: number, y: number, width = 128, height = 64) {
+export function addStock(x: number, y: number, width = 128, height = 64, initialValue = 0) {
     const state = useGraphStore.getState();
 
     const stock: Stock = {
@@ -93,9 +93,9 @@ export function addStock(x: number, y: number, width = 128, height = 64) {
         y,
         width,
         height,
-        label: "",
+        label: makeStockId(state.counter),
         description: "",
-        equation: "",
+        initialValue,
     };
 
     const op: Operation = { type: "stock/add", stock };
@@ -157,7 +157,7 @@ export function addFlow(from: string, to: string, curvature: number = 0) {
 
     const flow: Flow = {
         id: makeFlowId(state.counter),
-        label: "",
+        label: makeFlowId(state.counter),
         from,
         to,
         curvature,
