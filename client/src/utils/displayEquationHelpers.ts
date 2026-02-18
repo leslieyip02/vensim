@@ -1,11 +1,10 @@
 import { type Flow, isFlowId, isNodeId, isStockId, type Node, type Stock } from "@/models/graph";
-
 import {
     VALID_ENTITY_ID_REGEX,
     VALID_EQUATION_REGEX,
     VALID_NUMBER,
     VALID_OPERATOR_REGEX,
-} from "./constants";
+} from "@/utils/equationValidationRegex";
 
 export function replaceEquationIdsWithLabels(
     equation: string,
@@ -58,7 +57,6 @@ export function validateEquation(
     equation: string,
     nodes: Record<string, Node>,
     flows: Record<string, Flow>,
-    stocks: Record<string, Stock>,
 ) {
     equation = equation.trim();
     if (equation.length < 1) return true;
@@ -69,7 +67,6 @@ export function validateEquation(
     const stripped = equation.replace(/\s+/g, "");
 
     if (reconstructed !== stripped) return false;
-
     const tokensWithValidIds = tokens.filter((tok) => {
         // Keep numbers and operators
         if (new RegExp(`^${VALID_NUMBER}$`).test(tok)) return true;
@@ -78,7 +75,6 @@ export function validateEquation(
         // Keep ID tokens only if they exist in state
         if (isNodeId(tok)) return nodes[tok] !== undefined;
         if (isFlowId(tok)) return flows[tok] !== undefined;
-        if (isStockId(tok)) return stocks[tok] !== undefined;
         return false;
     });
     return tokensWithValidIds.length === tokens.length;
@@ -107,4 +103,10 @@ export function removeInvalidCharacters(
     });
 
     return tokensWithValidIds.join(" ");
+}
+
+export function removeWhitespaces(equation: string) {
+    const tokens = equation.match(VALID_EQUATION_REGEX);
+    if (!tokens) return "";
+    return tokens.map((token) => token.trim()).join(" ");
 }

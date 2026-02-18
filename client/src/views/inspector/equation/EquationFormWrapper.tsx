@@ -7,9 +7,6 @@ import { InspectorSectionWrapper } from "../InspectorSectionWrapper";
 interface InspectorFormProps {
     label: string;
     children: ReactNode;
-    onCancel?: () => void;
-    onDelete?: () => void;
-    showDelete?: boolean;
 }
 
 function InspectorFormContent({ children }: InspectorFormProps) {

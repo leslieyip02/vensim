@@ -9,6 +9,7 @@ type Node struct {
 	Radius      float64 `json:"radius"`
 	Label       string  `json:"label"`
 	Description string  `json:"description"`
+	Equation	string	`json:"equation"`
 }
 
 type Edge struct {
@@ -27,6 +28,7 @@ type Stock struct {
 	Height      float64 `json:"height"`
 	Label       string  `json:"label"`
 	Description string  `json:"description"`
+	InitialValue float64 `json:"initialValue"`
 }
 
 type Cloud struct {
@@ -41,4 +43,5 @@ type Flow struct {
 	From      string  `json:"from"`
 	To        string  `json:"to"`
 	Curvature float64 `json:"curvature"`
+	Equation	string	`json:"equation"`
 }
