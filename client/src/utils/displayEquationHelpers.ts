@@ -57,6 +57,7 @@ export function validateEquation(
     equation: string,
     nodes: Record<string, Node>,
     flows: Record<string, Flow>,
+    stocks: Record<string, Stock>,
 ) {
     equation = equation.trim();
     if (equation.length < 1) return true;
@@ -74,6 +75,7 @@ export function validateEquation(
 
         // Keep ID tokens only if they exist in state
         if (isNodeId(tok)) return nodes[tok] !== undefined;
+        if (isStockId(tok)) return stocks[tok] !== undefined;
         if (isFlowId(tok)) return flows[tok] !== undefined;
         return false;
     });

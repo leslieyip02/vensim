@@ -17,22 +17,22 @@ export function useEquationController(
 ) {
     const state = useGraphStore.getState();
 
-    // Displayed equation and equation error
-    const committedLabelEquation = replaceEquationIdsWithLabels(
-        entity.equation,
-        state.nodes,
-        state.stocks,
-        state.flows,
-    );
+    const [draftEquation, setDraftEquation] = useState("");
+    const [equationError, setEquationError] = useState(false);
 
-    const [draftEquation, setDraftEquation] = useState(committedLabelEquation);
-    const [equationError, setEquationError] = useState(
-        !validateEquation(committedLabelEquation, state.nodes, state.flows),
-    );
-
+    // Update equations and errors of other room members
     useEffect(() => {
+        const committedLabelEquation = replaceEquationIdsWithLabels(
+            entity.equation,
+            state.nodes,
+            state.stocks,
+            state.flows,
+        );
         setDraftEquation(committedLabelEquation);
-    }, [committedLabelEquation]);
+
+        const isValid = validateEquation(entity.equation, state.nodes, state.flows, state.stocks);
+        setEquationError(!isValid);
+    }, [entity.equation, state.nodes, state.flows, state.stocks]);
 
     // handleEquationBlur params
     const parents = getParentEntities(entity.id);
@@ -41,7 +41,7 @@ export function useEquationController(
     // Handlers
     const handleEquationFieldBlur = () => {
         const equationWithIds = replaceEquationLabelsWithIds(draftEquation, labelMap);
-        const isValid = validateEquation(equationWithIds, state.nodes, state.flows);
+        const isValid = validateEquation(equationWithIds, state.nodes, state.flows, state.stocks);
 
         setEquationError(!isValid);
         if (!isValid) return;
@@ -51,7 +51,7 @@ export function useEquationController(
 
     const handleChangeDraftEquation = (value: string) => {
         setDraftEquation(value);
-        setEquationError(!validateEquation(value, state.nodes, state.flows));
+        setEquationError(!validateEquation(value, state.nodes, state.flows, state.stocks));
     };
 
     const handleBadgeClick = (
