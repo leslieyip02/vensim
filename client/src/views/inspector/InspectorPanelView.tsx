@@ -32,7 +32,7 @@ export function InspectorPanelView() {
                 size="icon-lg"
                 variant="ghost"
                 onClick={toggleInspectorOpen}
-                className="absolute top-2 right-[-3rem] z-50"
+                className="absolute top-8 right-[-4rem] z-50"
             >
                 {inspectorOpen ? <LuPanelLeftClose /> : <AiOutlineEdit />}
             </Button>
