@@ -1,8 +1,9 @@
 import type { Operation } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 
+import { getClientId, setClientId } from "./id";
+
 let socket: WebSocket | null = null;
-let clientId: string | null = null;
 
 export function isGraphSocketConnected() {
     return socket !== null;
@@ -26,7 +27,7 @@ export function connectGraphSocket(url: string): Promise<void> {
             const msg = JSON.parse(event.data);
 
             if (msg.type === "clientId") {
-                clientId = msg.clientId;
+                setClientId(msg.clientId);
                 return;
             }
 
@@ -41,11 +42,11 @@ export function connectGraphSocket(url: string): Promise<void> {
 }
 
 export function sendGraphOperation(op: Operation) {
-    if (socket?.readyState === WebSocket.OPEN && clientId) {
+    if (socket?.readyState === WebSocket.OPEN) {
         socket.send(
             JSON.stringify({
                 ...op,
-                senderId: clientId,
+                senderId: getClientId(),
             }),
         );
     }

@@ -1,25 +1,32 @@
+import type Konva from "konva";
 import type { KonvaEventObject } from "konva/lib/Node";
+import { useRef } from "react";
 import { Layer, Stage } from "react-konva";
 
 import { useCameraController } from "@/controllers/camera";
+import { useCursorController } from "@/controllers/cursor";
 import { useInteractionController as useInteractionController } from "@/controllers/interaction";
 import { useKeyboardShortcuts } from "@/controllers/keyboard";
 
+import { CursorView } from "./cursor/CursorView";
 import { GraphView } from "./graph/GraphView";
 import { GridView } from "./GridView";
 
 export function BoardView() {
-    const cameraController = useCameraController({
+    const stageRef = useRef<Konva.Stage>(null);
+
+    const cameraController = useCameraController(stageRef, {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
         zoom: 1,
     });
-
     const interactionController = useInteractionController(cameraController.camera);
+
     useKeyboardShortcuts();
+    useCursorController(stageRef);
 
     const stageProps = {
-        ref: cameraController.stageRef,
+        ref: stageRef,
         width: window.innerWidth,
         height: window.innerHeight,
         scaleX: cameraController.camera.zoom,
@@ -39,10 +46,11 @@ export function BoardView() {
     };
 
     return (
-        <Stage {...stageProps}>
+        <Stage {...stageProps} style={{ cursor: "none" }}>
             <Layer>
                 <GridView />
                 <GraphView />
+                <CursorView />
             </Layer>
         </Stage>
     );
