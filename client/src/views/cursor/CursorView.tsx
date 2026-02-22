@@ -21,10 +21,10 @@ export function CursorView() {
     return (
         <>
             {Object.entries(cursors).map(([id, cursor]) => {
-                const color = getColor(cursor.name);
+                const color = getColor(cursor.username);
 
                 return (
-                    <Group x={cursor.x} y={cursor.y} listening={false}>
+                    <Group key={id} x={cursor.x} y={cursor.y} listening={false}>
                         {id === getClientId() && interactionmode !== "select" ? (
                             <>
                                 <Rect x={-6} y={-2} width={12} height={4} fill={color} />
@@ -42,7 +42,7 @@ export function CursorView() {
                                 strokeWidth={2}
                             />
                         )}
-                        <Text x={16} text={cursor.name} fill={color} />
+                        <Text x={16} text={cursor.username} fill={color} />
                     </Group>
                 );
             })}

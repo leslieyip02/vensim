@@ -1,5 +1,5 @@
 import { useGraphStore } from "@/stores/graph";
-import { connectGraphSocket } from "@/sync/graph";
+import { connectSocket } from "@/sync/socket";
 
 const API_ORIGIN = import.meta.env.VITE_API_ORIGIN;
 const WS_ORIGIN = import.meta.env.VITE_WS_ORIGIN;
@@ -41,5 +41,5 @@ export async function joinRoom(roomId: string) {
     }
 
     const wsPath = `${WS_ORIGIN}/join/${roomId}`;
-    await connectGraphSocket(wsPath);
+    await connectSocket(wsPath);
 }

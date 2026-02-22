@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
-import type { Cloud, Edge, Flow, Node, Stock } from "@/models/graph";
-import type { Operation } from "@/models/operation";
+import type { Cloud, Edge, Flow, Node, Operation, Stock } from "@/models/graph";
 
 interface GraphState {
     counter: number;

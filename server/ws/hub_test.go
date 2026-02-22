@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"encoding/json"
 	"server/graph"
 	"testing"
 	"time"
@@ -9,12 +10,12 @@ import (
 )
 
 type MockClient struct {
-	id                 string
-	listenCalled       chan struct{}
-	gotID              bool
-	gotSnapshot        bool
-	operationsSent     []graph.Operation
-	operationsReceived chan struct{}
+	id                string
+	listenCalled      chan struct{}
+	gotID             bool
+	gotSnapshot       bool
+	envelopesSent     []Envelope
+	envelopesReceived chan struct{}
 }
 
 func (c *MockClient) getID() string {
@@ -33,16 +34,18 @@ func (c *MockClient) sendSnapshot(_ *graph.State) {
 	c.gotSnapshot = true
 }
 
-func (c *MockClient) sendOperation(op graph.Operation) {
-	c.operationsSent = append(c.operationsSent, op)
-	c.operationsReceived <- struct{}{}
+func (c *MockClient) sendEnvelope(envelope Envelope) {
+	c.envelopesSent = append(c.envelopesSent, envelope)
+	c.envelopesReceived <- struct{}{}
 }
+
+func (c *MockClient) sendLeaveMessage(clientId string) {}
 
 func newMockClient(id string) *MockClient {
 	return &MockClient{
-		id:                 id,
-		listenCalled:       make(chan struct{}),
-		operationsReceived: make(chan struct{}, 1),
+		id:                id,
+		listenCalled:      make(chan struct{}),
+		envelopesReceived: make(chan struct{}, 1),
 	}
 }
 
@@ -83,17 +86,23 @@ func TestHub_BroadcastSkipsSender(t *testing.T) {
 		t.Fatal("c2 failed to start listening")
 	}
 
-	op := graph.Operation{SenderId: "client-1"}
-	hub.broadcastOperation(op)
+	op := graph.Operation{}
+	encoded, _ := json.Marshal(op)
+	envelope := Envelope{
+		Type:     "graph",
+		SenderID: "client-1",
+		Data:     encoded,
+	}
+	hub.broadcast(envelope)
 
 	select {
-	case <-c2.operationsReceived:
+	case <-c2.envelopesReceived:
 		// receiver got it
 	case <-time.After(time.Second):
 		t.Fatal("receiver did not receive op")
 	}
 
-	if len(c1.operationsSent) != 0 {
+	if len(c1.envelopesSent) != 0 {
 		t.Fatal("sender should not receive op")
 	}
 }

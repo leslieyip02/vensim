@@ -1,42 +1,36 @@
 import { create } from "zustand";
 
-interface Cursor {
-    x: number;
-    y: number;
-    name: string;
-}
+import type { Cursor, CursorMessage } from "@/models/cursor";
 
 interface CursorState {
     cursors: Record<string, Cursor>;
 
-    addCursor: (clientId: string, x: number, y: number, name: string) => void;
-    deleteCursor: (clientId: string) => void;
-    updateCursor: (clientId: string, x: number, y: number) => void;
+    handleMessage: (message: CursorMessage) => void;
 }
 
 export const useCursorStore = create<CursorState>((set) => ({
     cursors: {},
 
-    addCursor: (clientId, x, y, name) =>
-        set((state) => ({
-            cursors: {
-                ...state.cursors,
-                [clientId]: { x, y, name },
-            },
-        })),
+    handleMessage: (message) =>
+        set((state) => {
+            switch (message.type) {
+                case "cursor/update":
+                    return {
+                        cursors: {
+                            ...state.cursors,
+                            [message.clientId]: {
+                                ...state.cursors[message.clientId],
+                                ...message.cursor,
+                            },
+                        },
+                    };
 
-    deleteCursor: (clientId) =>
-        set((state) => ({
-            cursors: Object.fromEntries(
-                Object.entries(state.cursors).filter(([id]) => id !== clientId),
-            ),
-        })),
-
-    updateCursor: (clientId, x, y) =>
-        set((state) => ({
-            cursors: {
-                ...state.cursors,
-                [clientId]: { x, y, name: state.cursors[clientId].name },
-            },
-        })),
+                case "cursor/delete":
+                    return {
+                        cursors: Object.fromEntries(
+                            Object.entries(state.cursors).filter(([id]) => id !== message.clientId),
+                        ),
+                    };
+            }
+        }),
 }));

@@ -6,9 +6,9 @@ import {
     type Flow,
     ID_SEPARATOR,
     type Node,
+    type Operation,
     type Stock,
 } from "@/models/graph";
-import type { Operation } from "@/models/operation";
 
 import { useGraphStore } from "./graph";
 
@@ -38,6 +38,7 @@ const DEFAULT_STOCK: Stock = {
     height: 0,
     label: "",
     description: "",
+    equation: "",
 };
 
 const DEFAULT_CLOUD: Cloud = {
@@ -52,6 +53,8 @@ const DEFAULT_FLOW: Flow = {
     from: `stock${ID_SEPARATOR}0`,
     to: `cloud${ID_SEPARATOR}0`,
     curvature: 0,
+    label: "",
+    equation: "",
 };
 
 describe("useGraphStore", () => {

@@ -23,8 +23,7 @@ const (
 )
 
 type Operation struct {
-	Type     OperationType `json:"type"`
-	SenderId string        `json:"senderId"`
+	Type OperationType `json:"type"`
 
 	Node  *Node  `json:"node,omitempty"`
 	Edge  *Edge  `json:"edge,omitempty"`

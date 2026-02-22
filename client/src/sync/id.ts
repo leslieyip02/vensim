@@ -11,7 +11,7 @@ export function setClientId(id: string) {
 }
 
 export function isClientIdAssigned(): boolean {
-    return clientId === LOCAL_CLIENT;
+    return clientId !== LOCAL_CLIENT;
 }
 
 export function getClientId(): string {
