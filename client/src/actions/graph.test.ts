@@ -79,7 +79,7 @@ vi.mock("@/stores/graph", () => ({
     },
 }));
 
-vi.mock("@/sync/graph", () => ({
+vi.mock("@/sync/socket", () => ({
     sendGraphOperation: vi.fn(),
 }));
 
