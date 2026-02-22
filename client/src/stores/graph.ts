@@ -31,6 +31,9 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "node/update":
+                    if (!state.nodes[op.id]) {
+                        return {};
+                    }
                     return {
                         nodes: {
                             ...state.nodes,
@@ -60,6 +63,9 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "edge/delete":
+                    if (!state.edges[op.id]) {
+                        return {};
+                    }
                     return {
                         edges: Object.fromEntries(
                             Object.entries(state.edges).filter(([id]) => id !== op.id),
@@ -73,6 +79,9 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "stock/update":
+                    if (!state.stocks[op.id]) {
+                        return {};
+                    }
                     return {
                         stocks: {
                             ...state.stocks,
@@ -94,6 +103,9 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "cloud/update":
+                    if (!state.clouds[op.id]) {
+                        return {};
+                    }
                     return {
                         clouds: {
                             ...state.clouds,
@@ -115,6 +127,9 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "flow/update":
+                    if (!state.flows[op.id]) {
+                        return {};
+                    }
                     return {
                         flows: {
                             ...state.flows,

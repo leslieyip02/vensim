@@ -10,7 +10,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// this is left as a var so that it can be overridden in tests
 var autoCloseDuration = 5 * time.Minute
+
+const OperationSyncThreshold = 10
 
 type Broadcaster interface {
 	addListener(listener Listener)
@@ -94,7 +97,12 @@ func (h *Hub) Run() {
 				json.Unmarshal(envelope.Data, &op)
 
 				log.Printf("Hub %v: Applying %v", h.GetID(), op)
-				h.state.Apply(op)
+				_, succeeded := h.state.Apply(op)
+				if !succeeded {
+					// if the operation fails, force all clients to re-sync their states
+					h.syncClients()
+					continue
+				}
 				operationsApplied++
 			}
 
@@ -106,11 +114,8 @@ func (h *Hub) Run() {
 			}
 
 			// periodically sync state
-			if operationsApplied >= 10 {
-				log.Printf("Hub %v: Syncing state across clients", h.GetID())
-				for c := range h.listeners {
-					c.sendSnapshot(h.state)
-				}
+			if operationsApplied >= OperationSyncThreshold {
+				h.syncClients()
 				operationsApplied = 0
 			}
 
@@ -120,6 +125,13 @@ func (h *Hub) Run() {
 			}
 			return
 		}
+	}
+}
+
+func (h *Hub) syncClients() {
+	log.Printf("Hub %v: Syncing clients", h.GetID())
+	for c := range h.listeners {
+		c.sendSnapshot(h.state)
 	}
 }
 
