@@ -144,7 +144,7 @@ export const useGraphStore = create<GraphState>((set) => ({
                         ),
                     };
 
-                case "loop/add":
+                case "loop/add": {
                     const updatedPoolForAdd = [...state.loopCounterPool];
                     updatedPoolForAdd.shift();
                     if (updatedPoolForAdd.length === 0) {
@@ -155,6 +155,7 @@ export const useGraphStore = create<GraphState>((set) => ({
                         loopCounterPool: updatedPoolForAdd,
                         loops: { ...state.loops, [op.loop.id]: op.loop },
                     };
+                }
 
                 case "loop/update":
                     return {
@@ -164,7 +165,7 @@ export const useGraphStore = create<GraphState>((set) => ({
                         },
                     };
 
-                case "loop/delete":
+                case "loop/delete": {
                     const updatedPoolForDelete = [...state.loopCounterPool];
                     const deletedLoopCounter = parseInt(op.id.split(ID_SEPARATOR)[1]);
                     if (!updatedPoolForDelete.includes(deletedLoopCounter)) {
@@ -177,6 +178,7 @@ export const useGraphStore = create<GraphState>((set) => ({
                             Object.entries(state.loops).filter(([id]) => id !== op.id),
                         ),
                     };
+                }
             }
         }),
 }));
