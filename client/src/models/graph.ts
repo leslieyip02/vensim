@@ -2,7 +2,7 @@ export const ID_SEPARATOR = "_";
 
 export type Polarity = "+" | "-";
 
-export type LoopPolarity = "R" | "B" | "";
+export type LoopType = "R" | "B" | null;
 
 interface Identifiable {
     id: string;
@@ -50,7 +50,7 @@ export interface Flow extends Identifiable {
 
 export interface Loop extends Identifiable {
     edgeIds: string[];
-    polarity: LoopPolarity;
+    loopType: LoopType;
 }
 
 export function makeNodeId(counter: number) {

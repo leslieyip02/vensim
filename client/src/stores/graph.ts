@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import type { Cloud, Edge, Flow, Loop, Node, Stock } from "@/models/graph";
+import { ID_SEPARATOR, type Cloud, type Edge, type Flow, type Loop, type Node, type Stock } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 
 interface GraphState {
@@ -10,6 +10,8 @@ interface GraphState {
     stocks: Record<string, Stock>;
     clouds: Record<string, Cloud>;
     flows: Record<string, Flow>;
+
+    loopCounterPool: number[];
     loops: Record<string, Loop>;
 
     apply: (op: Operation) => void;
@@ -22,6 +24,8 @@ export const useGraphStore = create<GraphState>((set) => ({
     stocks: {},
     clouds: {},
     flows: {},
+
+    loopCounterPool: [1],
     loops: {},
 
     apply: (op) =>
@@ -133,8 +137,14 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "loop/add":
+                    const updatedPoolForAdd = [...state.loopCounterPool];
+                    updatedPoolForAdd.shift();
+                    if (updatedPoolForAdd.length === 0) {
+                        updatedPoolForAdd.push(parseInt(op.loop.id.split(ID_SEPARATOR)[1]) + 1);
+                    }
+
                     return {
-                        counter: state.counter + 1,
+                        loopCounterPool: updatedPoolForAdd,
                         loops: { ...state.loops, [op.loop.id]: op.loop },
                     };
 
@@ -147,7 +157,14 @@ export const useGraphStore = create<GraphState>((set) => ({
                     };
 
                 case "loop/delete":
+                    const updatedPoolForDelete = [...state.loopCounterPool];
+                    const deletedLoopCounter = parseInt(op.id.split(ID_SEPARATOR)[1]);
+                    if (!updatedPoolForDelete.includes(deletedLoopCounter)) {
+                        updatedPoolForDelete.push(deletedLoopCounter);
+                        updatedPoolForDelete.sort((a, b) => a - b);
+                    }
                     return {
+                        loopCounterPool: updatedPoolForDelete,
                         loops: Object.fromEntries(
                             Object.entries(state.loops).filter(([id]) => id !== op.id),
                         ),

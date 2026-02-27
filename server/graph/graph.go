@@ -44,5 +44,5 @@ type Flow struct {
 type Loop struct {
 	ID       string   `json:"id"`
 	EdgeIds  []string `json:"edgeIds"`
-	Polarity string   `json:"polarity"`
+	LoopType string   `json:"loopType"`
 }

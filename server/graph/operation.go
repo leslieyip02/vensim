@@ -21,6 +21,7 @@ const (
 	FlowUpdate  OperationType = "flow/update"
 	FlowDelete  OperationType = "flow/delete"
 	LoopAdd     OperationType = "loop/add"
+	LoopUpdate  OperationType = "loop/update"
 	LoopDelete  OperationType = "loop/delete"
 )
 
@@ -99,6 +100,10 @@ func (s *State) Apply(op Operation) *State {
 	case LoopAdd:
 		s.Loops[op.Loop.ID] = op.Loop
 		s.Counter++
+
+	case LoopUpdate:
+		loop := s.Loops[op.ID]
+		applyPatch(loop, op.Patch)
 
 	case LoopDelete:
 		delete(s.Loops, op.ID)

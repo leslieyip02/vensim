@@ -61,7 +61,7 @@ export function LoopView({ loop }: { loop: Loop }) {
                 pointerAtEnding={loopGeometry.direction === "cw"}
             />
             <Text
-                text={loop.polarity}
+                text={loop.loopType ?? ""}
                 width={20}
                 height={20}
                 offsetX={10}
@@ -71,7 +71,7 @@ export function LoopView({ loop }: { loop: Loop }) {
                 fontSize={16}
                 fontStyle="bold"
             />
-            {loop.polarity && (
+            {loop.loopType && (
                 <Text
                     text={loop.id.split(ID_SEPARATOR)[1]}
                     width={14}

@@ -3,7 +3,7 @@ import {
     type Edge,
     type Flow,
     type Loop,
-    type LoopPolarity,
+    type LoopType,
     makeCloudId,
     makeEdgeId,
     makeFlowId,
@@ -80,8 +80,8 @@ export function addEdge(
     dispatch(op);
 
     if (cycle) {
-        const { edgeIds, polarity } = cycle;
-        addLoop(edgeIds, polarity);
+        const { edgeIds, loopType } = cycle;
+        addLoop(edgeIds, loopType);
     }
 }
 
@@ -96,12 +96,12 @@ export function updateEdge(id: string, patch: Partial<Edge>) {
     );
     const toUpdateLoops: [string, Partial<Loop>][] = [];
     possiblyChangedLoops.forEach((loop) => {
-        const prevPol = loop.polarity;
+        const prevType = loop.loopType;
         const loopEdges = loop.edgeIds.map((edgeId) => state.edges[edgeId]);
-        const newPol = computeLoopPolarity(loopEdges);
+        const newType = computeLoopPolarity(loopEdges);
 
-        if (newPol !== prevPol) {
-            toUpdateLoops.push([loop.id, { polarity: newPol }]);
+        if (newType !== prevType) {
+            toUpdateLoops.push([loop.id, { loopType: newType }]);
         }
     });
 
@@ -219,13 +219,13 @@ export function deleteFlow(id: string) {
     dispatch(op);
 }
 
-function addLoop(edgeIds: string[], polarity: LoopPolarity) {
+function addLoop(edgeIds: string[], loopType: LoopType) {
     const state = useGraphStore.getState();
 
     const loop: Loop = {
-        id: makeLoopId(state.counter),
+        id: makeLoopId(state.loopCounterPool[0]),
         edgeIds,
-        polarity,
+        loopType,
     };
 
     const op: Operation = { type: "loop/add", loop };

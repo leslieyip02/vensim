@@ -61,7 +61,7 @@ const DEFAULT_FLOW: Flow = {
 const DEFAULT_LOOP: Loop = {
     id: `loop${ID_SEPARATOR}0`,
     edgeIds: [],
-    polarity: "R",
+    loopType: "R",
 };
 
 describe("useGraphStore", () => {
@@ -73,6 +73,7 @@ describe("useGraphStore", () => {
             stocks: {},
             clouds: {},
             flows: {},
+            loopCounterPool: [1],
             loops: {},
         });
     });
@@ -374,12 +375,12 @@ describe("useGraphStore", () => {
         });
     });
 
-    it("adds a loop and increments counter", () => {
+    it("adds a loop and updates loop pool", () => {
         const loop: Loop = {
             ...DEFAULT_LOOP,
             id: `loop${ID_SEPARATOR}1`,
             edgeIds: ["e1", "e2"],
-            polarity: "B",
+            loopType: "B",
         };
 
         const op: Operation = {
@@ -392,7 +393,8 @@ describe("useGraphStore", () => {
         const state = useGraphStore.getState();
 
         expect(state.loops[`loop${ID_SEPARATOR}1`]).toEqual(loop);
-        expect(state.counter).toBe(2);
+        expect(state.loopCounterPool).toEqual([2]);
+        expect(state.counter).toBe(1); // Global counter shouldn't change
     });
 
     it("updates a loop", () => {
@@ -401,7 +403,7 @@ describe("useGraphStore", () => {
                 [`loop${ID_SEPARATOR}1`]: {
                     ...DEFAULT_LOOP,
                     id: `loop${ID_SEPARATOR}1`,
-                    polarity: "R",
+                    loopType: "R",
                 },
             },
         });
@@ -409,16 +411,17 @@ describe("useGraphStore", () => {
         const op: Operation = {
             type: "loop/update",
             id: `loop${ID_SEPARATOR}1`,
-            patch: { polarity: "B" },
+            patch: { loopType: "B" },
         };
 
         useGraphStore.getState().apply(op);
 
-        expect(useGraphStore.getState().loops[`loop${ID_SEPARATOR}1`].polarity).toBe("B");
+        expect(useGraphStore.getState().loops[`loop${ID_SEPARATOR}1`].loopType).toBe("B");
     });
 
-    it("deletes a loop", () => {
+    it("deletes a loop and recycles ID", () => {
         useGraphStore.setState({
+            loopCounterPool: [3],
             loops: {
                 [`loop${ID_SEPARATOR}1`]: { ...DEFAULT_LOOP, id: `loop${ID_SEPARATOR}1` },
                 [`loop${ID_SEPARATOR}2`]: { ...DEFAULT_LOOP, id: `loop${ID_SEPARATOR}2` },
@@ -432,9 +435,11 @@ describe("useGraphStore", () => {
 
         useGraphStore.getState().apply(op);
 
-        expect(useGraphStore.getState().loops).toEqual({
+        const state = useGraphStore.getState();
+        expect(state.loops).toEqual({
             [`loop${ID_SEPARATOR}2`]: { ...DEFAULT_LOOP, id: `loop${ID_SEPARATOR}2` },
         });
+        expect(state.loopCounterPool).toEqual([1, 3]);
     });
 
     it("does not increment counter on update or delete", () => {

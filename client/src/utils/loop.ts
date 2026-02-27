@@ -1,8 +1,8 @@
-import { type Edge, type LoopPolarity } from "@/models/graph";
+import { type Edge, type LoopType } from "@/models/graph";
 
 type DetectedCycle = {
     edgeIds: string[];
-    polarity: LoopPolarity;
+    loopType: LoopType;
 };
 
 export function detectCycleFromEdge(
@@ -36,7 +36,7 @@ export function detectCycleFromEdge(
                 const fullCycle = [...stackEdges, newEdge];
                 found = {
                     edgeIds: fullCycle.map((se) => se.id),
-                    polarity: computeLoopPolarity(fullCycle),
+                    loopType: computeLoopPolarity(fullCycle),
                 };
                 return;
             }
@@ -55,8 +55,8 @@ export function detectCycleFromEdge(
     return found;
 }
 
-export function computeLoopPolarity(edges: Edge[]): LoopPolarity {
-    if (edges.some((e) => e.polarity == null)) return "";
+export function computeLoopPolarity(edges: Edge[]): LoopType {
+    if (edges.some((e) => e.polarity == null)) return null;
 
     const negativeCount = edges.filter((e) => e.polarity === "-").length;
 

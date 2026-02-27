@@ -7,6 +7,7 @@ import {
     makeFlowId,
     makeNodeId,
     makeStockId,
+    makeLoopId,
 } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { sendGraphOperation } from "@/sync/graph";
@@ -85,11 +86,12 @@ vi.mock("@/stores/graph", () => ({
                     to: `cloud${ID_SEPARATOR}1`,
                 },
             },
+            loopCounterPool: [1],
             loops: {
                 [`loop${ID_SEPARATOR}1`]: {
                     id: `loop${ID_SEPARATOR}1`,
                     edgeIds: [`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}2`],
-                    polarity: "R",
+                    loopType: "R",
                 },
             },
         })),
@@ -168,7 +170,7 @@ describe("graph actions", () => {
 
     describe("addEdge", () => {
         it("creates and sends an edge/add operation with defaults, detects and add loops", () => {
-            const mockCycle = { edgeIds: ["e1", "e2"], polarity: "B" as const };
+            const mockCycle = { edgeIds: ["e1", "e2"], loopType: "B" as const };
             vi.mocked(detectCycleFromEdge).mockReturnValue(mockCycle);
 
             addEdge(`node${ID_SEPARATOR}1`, `node${ID_SEPARATOR}2`);
@@ -185,12 +187,13 @@ describe("graph actions", () => {
             };
 
             expect(makeEdgeId).toHaveBeenCalledWith(3);
+            expect(makeLoopId).toHaveBeenCalledWith(1);
             expect(detectCycleFromEdge).toHaveBeenCalled();
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(applyMock).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: "loop/add",
-                    loop: expect.objectContaining({ polarity: "B" }),
+                    loop: expect.objectContaining({ loopType: "B" }),
                 }),
             );
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
@@ -216,7 +219,7 @@ describe("graph actions", () => {
     });
 
     describe("updateEdge", () => {
-        it("creates and sends an edge/update operation and updates loop polarity", () => {
+        it("creates and sends an edge/update operation and updates loop loopType", () => {
             vi.mocked(computeLoopPolarity).mockReturnValue("B");
             updateEdge(`edge${ID_SEPARATOR}1`, { curvature: 0.9 });
 
@@ -231,7 +234,7 @@ describe("graph actions", () => {
             expect(applyMock).toHaveBeenCalledWith({
                 type: "loop/update",
                 id: `loop${ID_SEPARATOR}1`,
-                patch: { polarity: "B" },
+                patch: { loopType: "B" },
             });
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
