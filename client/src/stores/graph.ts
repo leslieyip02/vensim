@@ -1,6 +1,14 @@
 import { create } from "zustand";
 
-import { ID_SEPARATOR, type Cloud, type Edge, type Flow, type Loop, type Node, type Stock } from "@/models/graph";
+import {
+    type Cloud,
+    type Edge,
+    type Flow,
+    ID_SEPARATOR,
+    type Loop,
+    type Node,
+    type Stock,
+} from "@/models/graph";
 import type { Operation } from "@/models/operation";
 
 interface GraphState {

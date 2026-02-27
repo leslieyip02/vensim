@@ -5,9 +5,9 @@ import {
     makeCloudId,
     makeEdgeId,
     makeFlowId,
+    makeLoopId,
     makeNodeId,
     makeStockId,
-    makeLoopId,
 } from "@/models/graph";
 import type { Operation } from "@/models/operation";
 import { sendGraphOperation } from "@/sync/graph";
