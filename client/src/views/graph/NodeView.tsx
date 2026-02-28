@@ -4,13 +4,13 @@ import { useNodeInteractions } from "@/controllers/interaction";
 import type { Node } from "@/models/graph";
 
 export function NodeView({ node }: { node: Node }) {
-    const { stroke, opacity, onClick, onDragEnd } = useNodeInteractions(node.id);
+    const { isSelectedByOther, stroke, opacity, onClick, onDragEnd } = useNodeInteractions(node.id);
 
     return (
         <Group
             x={node.x}
             y={node.y}
-            draggable
+            draggable={!isSelectedByOther}
             dragBoundFunc={(position) => position}
             onClick={onClick}
             onDragEnd={onDragEnd}

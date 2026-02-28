@@ -1,15 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-    ID_SEPARATOR,
-    makeCloudId,
-    makeEdgeId,
-    makeFlowId,
-    makeNodeId,
-    makeStockId,
-} from "@/models/graph";
+import { ID_SEPARATOR } from "@/models/graph";
 import type { Operation } from "@/models/operation";
-import { sendGraphOperation } from "@/sync/graph";
+import { sendGraphOperation } from "@/sync/socket";
 
 import {
     addCloud,
@@ -29,24 +22,16 @@ import {
     updateStock,
 } from "./graph";
 
+const getNextIdMock = vi.fn((entityType: string) => `${entityType}${ID_SEPARATOR}3`);
 const applyMock = vi.fn();
-
-vi.mock("@/models/graph", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("@/models/graph")>();
-    return {
-        ID_SEPARATOR: actual.ID_SEPARATOR,
-        makeNodeId: vi.fn((counter: number) => `node${actual.ID_SEPARATOR}${counter}`),
-        makeEdgeId: vi.fn((counter: number) => `edge${actual.ID_SEPARATOR}${counter}`),
-        makeStockId: vi.fn((counter: number) => `stock${actual.ID_SEPARATOR}${counter}`),
-        makeCloudId: vi.fn((counter: number) => `cloud${actual.ID_SEPARATOR}${counter}`),
-        makeFlowId: vi.fn((counter: number) => `flow${actual.ID_SEPARATOR}${counter}`),
-    };
-});
 
 vi.mock("@/stores/graph", () => ({
     useGraphStore: {
         getState: vi.fn(() => ({
             counter: 3,
+            getNextId: getNextIdMock,
+            getRecords: vi.fn(),
+            getKey: vi.fn(),
             apply: applyMock,
             nodes: { [`node${ID_SEPARATOR}1`]: { id: `node${ID_SEPARATOR}1` } },
             stocks: { [`stock${ID_SEPARATOR}1`]: { id: `stock${ID_SEPARATOR}1` } },
@@ -79,7 +64,7 @@ vi.mock("@/stores/graph", () => ({
     },
 }));
 
-vi.mock("@/sync/graph", () => ({
+vi.mock("@/sync/socket", () => ({
     sendGraphOperation: vi.fn(),
 }));
 
@@ -96,6 +81,7 @@ describe("graph actions", () => {
                 type: "node/add",
                 node: {
                     id: `node${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     x: 10,
                     y: 20,
                     radius: 50,
@@ -105,7 +91,7 @@ describe("graph actions", () => {
                 },
             };
 
-            expect(makeNodeId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("node");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -153,6 +139,7 @@ describe("graph actions", () => {
                 type: "edge/add",
                 edge: {
                     id: `edge${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     from: `node${ID_SEPARATOR}1`,
                     to: `node${ID_SEPARATOR}2`,
                     polarity: null,
@@ -160,7 +147,7 @@ describe("graph actions", () => {
                 },
             };
 
-            expect(makeEdgeId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("edge");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -172,6 +159,7 @@ describe("graph actions", () => {
                 type: "edge/add",
                 edge: {
                     id: `edge${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     from: "a",
                     to: "b",
                     polarity: "+",
@@ -221,6 +209,7 @@ describe("graph actions", () => {
                 type: "stock/add",
                 stock: {
                     id: `stock${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     x: 10,
                     y: 20,
                     width: 128,
@@ -231,7 +220,7 @@ describe("graph actions", () => {
                 },
             };
 
-            expect(makeStockId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("stock");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -285,13 +274,14 @@ describe("graph actions", () => {
                 type: "cloud/add",
                 cloud: {
                     id: `cloud${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     x: 10,
                     y: 20,
                     radius: 32,
                 },
             };
 
-            expect(makeCloudId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("cloud");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -337,6 +327,7 @@ describe("graph actions", () => {
                 type: "flow/add",
                 flow: {
                     id: `flow${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     from: `stock${ID_SEPARATOR}1`,
                     to: `cloud${ID_SEPARATOR}2`,
                     label: "",
@@ -345,7 +336,7 @@ describe("graph actions", () => {
                 },
             };
 
-            expect(makeFlowId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("flow");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });

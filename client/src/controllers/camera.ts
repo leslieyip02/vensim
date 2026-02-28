@@ -1,6 +1,6 @@
 import type Konva from "konva";
 import type { KonvaEventObject } from "konva/lib/Node";
-import { useRef, useState } from "react";
+import { type RefObject, useRef, useState } from "react";
 
 export interface Camera {
     x: number;
@@ -8,10 +8,9 @@ export interface Camera {
     zoom: number;
 }
 
-export function useCameraController(initial: Camera) {
+export function useCameraController(stageRef: RefObject<Konva.Stage | null>, initial: Camera) {
     const [camera, setCamera] = useState<Camera>(initial);
 
-    const stageRef = useRef<Konva.Stage>(null);
     const isPanning = useRef(false);
     const lastPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -65,7 +64,6 @@ export function useCameraController(initial: Camera) {
 
     return {
         camera,
-        stageRef,
         handleWheel,
         beginPan,
         handlePan,

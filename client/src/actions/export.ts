@@ -6,9 +6,7 @@ export async function importState(file: File) {
 }
 
 export function exportState() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-    const { apply, ...state } = useGraphStore.getState();
-
+    const state = getCleanState();
     const blob = new Blob([JSON.stringify(state)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
 
@@ -20,4 +18,24 @@ export function exportState() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+function getCleanState() {
+    const state = useGraphStore.getState();
+
+    return {
+        counter: state.counter,
+        nodes: purgeSelections(state.nodes),
+        edges: purgeSelections(state.edges),
+        stocks: purgeSelections(state.stocks),
+        clouds: purgeSelections(state.clouds),
+        flows: purgeSelections(state.flows),
+    };
+}
+
+function purgeSelections(records: Record<string, object>) {
+    // remove selectedBy since that locks an entity from being edited
+    return Object.fromEntries(
+        Object.entries(records).map(([key, entity]) => [key, { ...entity, selectedBy: null }]),
+    );
 }

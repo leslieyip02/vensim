@@ -38,6 +38,7 @@ const DEFAULT_STOCK: Stock = {
     height: 0,
     label: "",
     description: "",
+    equation: "",
 };
 
 const DEFAULT_CLOUD: Cloud = {
@@ -52,6 +53,8 @@ const DEFAULT_FLOW: Flow = {
     from: `stock${ID_SEPARATOR}0`,
     to: `cloud${ID_SEPARATOR}0`,
     curvature: 0,
+    label: "",
+    equation: "",
 };
 
 describe("useGraphStore", () => {
