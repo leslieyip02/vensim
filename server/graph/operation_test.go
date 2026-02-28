@@ -66,8 +66,8 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 
 	for desc, test := range tests {
 		t.Run(desc, func(t *testing.T) {
-			got, suceeded := test.initial.Apply(test.op)
-			if !suceeded {
+			got, succeeded := test.initial.Apply(test.op)
+			if !succeeded {
 				t.Errorf("expected operation to succeed")
 			}
 			if got.Counter != test.want.Counter {
@@ -141,8 +141,8 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 
 	for desc, test := range tests {
 		t.Run(desc, func(t *testing.T) {
-			got, suceeded := test.initial.Apply(test.op)
-			if !suceeded {
+			got, succeeded := test.initial.Apply(test.op)
+			if !succeeded {
 				t.Errorf("expected operation to succeed")
 			}
 			if got.Counter != test.want.Counter {
@@ -216,8 +216,8 @@ func TestState_Apply_StockOperations(t *testing.T) {
 
 	for desc, test := range tests {
 		t.Run(desc, func(t *testing.T) {
-			got, suceeded := test.initial.Apply(test.op)
-			if !suceeded {
+			got, succeeded := test.initial.Apply(test.op)
+			if !succeeded {
 				t.Errorf("expected operation to succeed")
 			}
 			if got.Counter != test.want.Counter {
@@ -291,8 +291,8 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 
 	for desc, test := range tests {
 		t.Run(desc, func(t *testing.T) {
-			got, suceeded := test.initial.Apply(test.op)
-			if !suceeded {
+			got, succeeded := test.initial.Apply(test.op)
+			if !succeeded {
 				t.Errorf("expected operation to succeed")
 			}
 			if got.Counter != test.want.Counter {
@@ -366,8 +366,8 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 
 	for desc, test := range tests {
 		t.Run(desc, func(t *testing.T) {
-			got, suceeded := test.initial.Apply(test.op)
-			if !suceeded {
+			got, succeeded := test.initial.Apply(test.op)
+			if !succeeded {
 				t.Errorf("expected operation to succeed")
 			}
 			if got.Counter != test.want.Counter {
