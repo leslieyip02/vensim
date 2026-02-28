@@ -1,7 +1,9 @@
 package graph
 
 type Node struct {
-	ID          string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	X           float64 `json:"x"`
 	Y           float64 `json:"y"`
 	Radius      float64 `json:"radius"`
@@ -11,7 +13,9 @@ type Node struct {
 }
 
 type Edge struct {
-	ID        string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	From      string  `json:"from"`
 	To        string  `json:"to"`
 	Polarity  string  `json:"polarity"`
@@ -19,7 +23,9 @@ type Edge struct {
 }
 
 type Stock struct {
-	ID          string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	X           float64 `json:"x"`
 	Y           float64 `json:"y"`
 	Width       float64 `json:"width"`
@@ -30,14 +36,18 @@ type Stock struct {
 }
 
 type Cloud struct {
-	ID     string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	X      float64 `json:"x"`
 	Y      float64 `json:"y"`
 	Radius float64 `json:"radius"`
 }
 
 type Flow struct {
-	ID        string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	From      string  `json:"from"`
 	To        string  `json:"to"`
 	Curvature float64 `json:"curvature"`

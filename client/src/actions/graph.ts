@@ -2,16 +2,11 @@ import {
     type Cloud,
     type Edge,
     type Flow,
-    makeCloudId,
-    makeEdgeId,
-    makeFlowId,
-    makeNodeId,
-    makeStockId,
     type Node,
     type Polarity,
     type Stock,
 } from "@/models/graph";
-import type { Operation } from "@/models/operation";
+import type { Operation, OperationType } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/socket";
 
@@ -21,26 +16,39 @@ function dispatch(op: Operation) {
     sendGraphOperation(op);
 }
 
-export function addNode(x: number, y: number, radius = 32) {
-    const state = useGraphStore.getState();
+// ==============
+//  Common logic
+// ==============
 
-    const node: Node = {
-        id: makeNodeId(state.counter),
-        x,
-        y,
-        radius,
-        label: "",
-        description: "",
-        equation: "",
-    };
+export function addEntity(entityType: string, entity: Partial<unknown>) {
+    const id = useGraphStore.getState().getNextId(entityType);
+    entity = { id, ...entity };
 
-    const op: Operation = { type: "node/add", node };
+    const op = { type: `${entityType}/add` as OperationType, [entityType]: entity } as Operation;
     dispatch(op);
 }
 
-export function updateNode(id: string, patch: Partial<Node>) {
-    const op: Operation = { type: "node/update", id, patch };
+export function updateEntity(entityType: string, id: string, patch: Partial<unknown>) {
+    const op = { type: `${entityType}/update` as OperationType, id, patch } as Operation;
     dispatch(op);
+}
+
+export function deleteEntity(entityType: string, id: string) {
+    const op = { type: `${entityType}/delete` as OperationType, id } as Operation;
+    dispatch(op);
+}
+
+// =======================
+//  Entity specific logic
+// =======================
+
+export function addNode(x: number, y: number, radius: number = 32) {
+    const node = makePartialNode(x, y, radius);
+    addEntity("node", node);
+}
+
+export function updateNode(id: string, patch: Partial<Node>) {
+    updateEntity("node", id, patch);
 }
 
 export function deleteNode(id: string) {
@@ -50,8 +58,7 @@ export function deleteNode(id: string) {
         .filter((edge) => edge.from === id || edge.to === id)
         .forEach((edge) => deleteEdge(edge.id));
 
-    const op: Operation = { type: "node/delete", id };
-    dispatch(op);
+    deleteEntity("node", id);
 }
 
 export function addEdge(
@@ -60,51 +67,25 @@ export function addEdge(
     polarity: Polarity | null = null,
     curvature: number = 0.25,
 ) {
-    const state = useGraphStore.getState();
-
-    const edge: Edge = {
-        id: makeEdgeId(state.counter),
-        from,
-        to,
-        polarity,
-        curvature,
-    };
-
-    const op: Operation = { type: "edge/add", edge };
-    dispatch(op);
+    const edge = makePartialEdge(from, to, polarity, curvature);
+    addEntity("edge", edge);
 }
 
 export function updateEdge(id: string, patch: Partial<Edge>) {
-    const op: Operation = { type: "edge/update", id, patch };
-    dispatch(op);
+    updateEntity("edge", id, patch);
 }
 
 export function deleteEdge(id: string) {
-    const op: Operation = { type: "edge/delete", id };
-    dispatch(op);
+    deleteEntity("edge", id);
 }
 
 export function addStock(x: number, y: number, width = 128, height = 64) {
-    const state = useGraphStore.getState();
-
-    const stock: Stock = {
-        id: makeStockId(state.counter),
-        x,
-        y,
-        width,
-        height,
-        label: "",
-        description: "",
-        equation: "",
-    };
-
-    const op: Operation = { type: "stock/add", stock };
-    dispatch(op);
+    const stock = makePartialStock(x, y, width, height);
+    addEntity("stock", stock);
 }
 
 export function updateStock(id: string, patch: Partial<Stock>) {
-    const op: Operation = { type: "stock/update", id, patch };
-    dispatch(op);
+    updateEntity("stock", id, patch);
 }
 
 export function deleteStock(id: string) {
@@ -118,27 +99,16 @@ export function deleteStock(id: string) {
         .filter((flow) => flow.from === id || flow.to === id)
         .forEach((flow) => deleteFlow(flow.id));
 
-    const op: Operation = { type: "stock/delete", id };
-    dispatch(op);
+    deleteEntity("stock", id);
 }
 
 export function addCloud(x: number, y: number, radius = 32) {
-    const state = useGraphStore.getState();
-
-    const cloud: Cloud = {
-        id: makeCloudId(state.counter),
-        x,
-        y,
-        radius,
-    };
-
-    const op: Operation = { type: "cloud/add", cloud };
-    dispatch(op);
+    const cloud = makePartialCloud(x, y, radius);
+    addEntity("cloud", cloud);
 }
 
 export function updateCloud(id: string, patch: Partial<Cloud>) {
-    const op: Operation = { type: "cloud/update", id, patch };
-    dispatch(op);
+    updateEntity("cloud", id, patch);
 }
 
 export function deleteCloud(id: string) {
@@ -148,29 +118,16 @@ export function deleteCloud(id: string) {
         .filter((flow) => flow.from === id || flow.to === id)
         .forEach((flow) => deleteFlow(flow.id));
 
-    const op: Operation = { type: "cloud/delete", id };
-    dispatch(op);
+    deleteEntity("cloud", id);
 }
 
 export function addFlow(from: string, to: string, curvature: number = 0) {
-    const state = useGraphStore.getState();
-
-    const flow: Flow = {
-        id: makeFlowId(state.counter),
-        label: "",
-        from,
-        to,
-        curvature,
-        equation: "",
-    };
-
-    const op: Operation = { type: "flow/add", flow };
-    dispatch(op);
+    const flow = makePartialFlow(from, to, curvature);
+    addEntity("flow", flow);
 }
 
 export function updateFlow(id: string, patch: Partial<Flow>) {
-    const op: Operation = { type: "flow/update", id, patch };
-    dispatch(op);
+    updateEntity("flow", id, patch);
 }
 
 export function deleteFlow(id: string) {
@@ -180,6 +137,69 @@ export function deleteFlow(id: string) {
         .filter((edge) => edge.to === id)
         .forEach((edge) => deleteEdge(edge.id));
 
-    const op: Operation = { type: "flow/delete", id };
-    dispatch(op);
+    deleteEntity("flow", id);
+}
+
+// =============================
+//  Entity construction helpers
+// =============================
+
+function makePartialNode(x: number, y: number, radius: number): Partial<Node> {
+    return {
+        selectedBy: null,
+        x,
+        y,
+        radius,
+        label: "",
+        description: "",
+        equation: "",
+    };
+}
+
+function makePartialEdge(
+    from: string,
+    to: string,
+    polarity: Polarity | null,
+    curvature: number,
+): Partial<Edge> {
+    return {
+        selectedBy: null,
+        from,
+        to,
+        polarity,
+        curvature,
+    };
+}
+
+function makePartialStock(x: number, y: number, width: number, height: number): Partial<Stock> {
+    return {
+        selectedBy: null,
+        x,
+        y,
+        width,
+        height,
+        label: "",
+        description: "",
+        equation: "",
+    };
+}
+
+function makePartialCloud(x: number, y: number, radius: number): Partial<Cloud> {
+    return {
+        selectedBy: null,
+        x,
+        y,
+        radius,
+    };
+}
+
+function makePartialFlow(from: string, to: string, curvature: number) {
+    return {
+        selectedBy: null,
+        label: "",
+        from,
+        to,
+        curvature,
+        equation: "",
+    };
 }

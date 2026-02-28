@@ -10,11 +10,13 @@ import {
     updateNode,
     updateStock,
 } from "@/actions/graph";
-import { SELECTED_STROKE_COLOR, UNSELECTED_STROKE_COLOR } from "@/configs/color";
+import { getNameColor, UNSELECTED_STROKE_COLOR } from "@/configs/color";
 import { mouseToWorldSpace, snapToGrid } from "@/models/geometry";
-import { isCloudId, isNodeId, isStockId } from "@/models/graph";
+import { ID_SEPARATOR, isCloudId, isNodeId, isStockId, type Selectable } from "@/models/graph";
+import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
 import { useTagStore } from "@/stores/tag";
+import { getUsername } from "@/sync/id";
 
 import type { Camera } from "./camera";
 
@@ -56,27 +58,52 @@ export function useInteractionController(camera: Camera) {
     };
 }
 
-export function useNodeInteractions(nodeId: string) {
+function useBaseInteractions(id: string) {
     const { tags, isTagged } = useTagStore((s) => s);
-    const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
-        useInteractionStore((s) => s);
+    const { selectedTags, toggleSelectId } = useInteractionStore((s) => s);
 
-    const isSelected = selectedIds.includes(nodeId);
-    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, nodeId));
-    const stroke = activeTagId
-        ? tags[activeTagId].color
-        : isSelected
-          ? SELECTED_STROKE_COLOR
-          : UNSELECTED_STROKE_COLOR;
+    const entityType = id.split(ID_SEPARATOR)[0];
+    const records = useGraphStore.getState().getRecords(entityType);
+    const entity = records[id] as Selectable;
+
+    const isSelectedByUser = entity.selectedBy === getUsername();
+    const isSelectedByOther = !isSelectedByUser && !!entity.selectedBy;
+
+    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, id));
+
+    let stroke = activeTagId ? tags[activeTagId].color : UNSELECTED_STROKE_COLOR;
+    if (entity.selectedBy) {
+        stroke = getNameColor(entity.selectedBy);
+    }
+
+    const opacity = selectedTags.length === 0 || activeTagId ? 1 : 0.25;
 
     return {
-        isSelected,
+        isSelectedByUser,
+        isSelectedByOther,
         stroke,
-        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
-        onClick: () => {
-            toggleSelectId(nodeId);
+        opacity,
+        toggle: () => {
+            if (isSelectedByOther) {
+                return;
+            }
+            toggleSelectId(id);
+        },
+    };
+}
 
-            if (interactionMode !== "add-edge") {
+export function useNodeInteractions(nodeId: string) {
+    const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
+    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(nodeId);
+
+    return {
+        isSelectedByOther,
+        stroke,
+        opacity,
+        onClick: () => {
+            toggle();
+
+            if (isSelectedByOther || interactionMode !== "add-edge") {
                 return;
             }
 
@@ -103,46 +130,26 @@ export function useNodeInteractions(nodeId: string) {
 }
 
 export function useEdgeInteractions(edgeId: string) {
-    const { tags, isTagged } = useTagStore((s) => s);
-    const { selectedIds, selectedTags, toggleSelectId } = useInteractionStore((s) => s);
-
-    const isSelected = selectedIds.includes(edgeId);
-    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, edgeId));
-    const stroke = activeTagId
-        ? tags[activeTagId].color
-        : isSelected
-          ? SELECTED_STROKE_COLOR
-          : UNSELECTED_STROKE_COLOR;
-
+    const { stroke, opacity, toggle } = useBaseInteractions(edgeId);
     return {
-        isSelected,
         stroke,
-        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
-        onClick: () => toggleSelectId(edgeId),
+        opacity,
+        onClick: () => toggle(),
     };
 }
 
 export function useStockInteractions(stockId: string) {
-    const { tags, isTagged } = useTagStore((s) => s);
-    const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
-        useInteractionStore((s) => s);
-
-    const isSelected = selectedIds.includes(stockId);
-    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, stockId));
-    const stroke = activeTagId
-        ? tags[activeTagId].color
-        : isSelected
-          ? SELECTED_STROKE_COLOR
-          : UNSELECTED_STROKE_COLOR;
+    const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
+    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(stockId);
 
     return {
-        isSelected,
+        isSelectedByOther,
         stroke,
-        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
+        opacity,
         onClick: () => {
-            toggleSelectId(stockId);
+            toggle();
 
-            if (interactionMode !== "add-flow") {
+            if (isSelectedByOther || interactionMode !== "add-flow") {
                 return;
             }
 
@@ -169,26 +176,17 @@ export function useStockInteractions(stockId: string) {
 }
 
 export function useCloudInteractions(cloudId: string) {
-    const { tags, isTagged } = useTagStore((s) => s);
-    const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
-        useInteractionStore((s) => s);
-
-    const isSelected = selectedIds.includes(cloudId);
-    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, cloudId));
-    const stroke = activeTagId
-        ? tags[activeTagId].color
-        : isSelected
-          ? SELECTED_STROKE_COLOR
-          : UNSELECTED_STROKE_COLOR;
+    const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
+    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(cloudId);
 
     return {
-        isSelected,
+        isSelectedByOther,
         stroke,
-        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
+        opacity,
         onClick: () => {
-            toggleSelectId(cloudId);
+            toggle();
 
-            if (interactionMode !== "add-flow") {
+            if (isSelectedByOther || interactionMode !== "add-flow") {
                 return;
             }
 
@@ -215,26 +213,17 @@ export function useCloudInteractions(cloudId: string) {
 }
 
 export function useFlowInteractions(flowId: string) {
-    const { tags, isTagged } = useTagStore((s) => s);
-    const { interactionMode, selectedIds, selectedTags, toggleSelectId, clearSelectedIds } =
-        useInteractionStore((s) => s);
-
-    const isSelected = selectedIds.includes(flowId);
-    const activeTagId = selectedTags.find((tagId) => isTagged(tagId, flowId));
-    const stroke = activeTagId
-        ? tags[activeTagId].color
-        : isSelected
-          ? SELECTED_STROKE_COLOR
-          : UNSELECTED_STROKE_COLOR;
+    const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
+    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(flowId);
 
     return {
-        isSelected,
+        isSelectedByOther,
         stroke,
-        opacity: selectedTags.length === 0 || activeTagId ? 1 : 0.25,
+        opacity,
         onClick: () => {
-            toggleSelectId(flowId);
+            toggle();
 
-            if (interactionMode !== "add-edge") {
+            if (isSelectedByOther || interactionMode !== "add-edge") {
                 return;
             }
 

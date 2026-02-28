@@ -4,13 +4,15 @@ import { useStockInteractions } from "@/controllers/interaction";
 import type { Stock } from "@/models/graph";
 
 export function StockView({ stock }: { stock: Stock }) {
-    const { stroke, opacity, onClick, onDragEnd } = useStockInteractions(stock.id);
+    const { isSelectedByOther, stroke, opacity, onClick, onDragEnd } = useStockInteractions(
+        stock.id,
+    );
 
     return (
         <Group
             x={stock.x}
             y={stock.y}
-            draggable
+            draggable={!isSelectedByOther}
             dragBoundFunc={(position) => position}
             onClick={onClick}
             onDragEnd={onDragEnd}

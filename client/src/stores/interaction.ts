@@ -1,5 +1,9 @@
 import { create } from "zustand";
 
+import { updateEntity } from "@/actions/graph";
+import { ID_SEPARATOR } from "@/models/graph";
+import { getUsername } from "@/sync/id";
+
 interface InteractionState {
     interactionMode: InteractionMode;
     selectedIds: string[];
@@ -22,27 +26,36 @@ export type InteractionMode =
     | "add-cloud"
     | "add-flow";
 
-export const useInteractionStore = create<InteractionState>((set) => ({
+export const useInteractionStore = create<InteractionState>((set, get) => ({
     interactionMode: "select",
     selectedIds: [],
     selectedTags: [],
+    inspectorOpen: false,
 
     setInteractionMode: (interactionMode) =>
         set(() => ({
             interactionMode,
         })),
 
-    toggleSelectId: (id) =>
+    toggleSelectId: (id) => {
+        const isSelected = get().selectedIds.includes(id);
+
         set((state) => ({
-            selectedIds: state.selectedIds.includes(id)
+            selectedIds: isSelected
                 ? state.selectedIds.filter((selectedId) => selectedId !== id)
                 : [...state.selectedIds, id],
-        })),
+        }));
 
-    clearSelectedIds: () =>
-        set(() => ({
-            selectedIds: [],
-        })),
+        // HACK: this sucks
+        const entityType = id.split(ID_SEPARATOR)[0];
+        const patch = { selectedBy: isSelected ? null : getUsername() };
+        updateEntity(entityType, id, patch);
+    },
+
+    clearSelectedIds: () => {
+        const selectedIds = get().selectedIds;
+        selectedIds.forEach((selectedId) => get().toggleSelectId(selectedId));
+    },
 
     toggleSelectedTag: (id) =>
         set((state) => ({
@@ -51,7 +64,6 @@ export const useInteractionStore = create<InteractionState>((set) => ({
                 : [...state.selectedTags, id],
         })),
 
-    inspectorOpen: false,
     toggleInspectorOpen: () =>
         set((state) => ({
             inspectorOpen: !state.inspectorOpen,

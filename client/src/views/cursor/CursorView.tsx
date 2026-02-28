@@ -1,18 +1,9 @@
 import { Arrow, Group, Rect, Text } from "react-konva";
 
-import { getPaletteColor } from "@/configs/color";
+import { getNameColor } from "@/configs/color";
 import { useCursorStore } from "@/stores/cursor";
 import { useInteractionStore } from "@/stores/interaction";
 import { getClientId } from "@/sync/id";
-
-function getColor(name: string) {
-    // HACK: pick a color based on the name
-    let index = 0;
-    for (let i = 0; i < name.length; i++) {
-        index += name.charCodeAt(i);
-    }
-    return getPaletteColor(index);
-}
 
 export function CursorView() {
     const cursors = useCursorStore((s) => s.cursors);
@@ -21,7 +12,7 @@ export function CursorView() {
     return (
         <>
             {Object.entries(cursors).map(([id, cursor]) => {
-                const color = getColor(cursor.username);
+                const color = getNameColor(cursor.username);
 
                 return (
                     <Group key={id} x={cursor.x} y={cursor.y} listening={false}>

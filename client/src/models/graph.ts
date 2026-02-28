@@ -2,11 +2,17 @@ export const ID_SEPARATOR = "_";
 
 export type Polarity = "+" | "-";
 
-interface Identifiable {
+export interface Identifiable {
     id: string;
 }
 
-export interface Node extends Identifiable {
+export interface Selectable {
+    // this refers to username instead of client
+    // because the cursor model already includes it
+    selectedBy?: string | null;
+}
+
+export interface Node extends Identifiable, Selectable {
     x: number;
     y: number;
     radius: number;
@@ -15,14 +21,14 @@ export interface Node extends Identifiable {
     equation: string;
 }
 
-export interface Edge extends Identifiable {
+export interface Edge extends Identifiable, Selectable {
     from: string;
     to: string;
     polarity: Polarity | null;
     curvature: number;
 }
 
-export interface Stock extends Identifiable {
+export interface Stock extends Identifiable, Selectable {
     x: number;
     y: number;
     width: number;
@@ -32,38 +38,18 @@ export interface Stock extends Identifiable {
     equation: string;
 }
 
-export interface Cloud extends Identifiable {
+export interface Cloud extends Identifiable, Selectable {
     x: number;
     y: number;
     radius: number;
 }
 
-export interface Flow extends Identifiable {
+export interface Flow extends Identifiable, Selectable {
     label: string;
     from: string;
     to: string;
     curvature: number;
     equation: string;
-}
-
-export function makeNodeId(counter: number) {
-    return `node${ID_SEPARATOR}${counter}`;
-}
-
-export function makeEdgeId(counter: number) {
-    return `edge${ID_SEPARATOR}${counter}`;
-}
-
-export function makeStockId(counter: number) {
-    return `stock${ID_SEPARATOR}${counter}`;
-}
-
-export function makeCloudId(counter: number) {
-    return `cloud${ID_SEPARATOR}${counter}`;
-}
-
-export function makeFlowId(counter: number) {
-    return `flow${ID_SEPARATOR}${counter}`;
 }
 
 export function isNodeId(id: string): boolean {
