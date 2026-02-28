@@ -1,6 +1,6 @@
 import { deleteCursor } from "@/actions/cursor";
 import type { CursorMessage } from "@/models/cursor";
-import type { Operation } from "@/models/graph";
+import type { Operation } from "@/models/operation";
 import { useCursorStore } from "@/stores/cursor";
 import { useGraphStore } from "@/stores/graph";
 

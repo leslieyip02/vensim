@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { Operation } from "@/models/graph";
 import {
     ID_SEPARATOR,
     makeCloudId,
@@ -9,6 +8,7 @@ import {
     makeNodeId,
     makeStockId,
 } from "@/models/graph";
+import type { Operation } from "@/models/operation";
 import { sendGraphOperation } from "@/sync/socket";
 
 import {

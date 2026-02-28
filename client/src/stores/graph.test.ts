@@ -6,9 +6,9 @@ import {
     type Flow,
     ID_SEPARATOR,
     type Node,
-    type Operation,
     type Stock,
 } from "@/models/graph";
+import type { Operation } from "@/models/operation";
 
 import { useGraphStore } from "./graph";
 

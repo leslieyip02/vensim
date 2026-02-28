@@ -8,10 +8,10 @@ import {
     makeNodeId,
     makeStockId,
     type Node,
-    type Operation,
     type Polarity,
     type Stock,
 } from "@/models/graph";
+import type { Operation } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/socket";
 
