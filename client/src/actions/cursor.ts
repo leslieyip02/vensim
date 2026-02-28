@@ -3,10 +3,22 @@ import { useCursorStore } from "@/stores/cursor";
 import { getClientId, getUsername } from "@/sync/id";
 import { sendCursorMessage } from "@/sync/socket";
 
+const THROTTLE_WINDOW = 50;
+
+let lastSentTimestamp = Date.now();
+
 function dispatch(message: CursorMessage) {
     const state = useCursorStore.getState();
+
+    // always update local cursor
     state.handleMessage(message);
-    sendCursorMessage(message);
+
+    // throttle updates to server
+    const currentTimestamp = Date.now();
+    if (currentTimestamp - lastSentTimestamp > THROTTLE_WINDOW) {
+        sendCursorMessage(message);
+        lastSentTimestamp = currentTimestamp;
+    }
 }
 
 export function updateCursor(x: number, y: number) {
