@@ -14,7 +14,7 @@ export function StockView({ stock }: { stock: Stock }) {
             y={stock.y}
             draggable={!isSelectedByOther}
             dragBoundFunc={(position) => position}
-            onClick={onClick}
+            onClick={(e) => onClick(e.evt)}
             onDragEnd={onDragEnd}
             opacity={opacity}
         >

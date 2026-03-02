@@ -12,7 +12,7 @@ export function NodeView({ node }: { node: Node }) {
             y={node.y}
             draggable={!isSelectedByOther}
             dragBoundFunc={(position) => position}
-            onClick={onClick}
+            onClick={(e) => onClick(e.evt)}
             onDragEnd={onDragEnd}
             opacity={opacity}
         >

@@ -55,7 +55,7 @@ export function CloudView({ cloud }: { cloud: Cloud }) {
             y={cloud.y}
             draggable={!isSelectedByOther}
             dragBoundFunc={(pos) => pos}
-            onClick={onClick}
+            onClick={(e) => onClick(e.evt)}
             onDragEnd={onDragEnd}
             opacity={opacity}
         >
