@@ -3,7 +3,6 @@ import { useRef } from "react";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import type { Flow, Node } from "@/models/graph";
-import { VALID_OPERATOR_STRING } from "@/utils/equationValidationRegex";
 import { useEquationController } from "@/utils/useEquationController";
 import { useOutsideClickHandler } from "@/utils/useOutsideClickHandler";
 import { EquationBadges } from "@/views/inspector/equation/EquationBadges";
@@ -21,10 +20,10 @@ export function EquationFieldSet({
     const {
         draftEquation,
         equationError,
-        parents,
         handleEquationFieldBlur,
         handleChangeDraftEquation,
         handleBadgeClick,
+        badges,
     } = useEquationController(entity, handleChange);
 
     useOutsideClickHandler(textareaRef, badgeRefs, handleEquationFieldBlur);
@@ -44,16 +43,11 @@ export function EquationFieldSet({
                         onBlur={handleEquationFieldBlur}
                         ref={textareaRef}
                     />
-                    {equationError && (
-                        <p className="text-sm text-red-600 mt-1">
-                            Equation can only contain numbers, operators ({VALID_OPERATOR_STRING})
-                            and valid node, stock or flow labels.
-                        </p>
-                    )}
+                    {equationError && <p className="text-sm text-red-600 mt-1">{equationError}</p>}
                 </Field>
             </FieldSet>
             <EquationBadges
-                parents={parents}
+                badges={badges}
                 badgeRefs={badgeRefs}
                 onClick={handleBadgeClick}
                 textAreaRef={textareaRef}
