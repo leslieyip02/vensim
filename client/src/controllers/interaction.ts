@@ -4,19 +4,30 @@ import {
     addCloud,
     addEdge,
     addFlow,
+    addLoop,
     addNode,
     addStock,
     updateCloud,
+    updateLoop,
     updateNode,
     updateStock,
 } from "@/actions/graph";
 import { getNameColor, UNSELECTED_STROKE_COLOR } from "@/configs/color";
 import { mouseToWorldSpace, snapToGrid } from "@/models/geometry";
-import { ID_SEPARATOR, isCloudId, isNodeId, isStockId, type Selectable } from "@/models/graph";
+import {
+    type Edge,
+    ID_SEPARATOR,
+    isCloudId,
+    isEdgeId,
+    isNodeId,
+    isStockId,
+    type Selectable,
+} from "@/models/graph";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
 import { useTagStore } from "@/stores/tag";
 import { getUsername } from "@/sync/id";
+import { getLoopsFromEdges } from "@/utils/loop";
 
 import type { Camera } from "./camera";
 
@@ -138,11 +149,31 @@ export function useNodeInteractions(nodeId: string) {
 }
 
 export function useEdgeInteractions(edgeId: string) {
+    const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
     const { stroke, opacity, onClick } = useBaseInteractions(edgeId);
     return {
         stroke,
         opacity,
-        onClick: (e: MouseEvent) => onClick(e),
+        onClick: (e: MouseEvent) => {
+            onClick(e);
+
+            if (interactionMode !== "add-loop") {
+                return;
+            }
+
+            const allEdges = useGraphStore.getState().getRecords("edge");
+            const selectedEdges = [...selectedIds, edgeId]
+                .filter(isEdgeId)
+                .map((id) => allEdges[id] as Edge);
+            const loops = getLoopsFromEdges(selectedEdges);
+
+            if (loops.length === 0) {
+                return;
+            }
+
+            loops.forEach((loop) => addLoop(loop.edgeIds));
+            clearSelectedIds();
+        },
     };
 }
 
@@ -245,6 +276,36 @@ export function useFlowInteractions(flowId: string) {
             const from = selectedIds[0];
             addEdge(from, flowId);
             clearSelectedIds();
+        },
+    };
+}
+
+export function useLoopInteractions(loopId: string) {
+    const { isSelectedByOther, stroke, opacity, onClick } = useBaseInteractions(loopId);
+
+    return {
+        isSelectedByOther,
+        stroke,
+        opacity,
+        onClick: (e: MouseEvent) => {
+            onClick(e);
+
+            if (isSelectedByOther) {
+                return;
+            }
+        },
+        onDragEnd: (
+            e: KonvaEventObject<DragEvent>,
+            centerX: number,
+            centerY: number,
+            avgRadius: number,
+        ) => {
+            const position = { x: e.target.x(), y: e.target.y() };
+
+            updateLoop(loopId, {
+                relX: (position.x - centerX) / avgRadius,
+                relY: (position.y - centerY) / avgRadius,
+            });
         },
     };
 }
