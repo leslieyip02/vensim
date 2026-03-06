@@ -11,7 +11,7 @@ import {
 import type { Operation, OperationType } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/socket";
-import { computeLoopPolarity } from "@/utils/loop";
+import { computeLoopType, detectLoop, detectLoopType } from "@/utils/loop";
 
 function dispatch(op: Operation) {
     const state = useGraphStore.getState();
@@ -23,22 +23,25 @@ function dispatch(op: Operation) {
 //  Common logic
 // ==============
 
-export function addEntity(entityType: string, entity: Partial<unknown>) {
+export function addEntity(entityType: string, entity: Partial<unknown>): string {
     const id = useGraphStore.getState().getNextId(entityType);
     entity = { id, ...entity };
 
     const op = { type: `${entityType}/add` as OperationType, [entityType]: entity } as Operation;
     dispatch(op);
+    return id;
 }
 
-export function updateEntity(entityType: string, id: string, patch: Partial<unknown>) {
+export function updateEntity(entityType: string, id: string, patch: Partial<unknown>): string {
     const op = { type: `${entityType}/update` as OperationType, id, patch } as Operation;
     dispatch(op);
+    return id;
 }
 
-export function deleteEntity(entityType: string, id: string) {
+export function deleteEntity(entityType: string, id: string): string {
     const op = { type: `${entityType}/delete` as OperationType, id } as Operation;
     dispatch(op);
+    return id;
 }
 
 // =======================
@@ -70,16 +73,44 @@ export function addEdge(
     polarity: Polarity | null = null,
     curvature: number = 0.25,
 ) {
+    const state = useGraphStore.getState();
+    const allEdges = state.getRecords("edge") as Record<string, Edge>;
+
     const edge = makePartialEdge(from, to, polarity, curvature);
-    addEntity("edge", edge);
+    const edgeId = addEntity("edge", edge);
+
+    const possibleLoops = detectLoop(allEdges, edge, edgeId);
+
+    if (possibleLoops) {
+        possibleLoops.forEach((loop) => {
+            addLoop(loop.edgeIds);
+        });
+    }
 }
 
 export function updateEdge(id: string, patch: Partial<Edge>) {
-    updateEntity("edge", id, patch);
+    const state = useGraphStore.getState();
+
+    const edgeId = updateEntity("edge", id, patch);
+
+    const possiblyUpdatedLoops = Object.values(state.loops).filter((loop) => loop.edgeIds.includes(edgeId));
+
+    possiblyUpdatedLoops.forEach((loop) => {
+        const loopEdges = loop.edgeIds.map((id) => state.edges[id]);
+        const newLoopType = detectLoopType(loopEdges, edgeId, patch.polarity ?? state.edges[edgeId].polarity);
+        if (newLoopType !== loop.loopType) {
+            updateLoop(loop.id, { loopType: newLoopType });
+        }
+    });
 }
 
 export function deleteEdge(id: string) {
-    deleteEntity("edge", id);
+    const state = useGraphStore.getState();
+
+    const edgeId = deleteEntity("edge", id);
+
+    const toDeleteLoops = Object.values(state.loops).filter((loop) => loop.edgeIds.includes(edgeId));
+    toDeleteLoops.forEach((loop) => deleteLoop(loop.id));
 }
 
 export function addStock(x: number, y: number, width = 128, height = 64) {
@@ -144,7 +175,7 @@ export function deleteFlow(id: string) {
 }
 
 export function addLoop(edgeIds: string[]) {
-    const loopType = computeLoopPolarity(edgeIds.map((id) => useGraphStore.getState().edges[id]));
+    const loopType = computeLoopType(edgeIds.map((id) => useGraphStore.getState().edges[id]));
     const loop = makePartialLoop(edgeIds, loopType);
     addEntity("loop", loop);
 }

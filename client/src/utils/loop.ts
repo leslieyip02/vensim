@@ -1,4 +1,4 @@
-import { type Edge, type LoopType } from "@/models/graph";
+import { type Edge, type LoopType, type Polarity } from "@/models/graph";
 
 type DetectedLoop = {
     edgeIds: string[];
@@ -48,7 +48,7 @@ export function detectLoop(
     existingEdges: Record<string, Edge>,
     newPartialEdge: Partial<Edge>,
     newEdgeId: string,
-): DetectedLoop | null {
+): DetectedLoop[] | null {
     const tempNewEdge: Edge = {
         id: newEdgeId,
         from: newPartialEdge.from!,
@@ -58,15 +58,19 @@ export function detectLoop(
     };
 
     const tempAllEdges = [...Object.values(existingEdges), tempNewEdge];
-
     const loops = getLoopsFromEdges(tempAllEdges);
-    return loops.find((l) => l.edgeIds.includes(newEdgeId)) ?? null;
+    return loops.filter((loop) => loop.edgeIds.includes(newEdgeId));
 }
 
-export function computeLoopPolarity(edges: Edge[]): LoopType {
+export function computeLoopType(edges: Edge[]): LoopType {
     if (edges.some((e) => e.polarity == null)) return null;
 
     const negativeCount = edges.filter((e) => e.polarity === "-").length;
 
     return negativeCount % 2 === 0 ? "R" : "B";
+}
+
+export function detectLoopType(edges: Edge[], updatedEdgeId: string, updatedEdgePolarity: Polarity | null): LoopType {
+    const updatedEdges = edges.map((e) => (e.id === updatedEdgeId ? { ...e, polarity: updatedEdgePolarity } : e));
+    return computeLoopType(updatedEdges);
 }
