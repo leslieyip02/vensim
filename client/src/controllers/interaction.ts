@@ -60,7 +60,7 @@ export function useInteractionController(camera: Camera) {
 
 function useBaseInteractions(id: string) {
     const { tags, isTagged } = useTagStore((s) => s);
-    const { selectedTags, toggleSelectId } = useInteractionStore((s) => s);
+    const { selectedTags, toggleSelectId, clearSelectedIds } = useInteractionStore((s) => s);
 
     const entityType = id.split(ID_SEPARATOR)[0];
     const records = useGraphStore.getState().getRecords(entityType);
@@ -83,10 +83,18 @@ function useBaseInteractions(id: string) {
         isSelectedByOther,
         stroke,
         opacity,
-        toggle: () => {
+        onClick: (e: MouseEvent) => {
             if (isSelectedByOther) {
                 return;
             }
+
+            // only allow multiselect when shifting
+            if (e.shiftKey) {
+                toggleSelectId(id);
+                return;
+            }
+
+            clearSelectedIds();
             toggleSelectId(id);
         },
     };
@@ -94,14 +102,14 @@ function useBaseInteractions(id: string) {
 
 export function useNodeInteractions(nodeId: string) {
     const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
-    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(nodeId);
+    const { isSelectedByOther, stroke, opacity, onClick } = useBaseInteractions(nodeId);
 
     return {
         isSelectedByOther,
         stroke,
         opacity,
-        onClick: () => {
-            toggle();
+        onClick: (e: MouseEvent) => {
+            onClick(e);
 
             if (isSelectedByOther || interactionMode !== "add-edge") {
                 return;
@@ -130,24 +138,24 @@ export function useNodeInteractions(nodeId: string) {
 }
 
 export function useEdgeInteractions(edgeId: string) {
-    const { stroke, opacity, toggle } = useBaseInteractions(edgeId);
+    const { stroke, opacity, onClick } = useBaseInteractions(edgeId);
     return {
         stroke,
         opacity,
-        onClick: () => toggle(),
+        onClick: (e: MouseEvent) => onClick(e),
     };
 }
 
 export function useStockInteractions(stockId: string) {
     const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
-    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(stockId);
+    const { isSelectedByOther, stroke, opacity, onClick } = useBaseInteractions(stockId);
 
     return {
         isSelectedByOther,
         stroke,
         opacity,
-        onClick: () => {
-            toggle();
+        onClick: (e: MouseEvent) => {
+            onClick(e);
 
             if (isSelectedByOther || interactionMode !== "add-flow") {
                 return;
@@ -177,14 +185,14 @@ export function useStockInteractions(stockId: string) {
 
 export function useCloudInteractions(cloudId: string) {
     const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
-    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(cloudId);
+    const { isSelectedByOther, stroke, opacity, onClick } = useBaseInteractions(cloudId);
 
     return {
         isSelectedByOther,
         stroke,
         opacity,
-        onClick: () => {
-            toggle();
+        onClick: (e: MouseEvent) => {
+            onClick(e);
 
             if (isSelectedByOther || interactionMode !== "add-flow") {
                 return;
@@ -214,14 +222,14 @@ export function useCloudInteractions(cloudId: string) {
 
 export function useFlowInteractions(flowId: string) {
     const { interactionMode, selectedIds, clearSelectedIds } = useInteractionStore((s) => s);
-    const { isSelectedByOther, stroke, opacity, toggle } = useBaseInteractions(flowId);
+    const { isSelectedByOther, stroke, opacity, onClick } = useBaseInteractions(flowId);
 
     return {
         isSelectedByOther,
         stroke,
         opacity,
-        onClick: () => {
-            toggle();
+        onClick: (e: MouseEvent) => {
+            onClick(e);
 
             if (isSelectedByOther || interactionMode !== "add-edge") {
                 return;

@@ -86,7 +86,7 @@ export function FlowView({ flow }: { flow: Flow }) {
             <ShapeDiv
                 sceneFunc={draw}
                 hitFunc={hit}
-                onClick={onClick}
+                onClick={(e) => onClick(e.evt)}
                 stroke={stroke}
                 strokeWidth={8}
             />

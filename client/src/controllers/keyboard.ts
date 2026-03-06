@@ -33,6 +33,7 @@ export function useKeyboardShortcuts() {
                     cancelSelection();
                     setInteractionMode("select");
                     break;
+                case "Backspace":
                 case "Delete":
                     deleteSelectedIds();
                     break;
