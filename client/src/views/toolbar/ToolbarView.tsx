@@ -2,6 +2,7 @@ import ClickerIcon from "@/assets/clicker.svg?react";
 import CloudIcon from "@/assets/cloud.svg?react";
 import EdgeIcon from "@/assets/edge.svg?react";
 import FlowIcon from "@/assets/flow.svg?react";
+import LoopIcon from "@/assets/loop.svg?react";
 import NodeIcon from "@/assets/node.svg?react";
 import StockIcon from "@/assets/stock.svg?react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -108,6 +109,22 @@ const AddFlowButton = ({ interactionMode }: ButtonProps) => (
     </Tooltip>
 );
 
+const AddLoopButton = ({ interactionMode }: ButtonProps) => (
+    <Tooltip>
+        <TooltipTrigger asChild>
+            <ToggleGroupItem
+                value="add-loop"
+                className={interactionMode === "add-loop" ? "bg-toolbar" : ""}
+            >
+                <LoopIcon />
+            </ToggleGroupItem>
+        </TooltipTrigger>
+        <TooltipContent>
+            <p>Add Loop</p>
+        </TooltipContent>
+    </Tooltip>
+);
+
 export function ToolbarView() {
     const { interactionMode, setInteractionMode, clearSelectedIds } = useInteractionStore((s) => s);
 
@@ -128,6 +145,7 @@ export function ToolbarView() {
                 <AddStockButton interactionMode={interactionMode} />
                 <AddCloudButton interactionMode={interactionMode} />
                 <AddFlowButton interactionMode={interactionMode} />
+                <AddLoopButton interactionMode={interactionMode} />
             </ToggleGroup>
         </div>
     );

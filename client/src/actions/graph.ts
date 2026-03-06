@@ -2,6 +2,8 @@ import {
     type Cloud,
     type Edge,
     type Flow,
+    type Loop,
+    type LoopType,
     type Node,
     type Polarity,
     type Stock,
@@ -9,6 +11,7 @@ import {
 import type { Operation, OperationType } from "@/models/operation";
 import { useGraphStore } from "@/stores/graph";
 import { sendGraphOperation } from "@/sync/socket";
+import { computeLoopPolarity } from "@/utils/loop";
 
 function dispatch(op: Operation) {
     const state = useGraphStore.getState();
@@ -140,6 +143,20 @@ export function deleteFlow(id: string) {
     deleteEntity("flow", id);
 }
 
+export function addLoop(edgeIds: string[]) {
+    const loopType = computeLoopPolarity(edgeIds.map((id) => useGraphStore.getState().edges[id]));
+    const loop = makePartialLoop(edgeIds, loopType);
+    addEntity("loop", loop);
+}
+
+export function updateLoop(id: string, patch: Partial<Loop>) {
+    updateEntity("loop", id, patch);
+}
+
+export function deleteLoop(id: string) {
+    deleteEntity("loop", id);
+}
+
 // =============================
 //  Entity construction helpers
 // =============================
@@ -201,5 +218,16 @@ function makePartialFlow(from: string, to: string, curvature: number) {
         to,
         curvature,
         equation: "",
+    };
+}
+
+function makePartialLoop(edgeIds: string[], loopType: LoopType): Partial<Loop> {
+    return {
+        selectedBy: null,
+        relX: 0,
+        relY: 0,
+        edgeIds,
+        loopType,
+        label: "",
     };
 }

@@ -24,7 +24,8 @@ export type InteractionMode =
     | "add-edge"
     | "add-stock"
     | "add-cloud"
-    | "add-flow";
+    | "add-flow"
+    | "add-loop";
 
 export const useInteractionStore = create<InteractionState>((set, get) => ({
     interactionMode: "select",

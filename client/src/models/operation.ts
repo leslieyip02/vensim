@@ -1,4 +1,4 @@
-import type { Cloud, Edge, Flow, Node, Stock } from "./graph";
+import type { Cloud, Edge, Flow, Loop, Node, Stock } from "./graph";
 
 export type OperationType =
     | "node/add"
@@ -15,7 +15,10 @@ export type OperationType =
     | "cloud/delete"
     | "flow/add"
     | "flow/update"
-    | "flow/delete";
+    | "flow/delete"
+    | "loop/add"
+    | "loop/update"
+    | "loop/delete";
 
 export type Operation = { type: OperationType } & (
     | { node: Node }
@@ -32,5 +35,8 @@ export type Operation = { type: OperationType } & (
     | { id: string }
     | { flow: Flow }
     | { id: string; patch: Partial<Flow> }
+    | { id: string }
+    | { loop: Loop }
+    | { id: string; patch: Partial<Loop> }
     | { id: string }
 );

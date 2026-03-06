@@ -184,3 +184,23 @@ export function computeLineGeometry(
         label,
     };
 }
+
+export function generateLoopPoints(
+    radius: number,
+    requestedPoints: number = 7,
+    requestedTotalPoints: number = 8,
+) {
+    const points: number[] = [];
+    const totalPoints =
+        requestedTotalPoints < requestedPoints ? requestedPoints + 1 : requestedTotalPoints;
+    const totalRotation = (requestedPoints / totalPoints) * (2 * Math.PI);
+
+    for (let i = 0; i <= requestedPoints; i++) {
+        const angle = (i / requestedPoints) * totalRotation;
+        const x = radius * Math.cos(angle);
+        const y = radius * Math.sin(angle);
+
+        points.push(Number(x.toFixed(2)), Number(y.toFixed(2)));
+    }
+    return points;
+}
