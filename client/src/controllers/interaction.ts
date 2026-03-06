@@ -154,8 +154,8 @@ export function useEdgeInteractions(edgeId: string) {
     return {
         stroke,
         opacity,
-        onClick: () => {
-            onClick: (e: MouseEvent) => onClick(e);
+        onClick: (e: MouseEvent) => {
+            onClick(e);
 
             if (interactionMode !== "add-loop") {
                 return;
