@@ -70,7 +70,13 @@ export function computeLoopType(edges: Edge[]): LoopType {
     return negativeCount % 2 === 0 ? "R" : "B";
 }
 
-export function detectLoopType(edges: Edge[], updatedEdgeId: string, updatedEdgePolarity: Polarity | null): LoopType {
-    const updatedEdges = edges.map((e) => (e.id === updatedEdgeId ? { ...e, polarity: updatedEdgePolarity } : e));
+export function detectLoopType(
+    edges: Edge[],
+    updatedEdgeId: string,
+    updatedEdgePolarity: Polarity | null,
+): LoopType {
+    const updatedEdges = edges.map((e) =>
+        e.id === updatedEdgeId ? { ...e, polarity: updatedEdgePolarity } : e,
+    );
     return computeLoopType(updatedEdges);
 }

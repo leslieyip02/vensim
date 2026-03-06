@@ -93,11 +93,17 @@ export function updateEdge(id: string, patch: Partial<Edge>) {
 
     const edgeId = updateEntity("edge", id, patch);
 
-    const possiblyUpdatedLoops = Object.values(state.loops).filter((loop) => loop.edgeIds.includes(edgeId));
+    const possiblyUpdatedLoops = Object.values(state.loops).filter((loop) =>
+        loop.edgeIds.includes(edgeId),
+    );
 
     possiblyUpdatedLoops.forEach((loop) => {
         const loopEdges = loop.edgeIds.map((id) => state.edges[id]);
-        const newLoopType = detectLoopType(loopEdges, edgeId, patch.polarity ?? state.edges[edgeId].polarity);
+        const newLoopType = detectLoopType(
+            loopEdges,
+            edgeId,
+            patch.polarity ?? state.edges[edgeId].polarity,
+        );
         if (newLoopType !== loop.loopType) {
             updateLoop(loop.id, { loopType: newLoopType });
         }
@@ -109,7 +115,9 @@ export function deleteEdge(id: string) {
 
     const edgeId = deleteEntity("edge", id);
 
-    const toDeleteLoops = Object.values(state.loops).filter((loop) => loop.edgeIds.includes(edgeId));
+    const toDeleteLoops = Object.values(state.loops).filter((loop) =>
+        loop.edgeIds.includes(edgeId),
+    );
     toDeleteLoops.forEach((loop) => deleteLoop(loop.id));
 }
 
