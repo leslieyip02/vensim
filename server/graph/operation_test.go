@@ -379,3 +379,78 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 		})
 	}
 }
+
+func TestState_Apply_LoopOperations(t *testing.T) {
+	tests := map[string]struct {
+		op      Operation
+		initial State
+		want    State
+	}{
+		"LoopAdd": {
+			op: Operation{
+				Type: LoopAdd,
+				Loop: &Loop{ID: "loop-1"},
+			},
+			initial: State{
+				Loops:   map[string]*Loop{},
+				Counter: 1,
+			},
+			want: State{
+				Loops: map[string]*Loop{
+					"loop-1": {ID: "loop-1"},
+				},
+				Counter: 2,
+			},
+		},
+		"LoopUpdate": {
+			op: Operation{
+				Type:  LoopUpdate,
+				ID:    "loop-1",
+				Patch: map[string]any{"label": "updated"},
+			},
+			initial: State{
+				Loops: map[string]*Loop{
+					"loop-1": {ID: "loop-1", Label: "old"},
+				},
+				Counter: 1,
+			},
+			want: State{
+				Loops: map[string]*Loop{
+					"loop-1": {ID: "loop-1", Label: "updated"},
+				},
+				Counter: 1,
+			},
+		},
+		"LoopDelete": {
+			op: Operation{
+				Type: LoopDelete,
+				ID:   "loop-1",
+			},
+			initial: State{
+				Loops: map[string]*Loop{
+					"loop-1": {ID: "loop-1"},
+				},
+				Counter: 1,
+			},
+			want: State{
+				Loops:   map[string]*Loop{},
+				Counter: 1,
+			},
+		},
+	}
+
+	for desc, test := range tests {
+		t.Run(desc, func(t *testing.T) {
+			got, succeeded := test.initial.Apply(test.op)
+			if !succeeded {
+				t.Errorf("expected operation to succeed")
+			}
+			if got.Counter != test.want.Counter {
+				t.Errorf("counter mismatch: want %+v but got %+v", test.want.Counter, got.Counter)
+			}
+			if !reflect.DeepEqual(test.want.Loops, got.Loops) {
+				t.Errorf("loops mismatch: want %+v but got %+v", test.want.Loops, got.Loops)
+			}
+		})
+	}
+}

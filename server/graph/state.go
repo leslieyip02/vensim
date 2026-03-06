@@ -6,6 +6,7 @@ type State struct {
 	Stocks  map[string]*Stock `json:"stocks"`
 	Clouds  map[string]*Cloud `json:"clouds"`
 	Flows   map[string]*Flow  `json:"flows"`
+	Loops   map[string]*Loop  `json:"loops"`
 	Counter int               `json:"counter"`
 }
 
@@ -16,6 +17,7 @@ func NewState() *State {
 		Stocks:  make(map[string]*Stock),
 		Clouds:  make(map[string]*Cloud),
 		Flows:   make(map[string]*Flow),
+		Loops:   make(map[string]*Loop),
 		Counter: 1,
 	}
 }
