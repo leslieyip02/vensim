@@ -71,7 +71,7 @@ export function LoopView({ loop }: { loop: Loop }) {
             y={actualY}
             draggable={!isSelectedByOther}
             dragBoundFunc={(position) => position}
-            onClick={onClick}
+            onClick={(e) => onClick(e.evt)}
             onDragEnd={(e) => {
                 onDragEnd(e, loopGeometry.centerX, loopGeometry.centerY, loopGeometry.avgRadius);
             }}
