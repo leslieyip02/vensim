@@ -13,6 +13,8 @@ func RunSimulation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// todo
+
 	res, err := simulate(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
