@@ -119,7 +119,7 @@ export function SimulationModalView() {
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
 
-                    <Button onClick={handleSimulate}>Test Run Sample Payload</Button>
+                    <Button onClick={handleSimulate}>Run Simulation</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
