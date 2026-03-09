@@ -5,6 +5,7 @@ import {
     type Edge,
     type Flow,
     ID_SEPARATOR,
+    type Loop,
     type Node,
     type Stock,
 } from "@/models/graph";
@@ -36,9 +37,10 @@ const DEFAULT_STOCK: Stock = {
     y: 0,
     width: 0,
     height: 0,
-    initialValue: 0,
     label: "",
     description: "",
+    equation: "",
+    initialValue: 0,
 };
 
 const DEFAULT_CLOUD: Cloud = {
@@ -53,8 +55,18 @@ const DEFAULT_FLOW: Flow = {
     id: `flow${ID_SEPARATOR}0`,
     from: `stock${ID_SEPARATOR}0`,
     to: `cloud${ID_SEPARATOR}0`,
-    equation: "",
     curvature: 0,
+    equation: "",
+};
+
+const DEFAULT_LOOP: Loop = {
+    id: `loop${ID_SEPARATOR}0`,
+    selectedBy: null,
+    relX: 0,
+    relY: 0,
+    edgeIds: [],
+    loopType: "R",
+    label: "",
 };
 
 describe("useGraphStore", () => {
@@ -63,6 +75,10 @@ describe("useGraphStore", () => {
             counter: 1,
             nodes: {},
             edges: {},
+            stocks: {},
+            clouds: {},
+            flows: {},
+            loops: {},
         });
     });
 
@@ -360,6 +376,68 @@ describe("useGraphStore", () => {
 
         expect(useGraphStore.getState().flows).toEqual({
             [`flow${ID_SEPARATOR}2`]: { ...DEFAULT_FLOW, id: `flow${ID_SEPARATOR}2` },
+        });
+    });
+
+    it("adds a loop and increments counter", () => {
+        const loop: Loop = {
+            ...DEFAULT_LOOP,
+            id: `loop${ID_SEPARATOR}1`,
+            edgeIds: [`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}2`],
+        };
+
+        const op: Operation = {
+            type: "loop/add",
+            loop,
+        };
+
+        useGraphStore.getState().apply(op);
+
+        const state = useGraphStore.getState();
+
+        expect(state.loops[`loop${ID_SEPARATOR}1`]).toEqual(loop);
+        expect(state.counter).toBe(2);
+    });
+
+    it("updates a loop", () => {
+        useGraphStore.setState({
+            loops: {
+                [`loop${ID_SEPARATOR}1`]: {
+                    ...DEFAULT_LOOP,
+                    id: `loop${ID_SEPARATOR}1`,
+                    label: "old",
+                },
+            },
+        });
+
+        const op: Operation = {
+            type: "loop/update",
+            id: `loop${ID_SEPARATOR}1`,
+            patch: { label: "updated" },
+        };
+
+        useGraphStore.getState().apply(op);
+
+        expect(useGraphStore.getState().loops[`loop${ID_SEPARATOR}1`].label).toBe("updated");
+    });
+
+    it("deletes a loop", () => {
+        useGraphStore.setState({
+            loops: {
+                [`loop${ID_SEPARATOR}1`]: { ...DEFAULT_LOOP, id: `loop${ID_SEPARATOR}1` },
+                [`loop${ID_SEPARATOR}2`]: { ...DEFAULT_LOOP, id: `loop${ID_SEPARATOR}2` },
+            },
+        });
+
+        const op: Operation = {
+            type: "loop/delete",
+            id: `loop${ID_SEPARATOR}1`,
+        };
+
+        useGraphStore.getState().apply(op);
+
+        expect(useGraphStore.getState().loops).toEqual({
+            [`loop${ID_SEPARATOR}2`]: { ...DEFAULT_LOOP, id: `loop${ID_SEPARATOR}2` },
         });
     });
 

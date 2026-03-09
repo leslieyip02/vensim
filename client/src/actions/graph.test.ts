@@ -1,52 +1,45 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-    ID_SEPARATOR,
-    makeCloudId,
-    makeEdgeId,
-    makeFlowId,
-    makeNodeId,
-    makeStockId,
-} from "@/models/graph";
+import { ID_SEPARATOR } from "@/models/graph";
 import type { Operation } from "@/models/operation";
-import { sendGraphOperation } from "@/sync/graph";
+import { sendGraphOperation } from "@/sync/socket";
 
 import {
     addCloud,
     addEdge,
     addFlow,
+    addLoop,
     addNode,
     addStock,
     deleteCloud,
     deleteEdge,
     deleteFlow,
+    deleteLoop,
     deleteNode,
     deleteStock,
     updateCloud,
     updateEdge,
     updateFlow,
+    updateLoop,
     updateNode,
     updateStock,
 } from "./graph";
 
+const getNextIdMock = vi.fn((entityType: string) => `${entityType}${ID_SEPARATOR}3`);
 const applyMock = vi.fn();
+const getRecordsMock = vi.fn();
 
-vi.mock("@/models/graph", async (importOriginal) => {
-    const actual = await importOriginal<typeof import("@/models/graph")>();
-    return {
-        ID_SEPARATOR: actual.ID_SEPARATOR,
-        makeNodeId: vi.fn((counter: number) => `node${actual.ID_SEPARATOR}${counter}`),
-        makeEdgeId: vi.fn((counter: number) => `edge${actual.ID_SEPARATOR}${counter}`),
-        makeStockId: vi.fn((counter: number) => `stock${actual.ID_SEPARATOR}${counter}`),
-        makeCloudId: vi.fn((counter: number) => `cloud${actual.ID_SEPARATOR}${counter}`),
-        makeFlowId: vi.fn((counter: number) => `flow${actual.ID_SEPARATOR}${counter}`),
-    };
-});
+const computeLoopTypeMock = vi.fn();
+const detectLoopMock = vi.fn();
+const detectLoopTypeMock = vi.fn();
 
 vi.mock("@/stores/graph", () => ({
     useGraphStore: {
         getState: vi.fn(() => ({
             counter: 3,
+            getNextId: getNextIdMock,
+            getRecords: getRecordsMock,
+            getKey: vi.fn(),
             apply: applyMock,
             nodes: { [`node${ID_SEPARATOR}1`]: { id: `node${ID_SEPARATOR}1` } },
             stocks: { [`stock${ID_SEPARATOR}1`]: { id: `stock${ID_SEPARATOR}1` } },
@@ -56,16 +49,22 @@ vi.mock("@/stores/graph", () => ({
                     id: `edge${ID_SEPARATOR}1`,
                     from: `node${ID_SEPARATOR}1`,
                     to: `stock${ID_SEPARATOR}1`,
+                    polarity: null,
+                    curvature: 0.25,
                 },
                 [`edge${ID_SEPARATOR}2`]: {
                     id: `edge${ID_SEPARATOR}2`,
                     from: `stock${ID_SEPARATOR}1`,
                     to: `node${ID_SEPARATOR}1`,
+                    polarity: "+",
+                    curvature: 0.25,
                 },
                 [`edge${ID_SEPARATOR}3`]: {
                     id: `edge${ID_SEPARATOR}3`,
                     from: `node${ID_SEPARATOR}1`,
                     to: `flow${ID_SEPARATOR}1`,
+                    polarity: null,
+                    curvature: 0.25,
                 },
             },
             flows: {
@@ -73,14 +72,34 @@ vi.mock("@/stores/graph", () => ({
                     id: `flow${ID_SEPARATOR}1`,
                     from: `stock${ID_SEPARATOR}1`,
                     to: `cloud${ID_SEPARATOR}1`,
+                    curvature: 0,
+                    label: "",
+                    equation: "",
+                },
+            },
+            loops: {
+                [`loop${ID_SEPARATOR}1`]: {
+                    id: `loop${ID_SEPARATOR}1`,
+                    edgeIds: [`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}2`],
+                    loopType: "R",
+                    label: "",
+                    selectedBy: null,
+                    relX: 0,
+                    relY: 0,
                 },
             },
         })),
     },
 }));
 
-vi.mock("@/sync/graph", () => ({
+vi.mock("@/sync/socket", () => ({
     sendGraphOperation: vi.fn(),
+}));
+
+vi.mock("@/utils/loop", () => ({
+    computeLoopType: (...args: unknown[]) => computeLoopTypeMock(...args),
+    detectLoop: (...args: unknown[]) => detectLoopMock(...args),
+    detectLoopType: (...args: unknown[]) => detectLoopTypeMock(...args),
 }));
 
 describe("graph actions", () => {
@@ -96,16 +115,17 @@ describe("graph actions", () => {
                 type: "node/add",
                 node: {
                     id: `node${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     x: 10,
                     y: 20,
                     radius: 50,
-                    label: `node${ID_SEPARATOR}3`,
+                    label: "",
                     description: "",
                     equation: "",
                 },
             };
 
-            expect(makeNodeId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("node");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -147,12 +167,16 @@ describe("graph actions", () => {
 
     describe("addEdge", () => {
         it("creates and sends an edge/add operation with defaults", () => {
+            getRecordsMock.mockReturnValue({});
+            detectLoopMock.mockReturnValue(null);
+
             addEdge(`node${ID_SEPARATOR}1`, `node${ID_SEPARATOR}2`);
 
             const expectedOp: Operation = {
                 type: "edge/add",
                 edge: {
                     id: `edge${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     from: `node${ID_SEPARATOR}1`,
                     to: `node${ID_SEPARATOR}2`,
                     polarity: null,
@@ -160,18 +184,22 @@ describe("graph actions", () => {
                 },
             };
 
-            expect(makeEdgeId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("edge");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
 
         it("respects custom polarity and curvature", () => {
+            getRecordsMock.mockReturnValue({});
+            detectLoopMock.mockReturnValue(null);
+
             addEdge("a", "b", "+", 0.5);
 
             const expectedOp: Operation = {
                 type: "edge/add",
                 edge: {
                     id: `edge${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     from: "a",
                     to: "b",
                     polarity: "+",
@@ -182,10 +210,47 @@ describe("graph actions", () => {
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
+
+        it("detects loops and adds loop entities when detectLoop returns loops", () => {
+            const allEdgesMock = {
+                [`edge${ID_SEPARATOR}1`]: { id: `edge${ID_SEPARATOR}1`, from: "a", to: "b" },
+            };
+            getRecordsMock.mockReturnValue(allEdgesMock);
+
+            detectLoopMock.mockReturnValue([
+                { edgeIds: [`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}3`] },
+            ]);
+
+            computeLoopTypeMock.mockReturnValue("R");
+
+            addEdge("a", "b");
+
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "edge/add",
+                edge: expect.objectContaining({
+                    id: `edge${ID_SEPARATOR}3`,
+                }),
+            });
+
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "loop/add",
+                loop: {
+                    id: `loop${ID_SEPARATOR}3`,
+                    selectedBy: null,
+                    relX: 0,
+                    relY: 0,
+                    edgeIds: [`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}3`],
+                    loopType: "R",
+                    label: "",
+                },
+            });
+        });
     });
 
     describe("updateEdge", () => {
         it("creates and sends an edge/update operation", () => {
+            detectLoopTypeMock.mockReturnValue("R");
+
             updateEdge(`edge${ID_SEPARATOR}1`, { curvature: 0.9 });
 
             const expectedOp: Operation = {
@@ -196,6 +261,24 @@ describe("graph actions", () => {
 
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
+        });
+
+        it("recomputes loopType and updates affected loops when polarity changes", () => {
+            detectLoopTypeMock.mockReturnValue("balancing");
+
+            updateEdge(`edge${ID_SEPARATOR}2`, { polarity: "-" });
+
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "edge/update",
+                id: `edge${ID_SEPARATOR}2`,
+                patch: { polarity: "-" },
+            });
+
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "loop/update",
+                id: `loop${ID_SEPARATOR}1`,
+                patch: { loopType: "balancing" },
+            });
         });
     });
 
@@ -211,6 +294,15 @@ describe("graph actions", () => {
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
+
+        it("deletes loops that contain the deleted edge", () => {
+            deleteEdge(`edge${ID_SEPARATOR}1`);
+
+            expect(applyMock).toHaveBeenCalledWith({
+                type: "loop/delete",
+                id: `loop${ID_SEPARATOR}1`,
+            });
+        });
     });
 
     describe("addStock", () => {
@@ -221,17 +313,19 @@ describe("graph actions", () => {
                 type: "stock/add",
                 stock: {
                     id: `stock${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     x: 10,
                     y: 20,
                     width: 128,
                     height: 64,
-                    label: `stock${ID_SEPARATOR}3`,
+                    label: "",
                     description: "",
+                    equation: "",
                     initialValue: 0,
                 },
             };
 
-            expect(makeStockId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("stock");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -285,13 +379,14 @@ describe("graph actions", () => {
                 type: "cloud/add",
                 cloud: {
                     id: `cloud${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     x: 10,
                     y: 20,
                     radius: 32,
                 },
             };
 
-            expect(makeCloudId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("cloud");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -337,15 +432,16 @@ describe("graph actions", () => {
                 type: "flow/add",
                 flow: {
                     id: `flow${ID_SEPARATOR}3`,
+                    selectedBy: null,
                     from: `stock${ID_SEPARATOR}1`,
                     to: `cloud${ID_SEPARATOR}2`,
-                    label: `flow${ID_SEPARATOR}3`,
+                    label: "",
                     curvature: 0,
                     equation: "",
                 },
             };
 
-            expect(makeFlowId).toHaveBeenCalledWith(3);
+            expect(getNextIdMock).toHaveBeenCalledWith("flow");
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });
@@ -378,6 +474,62 @@ describe("graph actions", () => {
                 type: "edge/delete",
                 id: `edge${ID_SEPARATOR}3`,
             });
+            expect(applyMock).toHaveBeenCalledWith(expectedOp);
+            expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
+        });
+    });
+
+    describe("addLoop", () => {
+        it("creates and sends a loop/add operation", () => {
+            computeLoopTypeMock.mockReturnValue("R");
+
+            addLoop([`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}2`]);
+
+            const expectedOp: Operation = {
+                type: "loop/add",
+                loop: {
+                    id: `loop${ID_SEPARATOR}3`,
+                    selectedBy: null,
+                    relX: 0,
+                    relY: 0,
+                    edgeIds: [`edge${ID_SEPARATOR}1`, `edge${ID_SEPARATOR}2`],
+                    loopType: "R",
+                    label: "",
+                },
+            };
+
+            expect(getNextIdMock).toHaveBeenCalledWith("loop");
+            expect(applyMock).toHaveBeenCalledWith(expectedOp);
+            expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
+        });
+    });
+
+    describe("updateLoop", () => {
+        it("creates and sends a loop/update operation", () => {
+            updateLoop(`loop${ID_SEPARATOR}1`, { label: "1" });
+
+            const expectedOp: Operation = {
+                type: "loop/update",
+                id: `loop${ID_SEPARATOR}1`,
+                patch: {
+                    label: "1",
+                },
+            };
+
+            expect(applyMock).toHaveBeenCalledWith(expectedOp);
+            expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
+        });
+    });
+
+    describe("deleteLoop", () => {
+        it("creates and sends a loop/delete operation", () => {
+            deleteLoop(`loop${ID_SEPARATOR}1`);
+
+            const expectedOp: Operation = {
+                type: "loop/delete",
+                id: `loop${ID_SEPARATOR}1`,
+            };
+
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
             expect(sendGraphOperation).toHaveBeenCalledWith(expectedOp);
         });

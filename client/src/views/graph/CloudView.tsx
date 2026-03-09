@@ -6,7 +6,9 @@ import { useCloudInteractions } from "@/controllers/interaction";
 import type { Cloud } from "@/models/graph";
 
 export function CloudView({ cloud }: { cloud: Cloud }) {
-    const { stroke, opacity, onClick, onDragEnd } = useCloudInteractions(cloud.id);
+    const { isSelectedByOther, stroke, opacity, onClick, onDragEnd } = useCloudInteractions(
+        cloud.id,
+    );
     const { radius } = cloud;
 
     function buildCloudPath(ctx: Context) {
@@ -51,9 +53,9 @@ export function CloudView({ cloud }: { cloud: Cloud }) {
         <Group
             x={cloud.x}
             y={cloud.y}
-            draggable
+            draggable={!isSelectedByOther}
             dragBoundFunc={(pos) => pos}
-            onClick={onClick}
+            onClick={(e) => onClick(e.evt)}
             onDragEnd={onDragEnd}
             opacity={opacity}
         >

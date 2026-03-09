@@ -97,7 +97,7 @@ export function EdgeView({ edge }: { edge: Edge }) {
             <ShapeDiv
                 sceneFunc={draw}
                 hitFunc={hit}
-                onClick={onClick}
+                onClick={(e) => onClick(e.evt)}
                 stroke={stroke}
                 strokeWidth={8}
             />

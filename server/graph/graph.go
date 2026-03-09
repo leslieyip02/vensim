@@ -3,17 +3,21 @@ package graph
 const ID_SEPARATOR string = "_"
 
 type Node struct {
-	ID          string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	X           float64 `json:"x"`
 	Y           float64 `json:"y"`
 	Radius      float64 `json:"radius"`
 	Label       string  `json:"label"`
 	Description string  `json:"description"`
-	Equation	string	`json:"equation"`
+	Equation    string  `json:"equation"`
 }
 
 type Edge struct {
-	ID        string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	From      string  `json:"from"`
 	To        string  `json:"to"`
 	Polarity  string  `json:"polarity"`
@@ -21,27 +25,45 @@ type Edge struct {
 }
 
 type Stock struct {
-	ID          string  `json:"id"`
-	X           float64 `json:"x"`
-	Y           float64 `json:"y"`
-	Width       float64 `json:"width"`
-	Height      float64 `json:"height"`
-	Label       string  `json:"label"`
-	Description string  `json:"description"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
+	X            float64 `json:"x"`
+	Y            float64 `json:"y"`
+	Width        float64 `json:"width"`
+	Height       float64 `json:"height"`
+	Label        string  `json:"label"`
+	Description  string  `json:"description"`
+	Equation     string  `json:"equation"`
 	InitialValue float64 `json:"initialValue"`
 }
 
 type Cloud struct {
-	ID     string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	X      float64 `json:"x"`
 	Y      float64 `json:"y"`
 	Radius float64 `json:"radius"`
 }
 
 type Flow struct {
-	ID        string  `json:"id"`
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
 	From      string  `json:"from"`
 	To        string  `json:"to"`
 	Curvature float64 `json:"curvature"`
-	Equation	string	`json:"equation"`
+	Equation  string  `json:"equation"`
+}
+
+type Loop struct {
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
+	RelX     float64  `json:"relX"`
+	RelY     float64  `json:"relY"`
+	EdgeIDs  []string `json:"edgeIds"`
+	LoopType string   `json:"loopType"`
+	Label    string   `json:"label"`
 }

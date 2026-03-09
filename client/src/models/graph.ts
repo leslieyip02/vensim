@@ -2,11 +2,19 @@ export const ID_SEPARATOR = "_";
 
 export type Polarity = "+" | "-";
 
-interface Identifiable {
+export type LoopType = "R" | "B" | null;
+
+export interface Identifiable {
     id: string;
 }
 
-export interface Node extends Identifiable {
+export interface Selectable {
+    // this refers to username instead of client
+    // because the cursor model already includes it
+    selectedBy?: string | null;
+}
+
+export interface Node extends Identifiable, Selectable {
     x: number;
     y: number;
     radius: number;
@@ -15,30 +23,31 @@ export interface Node extends Identifiable {
     equation: string;
 }
 
-export interface Edge extends Identifiable {
+export interface Edge extends Identifiable, Selectable {
     from: string;
     to: string;
     polarity: Polarity | null;
     curvature: number;
 }
 
-export interface Stock extends Identifiable {
+export interface Stock extends Identifiable, Selectable {
     x: number;
     y: number;
     width: number;
     height: number;
     label: string;
     description: string;
+    equation: string;
     initialValue: number;
 }
 
-export interface Cloud extends Identifiable {
+export interface Cloud extends Identifiable, Selectable {
     x: number;
     y: number;
     radius: number;
 }
 
-export interface Flow extends Identifiable {
+export interface Flow extends Identifiable, Selectable {
     label: string;
     from: string;
     to: string;
@@ -46,24 +55,12 @@ export interface Flow extends Identifiable {
     equation: string;
 }
 
-export function makeNodeId(counter: number) {
-    return `node${ID_SEPARATOR}${counter}`;
-}
-
-export function makeEdgeId(counter: number) {
-    return `edge${ID_SEPARATOR}${counter}`;
-}
-
-export function makeStockId(counter: number) {
-    return `stock${ID_SEPARATOR}${counter}`;
-}
-
-export function makeCloudId(counter: number) {
-    return `cloud${ID_SEPARATOR}${counter}`;
-}
-
-export function makeFlowId(counter: number) {
-    return `flow${ID_SEPARATOR}${counter}`;
+export interface Loop extends Identifiable, Selectable {
+    relX: number;
+    relY: number;
+    edgeIds: string[];
+    loopType: LoopType;
+    label: string;
 }
 
 export function isNodeId(id: string): boolean {
@@ -86,6 +83,10 @@ export function isFlowId(id: string): boolean {
     return id.startsWith("flow");
 }
 
+export function isLoopId(id: string): boolean {
+    return id.startsWith("loop");
+}
+
 export function isNode(element: Identifiable): element is Node {
     return isNodeId(element.id);
 }
@@ -104,4 +105,8 @@ export function isCloud(element: Identifiable): element is Cloud {
 
 export function isFlow(element: Identifiable): element is Flow {
     return isFlowId(element.id);
+}
+
+export function isLoop(element: Identifiable): element is Loop {
+    return isLoopId(element.id);
 }

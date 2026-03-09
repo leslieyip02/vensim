@@ -1,6 +1,15 @@
 import { create } from "zustand";
 
-import type { Cloud, Edge, Flow, Node, Stock } from "@/models/graph";
+import {
+    type Cloud,
+    type Edge,
+    type Flow,
+    ID_SEPARATOR,
+    type Identifiable,
+    type Loop,
+    type Node,
+    type Stock,
+} from "@/models/graph";
 import type { Operation } from "@/models/operation";
 
 interface GraphState {
@@ -10,125 +19,121 @@ interface GraphState {
     stocks: Record<string, Stock>;
     clouds: Record<string, Cloud>;
     flows: Record<string, Flow>;
+    loops: Record<string, Loop>;
 
+    getNextId: (entityType: string) => string;
+    getRecords: (entityType: string) => Record<string, unknown>;
+    getKey: (entityType: string) => keyof GraphState;
     apply: (op: Operation) => void;
 }
 
-export const useGraphStore = create<GraphState>((set) => ({
+export const useGraphStore = create<GraphState>((set, get) => ({
     counter: 1,
     nodes: {},
     edges: {},
     stocks: {},
     clouds: {},
     flows: {},
+    loops: {},
+
+    getNextId: (entityType) => {
+        return `${entityType}${ID_SEPARATOR}${get().counter}`;
+    },
+
+    getRecords: (entityType) => {
+        switch (entityType) {
+            case "node":
+                return get().nodes;
+            case "edge":
+                return get().edges;
+            case "stock":
+                return get().stocks;
+            case "cloud":
+                return get().clouds;
+            case "flow":
+                return get().flows;
+            case "loop":
+                return get().loops;
+            default:
+                throw new Error(`Unexpected entityType ${entityType}`);
+        }
+    },
+
+    getKey: (entityType) => {
+        switch (entityType) {
+            case "node":
+                return "nodes";
+            case "edge":
+                return "edges";
+            case "stock":
+                return "stocks";
+            case "cloud":
+                return "clouds";
+            case "flow":
+                return "flows";
+            case "loop":
+                return "loops";
+            default:
+                throw new Error(`Unexpected entityType ${entityType}`);
+        }
+    },
 
     apply: (op) =>
         set((state) => {
+            const entityType = op.type.split("/")[0];
+            const records = state.getRecords(entityType);
+            const key = state.getKey(entityType);
+
             switch (op.type) {
                 case "node/add":
+                case "edge/add":
+                case "stock/add":
+                case "cloud/add":
+                case "flow/add":
+                case "loop/add": {
+                    // HACK: this sucks
+                    const entity = (op as Record<string, unknown>)[entityType] as Identifiable;
+
                     return {
                         counter: state.counter + 1,
-                        nodes: { ...state.nodes, [op.node.id]: op.node },
+                        [key]: { ...records, [entity.id]: entity },
                     };
+                }
 
                 case "node/update":
+                case "edge/update":
+                case "stock/update":
+                case "cloud/update":
+                case "flow/update":
+                case "loop/update": {
+                    const id = (op as Record<string, unknown>).id as string;
+                    if (!records[id]) {
+                        return {};
+                    }
+
+                    const patch = (op as Record<string, unknown>).patch as Partial<unknown>;
                     return {
-                        nodes: {
-                            ...state.nodes,
-                            [op.id]: { ...state.nodes[op.id], ...op.patch },
+                        [key]: {
+                            ...records,
+                            [id]: { ...(records[id] as object), ...patch },
                         },
                     };
+                }
 
                 case "node/delete":
-                    return {
-                        nodes: Object.fromEntries(
-                            Object.entries(state.nodes).filter(([id]) => id !== op.id),
-                        ),
-                    };
-
-                case "edge/add":
-                    return {
-                        counter: state.counter + 1,
-                        edges: { ...state.edges, [op.edge.id]: op.edge },
-                    };
-
-                case "edge/update":
-                    return {
-                        edges: {
-                            ...state.edges,
-                            [op.id]: { ...state.edges[op.id], ...op.patch },
-                        },
-                    };
-
                 case "edge/delete":
-                    return {
-                        edges: Object.fromEntries(
-                            Object.entries(state.edges).filter(([id]) => id !== op.id),
-                        ),
-                    };
-
-                case "stock/add":
-                    return {
-                        counter: state.counter + 1,
-                        stocks: { ...state.stocks, [op.stock.id]: op.stock },
-                    };
-
-                case "stock/update":
-                    return {
-                        stocks: {
-                            ...state.stocks,
-                            [op.id]: { ...state.stocks[op.id], ...op.patch },
-                        },
-                    };
-
                 case "stock/delete":
-                    return {
-                        stocks: Object.fromEntries(
-                            Object.entries(state.stocks).filter(([id]) => id !== op.id),
-                        ),
-                    };
-
-                case "cloud/add":
-                    return {
-                        counter: state.counter + 1,
-                        clouds: { ...state.clouds, [op.cloud.id]: op.cloud },
-                    };
-
-                case "cloud/update":
-                    return {
-                        clouds: {
-                            ...state.clouds,
-                            [op.id]: { ...state.clouds[op.id], ...op.patch },
-                        },
-                    };
-
                 case "cloud/delete":
-                    return {
-                        clouds: Object.fromEntries(
-                            Object.entries(state.clouds).filter(([id]) => id !== op.id),
-                        ),
-                    };
-
-                case "flow/add":
-                    return {
-                        counter: state.counter + 1,
-                        flows: { ...state.flows, [op.flow.id]: op.flow },
-                    };
-
-                case "flow/update":
-                    return {
-                        flows: {
-                            ...state.flows,
-                            [op.id]: { ...state.flows[op.id], ...op.patch },
-                        },
-                    };
-
                 case "flow/delete":
+                case "loop/delete": {
+                    const id = (op as Record<string, unknown>).id as string;
+
                     return {
-                        flows: Object.fromEntries(
-                            Object.entries(state.flows).filter(([id]) => id !== op.id),
+                        [key]: Object.fromEntries(
+                            Object.entries(records).filter(([entryId]) => entryId !== id),
                         ),
                     };
+                }
             }
         }),
 }));

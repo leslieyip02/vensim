@@ -1,18 +1,27 @@
 package ws
 
 import (
+	"encoding/json"
+	"log"
 	"server/graph"
 	"server/id"
 
 	"github.com/gorilla/websocket"
 )
 
+type Envelope struct {
+	Type     string          `json:"type"`
+	SenderID string          `json:"senderId"`
+	Data     json.RawMessage `json:"data"`
+}
+
 type Listener interface {
 	getID() string
 	listen()
 	sendID()
-	sendOperation(op graph.Operation)
+	sendEnvelope(envelope Envelope)
 	sendSnapshot(state *graph.State)
+	sendLeaveMessage(clientId string)
 }
 
 type Client struct {
@@ -48,12 +57,13 @@ func (c *Client) getID() string {
 
 func (c *Client) listen() {
 	for {
-		var op graph.Operation
-		if err := c.conn.ReadJSON(&op); err != nil {
+		var envelope Envelope
+		if err := c.conn.ReadJSON(&envelope); err != nil {
+			log.Printf("Client %v: %v", c.getID(), err)
 			c.broadcaster.removeListener(c)
 			break
 		}
-		c.broadcaster.broadcastOperation(op)
+		c.broadcaster.broadcast(envelope)
 	}
 }
 
@@ -68,8 +78,8 @@ func (c *Client) sendID() {
 	c.conn.WriteJSON(msg)
 }
 
-func (c *Client) sendOperation(op graph.Operation) {
-	c.conn.WriteJSON(op)
+func (c *Client) sendEnvelope(envelope Envelope) {
+	c.conn.WriteJSON(envelope)
 }
 
 func (c *Client) sendSnapshot(state *graph.State) {
@@ -79,6 +89,17 @@ func (c *Client) sendSnapshot(state *graph.State) {
 	}{
 		Type:  "snapshot",
 		State: state,
+	}
+	c.conn.WriteJSON(msg)
+}
+
+func (c *Client) sendLeaveMessage(clientId string) {
+	msg := struct {
+		Type     string `json:"type"`
+		ClientID string `json:"clientId"`
+	}{
+		Type:     "leave",
+		ClientID: clientId,
 	}
 	c.conn.WriteJSON(msg)
 }

@@ -10,10 +10,11 @@ import { EditCloudFormView } from "./EditCloudFormView";
 import { EditEdgeFormView } from "./EditEdgeFormView";
 import { EditFlowFormView } from "./EditFlowFormView";
 import { EditGroupFormView } from "./EditGroupFormView";
+import { EditLoopFormView } from "./EditLoopFormView";
 import { EditNodeFormView } from "./EditNodeFormView";
 import { EditStockFormView } from "./EditStockFormView";
 
-type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "group";
+type FormType = "node" | "edge" | "stock" | "cloud" | "flow" | "loop" | "group";
 
 interface FormProps {
     formType: FormType | null;
@@ -53,6 +54,8 @@ const FormView = ({ formType, selectedIds }: FormProps) => {
                     <EditFlowEquationFormView flowId={selectedIds[0]} />
                 </>
             );
+        case "loop":
+            return <EditLoopFormView loopId={selectedIds[0]} />;
         case "group":
             return <EditGroupFormView targetIds={selectedIds} />;
         default:

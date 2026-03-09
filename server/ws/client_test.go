@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +14,7 @@ import (
 )
 
 type MockHub struct {
-	broadcastChannel chan graph.Operation
+	broadcastChannel chan Envelope
 	unregisterCalled chan struct{}
 }
 
@@ -25,8 +26,8 @@ func (h *MockHub) removeListener(_ Listener) {
 	}
 }
 
-func (h *MockHub) broadcastOperation(op graph.Operation) {
-	h.broadcastChannel <- op
+func (h *MockHub) broadcast(envelope Envelope) {
+	h.broadcastChannel <- envelope
 }
 
 func newTestServer(t *testing.T, handler func(*websocket.Conn)) *httptest.Server {
@@ -74,7 +75,7 @@ func TestNewClient_IDFailure(t *testing.T) {
 
 func TestClient_Listen(t *testing.T) {
 	hub := &MockHub{
-		broadcastChannel: make(chan graph.Operation, 1),
+		broadcastChannel: make(chan Envelope, 1),
 		unregisterCalled: make(chan struct{}, 1),
 	}
 
@@ -92,13 +93,26 @@ func TestClient_Listen(t *testing.T) {
 	defer conn.Close()
 
 	op := graph.Operation{Type: "addNode"}
-	conn.WriteJSON(op)
+	encoded, _ := json.Marshal(op)
+	envelope := Envelope{
+		Type:     "graph",
+		SenderID: "123",
+		Data:     encoded,
+	}
+	conn.WriteJSON(envelope)
 
 	select {
 	case received := <-hub.broadcastChannel:
-		if received.Type != op.Type {
-			t.Fatalf("unexpected op")
+		if received.Type != "graph" {
+			t.Fatalf("unexpected envelope type: %v", received.Type)
 		}
+
+		var decoded graph.Operation
+		json.Unmarshal(received.Data, &decoded)
+		if decoded.Type != op.Type {
+			t.Fatalf("unexpected op type: %v", decoded.Type)
+		}
+
 	case <-time.After(time.Second):
 		t.Fatal("did not receive broadcast")
 	}
@@ -138,23 +152,35 @@ func TestClient_SendID(t *testing.T) {
 	}
 }
 
-func TestClient_SendOperation(t *testing.T) {
+func TestClient_SendEnvelope(t *testing.T) {
 	op := graph.Operation{Type: "addNode"}
+	encoded, _ := json.Marshal(op)
+	envelope := Envelope{
+		Type:     "graph",
+		SenderID: "123",
+		Data:     encoded,
+	}
 
 	server := newTestServer(t, func(conn *websocket.Conn) {
 		client := &Client{conn: conn}
-		client.sendOperation(op)
+		client.sendEnvelope(envelope)
 	})
 	defer server.Close()
 
 	u := "ws" + strings.TrimPrefix(server.URL, "http")
 	conn, _, _ := websocket.DefaultDialer.Dial(u, nil)
 
-	var received graph.Operation
+	var received Envelope
 	conn.ReadJSON(&received)
 
-	if received.Type != op.Type {
-		t.Fatalf("unexpected operation: %+v", received)
+	if received.Type != "graph" {
+		t.Fatalf("unexpected envelope type: %v", received.Type)
+	}
+
+	var decoded graph.Operation
+	json.Unmarshal(received.Data, &decoded)
+	if decoded.Type != op.Type {
+		t.Fatalf("unexpected op type: %v", decoded.Type)
 	}
 }
 
@@ -178,5 +204,26 @@ func TestClient_SendSnapshot(t *testing.T) {
 
 	if msg.Type != "snapshot" || msg.State == nil {
 		t.Fatalf("unexpected snapshot message")
+	}
+}
+
+func TestClient_SendLeaveMessage(t *testing.T) {
+	server := newTestServer(t, func(conn *websocket.Conn) {
+		client := &Client{conn: conn}
+		client.sendLeaveMessage("123")
+	})
+	defer server.Close()
+
+	u := "ws" + strings.TrimPrefix(server.URL, "http")
+	conn, _, _ := websocket.DefaultDialer.Dial(u, nil)
+
+	var msg struct {
+		Type     string `json:"type"`
+		ClientID string `json:"clientId"`
+	}
+	conn.ReadJSON(&msg)
+
+	if msg.Type != "leave" {
+		t.Fatalf("unexpected leave message")
 	}
 }

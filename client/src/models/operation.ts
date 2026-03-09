@@ -1,18 +1,42 @@
-import type { Cloud, Edge, Flow, Node, Stock } from "./graph";
+import type { Cloud, Edge, Flow, Loop, Node, Stock } from "./graph";
 
-export type Operation =
-    | { type: "node/add"; node: Node }
-    | { type: "node/update"; id: string; patch: Partial<Node> }
-    | { type: "node/delete"; id: string }
-    | { type: "edge/add"; edge: Edge }
-    | { type: "edge/update"; id: string; patch: Partial<Edge> }
-    | { type: "edge/delete"; id: string }
-    | { type: "stock/add"; stock: Stock }
-    | { type: "stock/update"; id: string; patch: Partial<Stock> }
-    | { type: "stock/delete"; id: string }
-    | { type: "cloud/add"; cloud: Cloud }
-    | { type: "cloud/update"; id: string; patch: Partial<Cloud> }
-    | { type: "cloud/delete"; id: string }
-    | { type: "flow/add"; flow: Flow }
-    | { type: "flow/update"; id: string; patch: Partial<Flow> }
-    | { type: "flow/delete"; id: string };
+export type OperationType =
+    | "node/add"
+    | "node/update"
+    | "node/delete"
+    | "edge/add"
+    | "edge/update"
+    | "edge/delete"
+    | "stock/add"
+    | "stock/update"
+    | "stock/delete"
+    | "cloud/add"
+    | "cloud/update"
+    | "cloud/delete"
+    | "flow/add"
+    | "flow/update"
+    | "flow/delete"
+    | "loop/add"
+    | "loop/update"
+    | "loop/delete";
+
+export type Operation = { type: OperationType } & (
+    | { node: Node }
+    | { id: string; patch: Partial<Node> }
+    | { id: string }
+    | { edge: Edge }
+    | { id: string; patch: Partial<Edge> }
+    | { id: string }
+    | { stock: Stock }
+    | { id: string; patch: Partial<Stock> }
+    | { id: string }
+    | { cloud: Cloud }
+    | { id: string; patch: Partial<Cloud> }
+    | { id: string }
+    | { flow: Flow }
+    | { id: string; patch: Partial<Flow> }
+    | { id: string }
+    | { loop: Loop }
+    | { id: string; patch: Partial<Loop> }
+    | { id: string }
+);

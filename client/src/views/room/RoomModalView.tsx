@@ -17,7 +17,7 @@ import {
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { isGraphSocketConnected } from "@/sync/graph";
+import { isSocketConnected } from "@/sync/socket";
 
 export function RoomModalView() {
     const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +44,7 @@ export function RoomModalView() {
         }
     };
 
-    const alreadyJoined = isGraphSocketConnected();
+    const alreadyJoined = isSocketConnected();
 
     return (
         <Dialog

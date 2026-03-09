@@ -1,5 +1,12 @@
-import { deleteCloud, deleteEdge, deleteFlow, deleteNode, deleteStock } from "@/actions/graph";
-import { isCloudId, isEdgeId, isFlowId, isNodeId, isStockId } from "@/models/graph";
+import {
+    deleteCloud,
+    deleteEdge,
+    deleteFlow,
+    deleteLoop,
+    deleteNode,
+    deleteStock,
+} from "@/actions/graph";
+import { isCloudId, isEdgeId, isFlowId, isLoopId, isNodeId, isStockId } from "@/models/graph";
 import { useInteractionStore } from "@/stores/interaction";
 
 export function useCommands() {
@@ -12,6 +19,7 @@ export function useCommands() {
             else if (isEdgeId(id)) deleteEdge(id);
             else if (isCloudId(id)) deleteCloud(id);
             else if (isFlowId(id)) deleteFlow(id);
+            else if (isLoopId(id)) deleteLoop(id);
         });
         clearSelectedIds();
     };
