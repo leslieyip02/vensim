@@ -1,8 +1,17 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { updateEntity } from "@/actions/graph";
 import { ID_SEPARATOR } from "@/models/graph";
 
 import { type InteractionMode, useInteractionStore } from "./interaction";
+
+vi.mock("@/actions/graph", () => ({
+    updateEntity: vi.fn(),
+}));
+
+vi.mock("@/sync/id", () => ({
+    getUsername: vi.fn(() => "test-user"),
+}));
 
 describe("useInteractionStore", () => {
     beforeEach(() => {
@@ -10,7 +19,9 @@ describe("useInteractionStore", () => {
             interactionMode: "select",
             selectedIds: [],
             selectedTags: [],
+            inspectorOpen: false,
         });
+        vi.clearAllMocks();
     });
 
     it("has correct initial state", () => {
@@ -19,6 +30,7 @@ describe("useInteractionStore", () => {
         expect(state.interactionMode).toBe("select");
         expect(state.selectedIds).toEqual([]);
         expect(state.selectedTags).toEqual([]);
+        expect(state.inspectorOpen).toBe(false);
     });
 
     it("sets interaction mode", () => {
@@ -33,6 +45,9 @@ describe("useInteractionStore", () => {
         useInteractionStore.getState().toggleSelectId(`node${ID_SEPARATOR}1`);
 
         expect(useInteractionStore.getState().selectedIds).toEqual([`node${ID_SEPARATOR}1`]);
+        expect(updateEntity).toHaveBeenCalledWith("node", `node${ID_SEPARATOR}1`, {
+            selectedBy: "test-user",
+        });
     });
 
     it("toggles selected id off if already selected", () => {
@@ -43,6 +58,9 @@ describe("useInteractionStore", () => {
         useInteractionStore.getState().toggleSelectId(`node${ID_SEPARATOR}1`);
 
         expect(useInteractionStore.getState().selectedIds).toEqual([]);
+        expect(updateEntity).toHaveBeenCalledWith("node", `node${ID_SEPARATOR}1`, {
+            selectedBy: null,
+        });
     });
 
     it("supports toggling multiple selected ids", () => {
@@ -55,15 +73,25 @@ describe("useInteractionStore", () => {
             `node${ID_SEPARATOR}1`,
             `node${ID_SEPARATOR}2`,
         ]);
+        expect(updateEntity).toHaveBeenCalledWith("node", `node${ID_SEPARATOR}1`, {
+            selectedBy: "test-user",
+        });
+        expect(updateEntity).toHaveBeenCalledWith("node", `node${ID_SEPARATOR}2`, {
+            selectedBy: "test-user",
+        });
     });
 
-    it("clears selected ids", () => {
+    it("clearSelectedIds calls toggleSelectId for each selectedId and clears them", () => {
         useInteractionStore.setState({
-            selectedIds: [`node${ID_SEPARATOR}1`, `node${ID_SEPARATOR}2`],
+            selectedIds: [`node${ID_SEPARATOR}1`, `stock${ID_SEPARATOR}2`],
         });
+
+        const toggleSpy = vi.spyOn(useInteractionStore.getState(), "toggleSelectId");
 
         useInteractionStore.getState().clearSelectedIds();
 
+        expect(toggleSpy).toHaveBeenCalledWith(`node${ID_SEPARATOR}1`);
+        expect(toggleSpy).toHaveBeenCalledWith(`stock${ID_SEPARATOR}2`);
         expect(useInteractionStore.getState().selectedIds).toEqual([]);
     });
 
@@ -104,5 +132,33 @@ describe("useInteractionStore", () => {
 
         expect(useInteractionStore.getState().selectedIds).toEqual([`node${ID_SEPARATOR}1`]);
         expect(useInteractionStore.getState().selectedTags).toEqual([`tag${ID_SEPARATOR}a`]);
+    });
+
+    it("sets selectedBy to username when selecting and to null when deselecting", () => {
+        const id = `node${ID_SEPARATOR}123`;
+
+        useInteractionStore.getState().toggleSelectId(id);
+        expect(updateEntity).toHaveBeenLastCalledWith("node", id, { selectedBy: "test-user" });
+
+        useInteractionStore.getState().toggleSelectId(id);
+        expect(updateEntity).toHaveBeenLastCalledWith("node", id, { selectedBy: null });
+    });
+
+    it("extracts entityType from id when toggling selection", () => {
+        const edgeId = `edge${ID_SEPARATOR}5`;
+
+        useInteractionStore.getState().toggleSelectId(edgeId);
+
+        expect(updateEntity).toHaveBeenCalledWith("edge", edgeId, { selectedBy: "test-user" });
+    });
+
+    it("toggles inspectorOpen", () => {
+        expect(useInteractionStore.getState().inspectorOpen).toBe(false);
+
+        useInteractionStore.getState().toggleInspectorOpen();
+        expect(useInteractionStore.getState().inspectorOpen).toBe(true);
+
+        useInteractionStore.getState().toggleInspectorOpen();
+        expect(useInteractionStore.getState().inspectorOpen).toBe(false);
     });
 });

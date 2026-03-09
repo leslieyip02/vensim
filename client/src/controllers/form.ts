@@ -1,5 +1,12 @@
-import { updateCloud, updateEdge, updateFlow, updateNode, updateStock } from "@/actions/graph";
-import { type Cloud, type Edge, type Flow, type Node, type Stock } from "@/models/graph";
+import {
+    updateCloud,
+    updateEdge,
+    updateFlow,
+    updateLoop,
+    updateNode,
+    updateStock,
+} from "@/actions/graph";
+import { type Cloud, type Edge, type Flow, type Loop, type Node, type Stock } from "@/models/graph";
 import type { Tag } from "@/models/tag";
 import { useGraphStore } from "@/stores/graph";
 import { useInteractionStore } from "@/stores/interaction";
@@ -81,6 +88,24 @@ export function useFlowForm(flowId: string) {
         },
         handleDelete: () => {
             deleteId(flowId);
+        },
+    };
+}
+
+export function useLoopForm(loopId: string) {
+    const { loops } = useGraphStore((s) => s);
+    const { deleteId, cancelSelection } = useCommands();
+
+    return {
+        loop: loops[loopId],
+        handleChange: (patch: Partial<Loop>) => {
+            updateLoop(loopId, patch);
+        },
+        handleCancel: () => {
+            cancelSelection();
+        },
+        handleDelete: () => {
+            deleteId(loopId);
         },
     };
 }

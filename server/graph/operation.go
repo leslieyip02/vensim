@@ -20,6 +20,9 @@ const (
 	FlowAdd     OperationType = "flow/add"
 	FlowUpdate  OperationType = "flow/update"
 	FlowDelete  OperationType = "flow/delete"
+	LoopAdd     OperationType = "loop/add"
+	LoopUpdate  OperationType = "loop/update"
+	LoopDelete  OperationType = "loop/delete"
 )
 
 type Operation struct {
@@ -30,6 +33,7 @@ type Operation struct {
 	Stock *Stock `json:"stock,omitempty"`
 	Cloud *Cloud `json:"cloud,omitempty"`
 	Flow  *Flow  `json:"flow,omitempty"`
+	Loop  *Loop  `json:"loop,omitempty"`
 
 	ID    string         `json:"id,omitempty"`
 	Patch map[string]any `json:"patch,omitempty"`
@@ -107,6 +111,20 @@ func (s *State) Apply(op Operation) (*State, bool) {
 
 	case FlowDelete:
 		delete(s.Flows, op.ID)
+
+	case LoopAdd:
+		s.Loops[op.Loop.ID] = op.Loop
+		s.Counter++
+
+	case LoopUpdate:
+		loop, found := s.Loops[op.ID]
+		if !found {
+			return s, false
+		}
+		applyPatch(loop, op.Patch)
+
+	case LoopDelete:
+		delete(s.Loops, op.ID)
 	}
 
 	return s, true

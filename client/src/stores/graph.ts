@@ -6,6 +6,7 @@ import {
     type Flow,
     ID_SEPARATOR,
     type Identifiable,
+    type Loop,
     type Node,
     type Stock,
 } from "@/models/graph";
@@ -18,6 +19,7 @@ interface GraphState {
     stocks: Record<string, Stock>;
     clouds: Record<string, Cloud>;
     flows: Record<string, Flow>;
+    loops: Record<string, Loop>;
 
     getNextId: (entityType: string) => string;
     getRecords: (entityType: string) => Record<string, unknown>;
@@ -32,6 +34,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     stocks: {},
     clouds: {},
     flows: {},
+    loops: {},
 
     getNextId: (entityType) => {
         return `${entityType}${ID_SEPARATOR}${get().counter}`;
@@ -49,6 +52,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                 return get().clouds;
             case "flow":
                 return get().flows;
+            case "loop":
+                return get().loops;
             default:
                 throw new Error(`Unexpected entityType ${entityType}`);
         }
@@ -66,6 +71,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                 return "clouds";
             case "flow":
                 return "flows";
+            case "loop":
+                return "loops";
             default:
                 throw new Error(`Unexpected entityType ${entityType}`);
         }
@@ -82,7 +89,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                 case "edge/add":
                 case "stock/add":
                 case "cloud/add":
-                case "flow/add": {
+                case "flow/add":
+                case "loop/add": {
                     // HACK: this sucks
                     const entity = (op as Record<string, unknown>)[entityType] as Identifiable;
 
@@ -96,7 +104,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                 case "edge/update":
                 case "stock/update":
                 case "cloud/update":
-                case "flow/update": {
+                case "flow/update":
+                case "loop/update": {
                     const id = (op as Record<string, unknown>).id as string;
                     if (!records[id]) {
                         return {};
@@ -115,7 +124,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                 case "edge/delete":
                 case "stock/delete":
                 case "cloud/delete":
-                case "flow/delete": {
+                case "flow/delete":
+                case "loop/delete": {
                     const id = (op as Record<string, unknown>).id as string;
 
                     return {

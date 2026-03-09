@@ -53,3 +53,14 @@ type Flow struct {
 	Curvature float64 `json:"curvature"`
 	Equation  string  `json:"equation"`
 }
+
+type Loop struct {
+	ID         string  `json:"id"`
+	SelectedBy *string `json:"selectedBy"`
+
+	RelX     float64  `json:"relX"`
+	RelY     float64  `json:"relY"`
+	EdgeIDs  []string `json:"edgeIds"`
+	LoopType string   `json:"loopType"`
+	Label    string   `json:"label"`
+}
