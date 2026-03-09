@@ -25,15 +25,15 @@ export function SimulationChartView({ data }: { data: SimulationResult }) {
 
         Object.values(state.nodes).forEach((n) => {
             idToLabel[n.id] = n.label;
-            selectedMap[n.label] = false;
+            selectedMap[n.label || n.id] = false;
         });
         Object.values(state.flows).forEach((f) => {
             idToLabel[f.id] = f.label;
-            selectedMap[f.label] = false;
+            selectedMap[f.label || f.id] = false;
         });
         Object.values(state.stocks).forEach((s) => {
             idToLabel[s.id] = s.label;
-            selectedMap[s.label] = true;
+            selectedMap[s.label || s.id] = true;
         });
 
         const series = allKeys.map((id) => ({
