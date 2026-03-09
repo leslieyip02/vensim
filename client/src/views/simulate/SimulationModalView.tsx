@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useErrorBoundary } from "react-error-boundary";
 import { LuChartNoAxesCombined } from "react-icons/lu";
 
 import { runSimulation } from "@/actions/simulation";
@@ -18,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import type { SimulationResult, SimulationSettings } from "@/models/simulation";
 
 import { chartHeight, SimulationChartView } from "./SimulationChartView";
-import { useErrorBoundary } from "react-error-boundary";
 
 export function SimulationModalView() {
     const [isOpen, setIsOpen] = useState(false);
