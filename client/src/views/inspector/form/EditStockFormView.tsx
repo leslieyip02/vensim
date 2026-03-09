@@ -70,8 +70,6 @@ function StockFieldSet({ stockId }: { stockId: string }) {
                 />
             </Field>
 
-            {/* TODO: add equation form */}
-
             <Field>
                 <FieldLabel>Initial Value</FieldLabel>
                 <Input

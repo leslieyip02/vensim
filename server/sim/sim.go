@@ -11,7 +11,6 @@ func simulate(req SimulationRequest) (SimulationResult, error) {
 	currValues := make(map[string]float64)
 
 	for _, s := range req.Stocks {
-		// TODO: parse stock equations
 		currValues[s.ID] = s.InitialValue
 	}
 	for _, v := range req.Variables {
