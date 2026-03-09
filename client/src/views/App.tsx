@@ -10,6 +10,7 @@ import { HelpModalView } from "./help/HelpModalView";
 import { InspectorPanelView } from "./inspector/InspectorPanelView";
 import { RoomModalView } from "./room/RoomModalView";
 import { ToolbarView } from "./toolbar/ToolbarView";
+import { SimulationModalView } from "./simulate/SimulationModalView";
 
 function App() {
     return (
@@ -17,6 +18,9 @@ function App() {
             <InspectorPanelView />
             <ToolbarView />
             <HelpModalView />
+            <ErrorBoundary FallbackComponent={ErrorModalView}>
+                <SimulationModalView />
+            </ErrorBoundary>
             <ErrorBoundary FallbackComponent={ErrorModalView}>
                 <RoomModalView />
             </ErrorBoundary>

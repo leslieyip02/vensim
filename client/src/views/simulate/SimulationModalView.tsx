@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import type { SimulationResult, SimulationSettings } from "@/models/simulation";
 
 import { chartHeight, SimulationChartView } from "./SimulationChartView";
+import { useErrorBoundary } from "react-error-boundary";
 
 export function SimulationModalView() {
     const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +30,8 @@ export function SimulationModalView() {
     const [simulationData, setSimulationData] = useState<SimulationResult | null>(null);
 
     const [isChartLoading, setIsChartLoading] = useState(false);
+
+    const { showBoundary } = useErrorBoundary();
 
     const handleSimulate = async () => {
         try {
@@ -42,7 +45,7 @@ export function SimulationModalView() {
             const data: SimulationResult = await runSimulation(settings);
             setSimulationData(data);
         } catch (error) {
-            console.error(error);
+            showBoundary(error);
         } finally {
             setIsChartLoading(false);
         }
