@@ -85,7 +85,7 @@ export function EdgeView({ edge }: { edge: Edge }) {
     }
 
     function hit(ctx: Context, shape: Shape<ShapeConfig>) {
-        ctx.lineWidth = 8;
+        shape.strokeWidth(6);
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
         ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, end.x, end.y);
@@ -99,7 +99,6 @@ export function EdgeView({ edge }: { edge: Edge }) {
                 hitFunc={hit}
                 onClick={(e) => onClick(e.evt)}
                 stroke={stroke}
-                strokeWidth={8}
             />
             {edge.polarity && <Text x={label.x} y={label.y} text={edge.polarity} />}
         </Group>
