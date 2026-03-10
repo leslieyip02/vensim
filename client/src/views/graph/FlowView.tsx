@@ -1,6 +1,6 @@
 import type { Context } from "konva/lib/Context";
 import type { Shape, ShapeConfig } from "konva/lib/Shape";
-import { Group, Shape as ShapeDiv } from "react-konva";
+import { Circle, Group, Shape as ShapeDiv } from "react-konva";
 
 import { useFlowInteractions } from "@/controllers/interaction";
 import { computeLineGeometry } from "@/models/geometry";
@@ -74,7 +74,7 @@ export function FlowView({ flow }: { flow: Flow }) {
     }
 
     function hit(ctx: Context, shape: Shape<ShapeConfig>) {
-        ctx.lineWidth = 8;
+        shape.strokeWidth(14);
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
         ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, end.x, end.y);
@@ -83,12 +83,12 @@ export function FlowView({ flow }: { flow: Flow }) {
 
     return (
         <Group opacity={opacity}>
+            <Circle x={mid.x} y={mid.y} radius={18} onClick={(e) => onClick(e.evt)} />
             <ShapeDiv
                 sceneFunc={draw}
                 hitFunc={hit}
                 onClick={(e) => onClick(e.evt)}
                 stroke={stroke}
-                strokeWidth={8}
             />
         </Group>
     );
