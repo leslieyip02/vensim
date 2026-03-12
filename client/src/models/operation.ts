@@ -20,7 +20,10 @@ export type OperationType =
     | "loop/update"
     | "loop/delete";
 
-export type Operation = { type: OperationType } & (
+export type Operation = {
+    type: OperationType;
+    clock: number;
+} & (
     | { node: Node }
     | { id: string; patch: Partial<Node> }
     | { id: string }

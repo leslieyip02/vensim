@@ -10,12 +10,12 @@ import (
 )
 
 type MockClient struct {
-	id                string
-	listenCalled      chan struct{}
-	gotID             bool
-	gotSnapshot       bool
-	envelopesSent     []Envelope
-	envelopesReceived chan struct{}
+	id                    string
+	listenCalled          chan struct{}
+	sendIDCalled          chan struct{}
+	envelopesReceived     chan struct{}
+	snapshotsReceived     chan struct{}
+	leaveMessagesReceived chan string
 }
 
 func (c *MockClient) getID() string {
@@ -27,29 +27,33 @@ func (c *MockClient) listen() {
 }
 
 func (c *MockClient) sendID() {
-	c.gotID = true
+	close(c.sendIDCalled)
 }
 
 func (c *MockClient) sendSnapshot(_ *graph.State) {
-	c.gotSnapshot = true
+	c.snapshotsReceived <- struct{}{}
 }
 
 func (c *MockClient) sendEnvelope(envelope Envelope) {
-	c.envelopesSent = append(c.envelopesSent, envelope)
 	c.envelopesReceived <- struct{}{}
 }
 
-func (c *MockClient) sendLeaveMessage(clientId string) {}
+func (c *MockClient) sendLeaveMessage(clientId string) {
+	c.leaveMessagesReceived <- clientId
+}
 
 func newMockClient(id string) *MockClient {
 	return &MockClient{
-		id:                id,
-		listenCalled:      make(chan struct{}),
-		envelopesReceived: make(chan struct{}, 1),
+		id:                    id,
+		listenCalled:          make(chan struct{}),
+		sendIDCalled:          make(chan struct{}),
+		envelopesReceived:     make(chan struct{}, 1),
+		snapshotsReceived:     make(chan struct{}, 1),
+		leaveMessagesReceived: make(chan string, 1),
 	}
 }
 
-func TestHub_BroadcastSkipsSender(t *testing.T) {
+func TestHub_RegisterUnregisterClient(t *testing.T) {
 	state := graph.NewState()
 
 	c1 := newMockClient("client-1")
@@ -77,6 +81,18 @@ func TestHub_BroadcastSkipsSender(t *testing.T) {
 	case <-time.After(time.Second):
 		t.Fatal("c1 failed to start listening")
 	}
+	select {
+	case <-c1.sendIDCalled:
+		// ok
+	case <-time.After(time.Second):
+		t.Fatal("c1 didn't receive ID")
+	}
+	select {
+	case <-c1.snapshotsReceived:
+		// ok
+	case <-time.After(time.Second):
+		t.Fatal("c1 didn't receive snapshot")
+	}
 
 	hub.Register(nil)
 	select {
@@ -85,8 +101,55 @@ func TestHub_BroadcastSkipsSender(t *testing.T) {
 	case <-time.After(time.Second):
 		t.Fatal("c2 failed to start listening")
 	}
+	select {
+	case <-c2.sendIDCalled:
+		// ok
+	case <-time.After(time.Second):
+		t.Fatal("c2 didn't receive ID")
+	}
+	select {
+	case <-c2.snapshotsReceived:
+		// ok
+	case <-time.After(time.Second):
+		t.Fatal("c2 didn't receive snapshot")
+	}
 
-	op := graph.Operation{}
+	hub.removeListener(c1)
+	select {
+	case leaveID := <-c2.leaveMessagesReceived:
+		if leaveID != c1.getID() {
+			t.Fatal("c1 leave message not sent")
+		}
+	case <-time.After(time.Second):
+		t.Fatal("c1 leave message not sent")
+	}
+}
+
+func TestHub_Broadcast(t *testing.T) {
+	state := graph.NewState()
+
+	c1 := newMockClient("client-1")
+	c2 := newMockClient("client-2")
+
+	originalNewClient := newClient
+	defer func() { newClient = originalNewClient }()
+
+	index := 0
+	mockClients := []*MockClient{c1, c2}
+	newClient = func(_ *websocket.Conn, _ Broadcaster) Listener {
+		c := mockClients[index]
+		index++
+		return c
+	}
+
+	hub := NewHub("room-1", state, func() {})
+	go hub.Run()
+	t.Cleanup(func() { hub.close() })
+
+	hub.Register(nil)
+	hub.Register(nil)
+
+	op := graph.Operation{Clock: 1}
 	encoded, _ := json.Marshal(op)
 	envelope := Envelope{
 		Type:     "graph",
@@ -102,14 +165,74 @@ func TestHub_BroadcastSkipsSender(t *testing.T) {
 		t.Fatal("receiver did not receive op")
 	}
 
-	if len(c1.envelopesSent) != 0 {
+	select {
+	case <-c1.envelopesReceived:
 		t.Fatal("sender should not receive op")
+	case <-time.After(time.Second):
+		// ok
 	}
 }
 
-func TestHub_DoesNotAutoCloseWhenNotEmpty(t *testing.T) {
+func TestHub_BroadcastOutdatedOperation(t *testing.T) {
+	state := graph.NewState()
+	state.Clock = 10
+
+	c1 := newMockClient("client-1")
+	c2 := newMockClient("client-2")
+
+	originalNewClient := newClient
+	defer func() { newClient = originalNewClient }()
+
+	index := 0
+	mockClients := []*MockClient{c1, c2}
+	newClient = func(_ *websocket.Conn, _ Broadcaster) Listener {
+		c := mockClients[index]
+		index++
+		return c
+	}
+
+	hub := NewHub("room-1", state, func() {})
+	go hub.Run()
+	t.Cleanup(func() { hub.close() })
+
+	hub.Register(nil)
+	hub.Register(nil)
+
+	// drain initial snapshot
+	select {
+	case <-c1.snapshotsReceived:
+		// ok
+	case <-time.After(time.Second):
+		t.Fatal("c1 didn't receive snapshot")
+	}
+
+	op := graph.Operation{Clock: 1}
+	encoded, _ := json.Marshal(op)
+	envelope := Envelope{
+		Type:     "graph",
+		SenderID: "client-1",
+		Data:     encoded,
+	}
+	hub.broadcast(envelope)
+
+	select {
+	case <-c2.envelopesReceived:
+		t.Fatal("other client should not received outdated op")
+	case <-time.After(time.Second):
+		// ok
+	}
+
+	select {
+	case <-c1.snapshotsReceived:
+		// ok
+	case <-time.After(time.Second):
+		t.Fatal("hub should sync client")
+	}
+}
+
+func TestHub_AutoShutdown(t *testing.T) {
 	// mock
-	autoCloseDuration = 100 * time.Millisecond
+	shutdownTimeout = 100 * time.Millisecond
 
 	state := graph.NewState()
 
@@ -135,7 +258,9 @@ func TestHub_DoesNotAutoCloseWhenNotEmpty(t *testing.T) {
 	select {
 	case <-closed:
 		t.Fatal("hub closed while client was still connected")
-	case <-time.After(autoCloseDuration + 50*time.Millisecond):
+	case <-time.After(shutdownTimeout + 50*time.Millisecond):
 		// success
 	}
+
+	hub.unregisterClient(c)
 }

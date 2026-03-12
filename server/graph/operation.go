@@ -26,7 +26,8 @@ const (
 )
 
 type Operation struct {
-	Type OperationType `json:"type"`
+	Type  OperationType `json:"type"`
+	Clock int           `json:"clock"`
 
 	Node  *Node  `json:"node,omitempty"`
 	Edge  *Edge  `json:"edge,omitempty"`
@@ -41,6 +42,15 @@ type Operation struct {
 
 // Returns a tuple of the resultant state and a bool flag to indicate whether the update was applied
 func (s *State) Apply(op Operation) (*State, bool) {
+	// if the operation has a lower logical clock value,
+	// it has not seen some operations,
+	// which means the client is desynced
+	if op.Clock <= s.Clock {
+		// in this case, we are being pessimistic
+		// in order to force the client to sync
+		return s, false
+	}
+
 	switch op.Type {
 	case NodeAdd:
 		s.Nodes[op.Node.ID] = op.Node
@@ -127,6 +137,7 @@ func (s *State) Apply(op Operation) (*State, bool) {
 		delete(s.Loops, op.ID)
 	}
 
+	s.Clock++
 	return s, true
 }
 

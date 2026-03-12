@@ -33,12 +33,13 @@ export function connectSocket(url: string): Promise<void> {
                 // delete the "local" cursor
                 const currentId = getClientId();
                 deleteCursor(currentId);
-
                 setClientId(message.clientId);
                 return;
             }
 
             if (message.type === "snapshot") {
+                // always overwrite data with snapshot
+                // the server state is the source of truth
                 useGraphStore.setState(message.state);
                 return;
             }

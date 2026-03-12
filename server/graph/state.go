@@ -8,6 +8,7 @@ type State struct {
 	Flows   map[string]*Flow  `json:"flows"`
 	Loops   map[string]*Loop  `json:"loops"`
 	Counter int               `json:"counter"`
+	Clock   int               `json:"clock"`
 }
 
 func NewState() *State {
@@ -19,5 +20,6 @@ func NewState() *State {
 		Flows:   make(map[string]*Flow),
 		Loops:   make(map[string]*Loop),
 		Counter: 1,
+		Clock:   0,
 	}
 }
