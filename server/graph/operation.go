@@ -137,7 +137,7 @@ func (s *State) Apply(op Operation) (*State, bool) {
 		delete(s.Loops, op.ID)
 	}
 
-	s.Clock++
+	s.Clock = op.Clock
 	return s, true
 }
 

@@ -37,6 +37,7 @@ vi.mock("@/stores/graph", () => ({
     useGraphStore: {
         getState: vi.fn(() => ({
             counter: 3,
+            clock: 10,
             getNextId: getNextIdMock,
             getRecords: getRecordsMock,
             getKey: vi.fn(),
@@ -113,6 +114,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "node/add",
+                clock: 11,
                 node: {
                     id: `node${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -137,6 +139,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "node/update",
+                clock: 11,
                 id: `node${ID_SEPARATOR}1`,
                 patch: { label: "Updated" },
             };
@@ -150,14 +153,20 @@ describe("graph actions", () => {
         it("deletes node and cascades to edges where node is from or to", () => {
             deleteNode(`node${ID_SEPARATOR}1`);
 
-            const expectedOp: Operation = { type: "node/delete", id: `node${ID_SEPARATOR}1` };
+            const expectedOp: Operation = {
+                type: "node/delete",
+                clock: 11,
+                id: `node${ID_SEPARATOR}1`,
+            };
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/delete",
+                clock: 11,
                 id: `edge${ID_SEPARATOR}1`,
             });
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/delete",
+                clock: 11,
                 id: `edge${ID_SEPARATOR}2`,
             });
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -174,6 +183,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "edge/add",
+                clock: 11,
                 edge: {
                     id: `edge${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -197,6 +207,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "edge/add",
+                clock: 11,
                 edge: {
                     id: `edge${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -227,6 +238,7 @@ describe("graph actions", () => {
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/add",
+                clock: 11,
                 edge: expect.objectContaining({
                     id: `edge${ID_SEPARATOR}3`,
                 }),
@@ -234,6 +246,7 @@ describe("graph actions", () => {
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "loop/add",
+                clock: 11,
                 loop: {
                     id: `loop${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -255,6 +268,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "edge/update",
+                clock: 11,
                 id: `edge${ID_SEPARATOR}1`,
                 patch: { curvature: 0.9 },
             };
@@ -270,12 +284,14 @@ describe("graph actions", () => {
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/update",
+                clock: 11,
                 id: `edge${ID_SEPARATOR}2`,
                 patch: { polarity: "-" },
             });
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "loop/update",
+                clock: 11,
                 id: `loop${ID_SEPARATOR}1`,
                 patch: { loopType: "balancing" },
             });
@@ -288,6 +304,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "edge/delete",
+                clock: 11,
                 id: `edge${ID_SEPARATOR}1`,
             };
 
@@ -300,6 +317,7 @@ describe("graph actions", () => {
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "loop/delete",
+                clock: 11,
                 id: `loop${ID_SEPARATOR}1`,
             });
         });
@@ -311,6 +329,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "stock/add",
+                clock: 11,
                 stock: {
                     id: `stock${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -336,6 +355,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "stock/update",
+                clock: 11,
                 id: `stock${ID_SEPARATOR}1`,
                 patch: {
                     x: 30,
@@ -351,10 +371,15 @@ describe("graph actions", () => {
         it("deletes stock and cascades to outgoing edges and connected flows", () => {
             deleteStock(`stock${ID_SEPARATOR}1`);
 
-            const expectedOp: Operation = { type: "stock/delete", id: `stock${ID_SEPARATOR}1` };
+            const expectedOp: Operation = {
+                type: "stock/delete",
+                clock: 11,
+                id: `stock${ID_SEPARATOR}1`,
+            };
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/delete",
+                clock: 11,
                 id: `edge${ID_SEPARATOR}2`,
             });
             expect(applyMock).not.toHaveBeenCalledWith({
@@ -363,6 +388,7 @@ describe("graph actions", () => {
             });
             expect(applyMock).toHaveBeenCalledWith({
                 type: "flow/delete",
+                clock: 11,
                 id: `flow${ID_SEPARATOR}1`,
             });
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -376,6 +402,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "cloud/add",
+                clock: 11,
                 cloud: {
                     id: `cloud${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -397,6 +424,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "cloud/update",
+                clock: 11,
                 id: `cloud${ID_SEPARATOR}1`,
                 patch: {
                     x: 30,
@@ -412,10 +440,15 @@ describe("graph actions", () => {
         it("deletes cloud and cascades to connected flows", () => {
             deleteCloud(`cloud${ID_SEPARATOR}1`);
 
-            const expectedOp: Operation = { type: "cloud/delete", id: `cloud${ID_SEPARATOR}1` };
+            const expectedOp: Operation = {
+                type: "cloud/delete",
+                clock: 11,
+                id: `cloud${ID_SEPARATOR}1`,
+            };
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "flow/delete",
+                clock: 11,
                 id: `flow${ID_SEPARATOR}1`,
             });
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -429,6 +462,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "flow/add",
+                clock: 11,
                 flow: {
                     id: `flow${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -452,6 +486,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "flow/update",
+                clock: 11,
                 id: `flow${ID_SEPARATOR}1`,
                 patch: {
                     curvature: 0.5,
@@ -467,10 +502,15 @@ describe("graph actions", () => {
         it("deletes flow and cascades to edges pointing to the flow", () => {
             deleteFlow(`flow${ID_SEPARATOR}1`);
 
-            const expectedOp: Operation = { type: "flow/delete", id: `flow${ID_SEPARATOR}1` };
+            const expectedOp: Operation = {
+                type: "flow/delete",
+                clock: 11,
+                id: `flow${ID_SEPARATOR}1`,
+            };
 
             expect(applyMock).toHaveBeenCalledWith({
                 type: "edge/delete",
+                clock: 11,
                 id: `edge${ID_SEPARATOR}3`,
             });
             expect(applyMock).toHaveBeenCalledWith(expectedOp);
@@ -486,6 +526,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "loop/add",
+                clock: 11,
                 loop: {
                     id: `loop${ID_SEPARATOR}3`,
                     selectedBy: null,
@@ -509,6 +550,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "loop/update",
+                clock: 11,
                 id: `loop${ID_SEPARATOR}1`,
                 patch: {
                     label: "1",
@@ -526,6 +568,7 @@ describe("graph actions", () => {
 
             const expectedOp: Operation = {
                 type: "loop/delete",
+                clock: 11,
                 id: `loop${ID_SEPARATOR}1`,
             };
 
