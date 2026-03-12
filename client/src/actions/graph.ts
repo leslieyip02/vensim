@@ -41,6 +41,12 @@ export function addEntity(entityType: string, entity: Partial<unknown>): string 
 }
 
 export function updateEntity(entityType: string, id: string, patch: Partial<unknown>): string {
+    const records = useGraphStore.getState().getRecords(entityType);
+    if (!records[id]) {
+        // don't dispatch updates on deleted records
+        return id;
+    }
+
     dispatch({
         type: `${entityType}/update` as OperationType,
         clock: getClock(),
