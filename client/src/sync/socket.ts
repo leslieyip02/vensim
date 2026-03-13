@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 import { deleteCursor } from "@/actions/cursor";
 import type { CursorMessage } from "@/models/cursor";
 import type { Operation } from "@/models/operation";
@@ -33,13 +35,16 @@ export function connectSocket(url: string): Promise<void> {
                 // delete the "local" cursor
                 const currentId = getClientId();
                 deleteCursor(currentId);
-
                 setClientId(message.clientId);
                 return;
             }
 
             if (message.type === "snapshot") {
+                // always overwrite data with snapshot
+                // the server state is the source of truth
                 useGraphStore.setState(message.state);
+
+                toast.info("Synced to server!");
                 return;
             }
 

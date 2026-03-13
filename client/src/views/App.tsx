@@ -4,6 +4,8 @@ import "./App.css";
 
 import { ErrorBoundary } from "react-error-boundary";
 
+import { Toaster } from "@/components/ui/sonner";
+
 import { BoardView } from "./BoardView";
 import { ErrorModalView } from "./error/ErrorModalView";
 import { HelpModalView } from "./help/HelpModalView";
@@ -21,6 +23,7 @@ function App() {
                 <RoomModalView />
             </ErrorBoundary>
             <BoardView />
+            <Toaster />
         </main>
     );
 }

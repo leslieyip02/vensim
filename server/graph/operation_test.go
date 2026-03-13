@@ -13,23 +13,27 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 	}{
 		"NodeAdd": {
 			op: Operation{
-				Type: NodeAdd,
-				Node: &Node{ID: "node-1"},
+				Type:  NodeAdd,
+				Clock: 1,
+				Node:  &Node{ID: "node-1"},
 			},
 			initial: State{
 				Nodes:   map[string]*Node{},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Nodes: map[string]*Node{
 					"node-1": {ID: "node-1"},
 				},
 				Counter: 2,
+				Clock:   1,
 			},
 		},
 		"NodeUpdate": {
 			op: Operation{
 				Type:  NodeUpdate,
+				Clock: 1,
 				ID:    "node-1",
 				Patch: map[string]any{"x": 30},
 			},
@@ -38,28 +42,33 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 					"node-1": {ID: "node-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Nodes: map[string]*Node{
 					"node-1": {ID: "node-1", X: 30},
 				},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 		"NodeDelete": {
 			op: Operation{
-				Type: NodeDelete,
-				ID:   "node-1",
+				Type:  NodeDelete,
+				Clock: 1,
+				ID:    "node-1",
 			},
 			initial: State{
 				Nodes: map[string]*Node{
 					"node-1": {ID: "node-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Nodes:   map[string]*Node{},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 	}
@@ -88,23 +97,27 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 	}{
 		"EdgeAdd": {
 			op: Operation{
-				Type: EdgeAdd,
-				Edge: &Edge{ID: "edge-1"},
+				Type:  EdgeAdd,
+				Clock: 1,
+				Edge:  &Edge{ID: "edge-1"},
 			},
 			initial: State{
 				Edges:   map[string]*Edge{},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Edges: map[string]*Edge{
 					"edge-1": {ID: "edge-1"},
 				},
 				Counter: 2,
+				Clock:   1,
 			},
 		},
 		"EdgeUpdate": {
 			op: Operation{
 				Type:  EdgeUpdate,
+				Clock: 1,
 				ID:    "edge-1",
 				Patch: map[string]any{"to": "c"},
 			},
@@ -113,28 +126,33 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 					"edge-1": {ID: "edge-1", From: "a", To: "b"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Edges: map[string]*Edge{
 					"edge-1": {ID: "edge-1", From: "a", To: "c"},
 				},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 		"EdgeDelete": {
 			op: Operation{
-				Type: EdgeDelete,
-				ID:   "edge-1",
+				Type:  EdgeDelete,
+				Clock: 1,
+				ID:    "edge-1",
 			},
 			initial: State{
 				Edges: map[string]*Edge{
 					"edge-1": {ID: "edge-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Edges:   map[string]*Edge{},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 	}
@@ -164,22 +182,26 @@ func TestState_Apply_StockOperations(t *testing.T) {
 		"StockAdd": {
 			op: Operation{
 				Type:  StockAdd,
+				Clock: 1,
 				Stock: &Stock{ID: "stock-1"},
 			},
 			initial: State{
 				Stocks:  map[string]*Stock{},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Stocks: map[string]*Stock{
 					"stock-1": {ID: "stock-1"},
 				},
 				Counter: 2,
+				Clock:   1,
 			},
 		},
 		"StockUpdate": {
 			op: Operation{
 				Type:  StockUpdate,
+				Clock: 1,
 				ID:    "stock-1",
 				Patch: map[string]any{"x": 30},
 			},
@@ -188,28 +210,33 @@ func TestState_Apply_StockOperations(t *testing.T) {
 					"stock-1": {ID: "stock-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Stocks: map[string]*Stock{
 					"stock-1": {ID: "stock-1", X: 30},
 				},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 		"StockDelete": {
 			op: Operation{
-				Type: StockDelete,
-				ID:   "stock-1",
+				Type:  StockDelete,
+				Clock: 1,
+				ID:    "stock-1",
 			},
 			initial: State{
 				Stocks: map[string]*Stock{
 					"stock-1": {ID: "stock-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Stocks:  map[string]*Stock{},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 	}
@@ -239,22 +266,26 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 		"CloudAdd": {
 			op: Operation{
 				Type:  CloudAdd,
+				Clock: 1,
 				Cloud: &Cloud{ID: "cloud-1"},
 			},
 			initial: State{
 				Clouds:  map[string]*Cloud{},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Clouds: map[string]*Cloud{
 					"cloud-1": {ID: "cloud-1"},
 				},
 				Counter: 2,
+				Clock:   1,
 			},
 		},
 		"CloudUpdate": {
 			op: Operation{
 				Type:  CloudUpdate,
+				Clock: 1,
 				ID:    "cloud-1",
 				Patch: map[string]any{"x": 30},
 			},
@@ -263,28 +294,33 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 					"cloud-1": {ID: "cloud-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Clouds: map[string]*Cloud{
 					"cloud-1": {ID: "cloud-1", X: 30},
 				},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 		"CloudDelete": {
 			op: Operation{
-				Type: CloudDelete,
-				ID:   "cloud-1",
+				Type:  CloudDelete,
+				Clock: 1,
+				ID:    "cloud-1",
 			},
 			initial: State{
 				Clouds: map[string]*Cloud{
 					"cloud-1": {ID: "cloud-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Clouds:  map[string]*Cloud{},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 	}
@@ -313,23 +349,27 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 	}{
 		"FlowAdd": {
 			op: Operation{
-				Type: FlowAdd,
-				Flow: &Flow{ID: "flow-1"},
+				Type:  FlowAdd,
+				Clock: 1,
+				Flow:  &Flow{ID: "flow-1"},
 			},
 			initial: State{
 				Flows:   map[string]*Flow{},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Flows: map[string]*Flow{
 					"flow-1": {ID: "flow-1"},
 				},
 				Counter: 2,
+				Clock:   1,
 			},
 		},
 		"FlowUpdate": {
 			op: Operation{
 				Type:  FlowUpdate,
+				Clock: 1,
 				ID:    "flow-1",
 				Patch: map[string]any{"curvature": 0.5},
 			},
@@ -338,28 +378,33 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 					"flow-1": {ID: "flow-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Flows: map[string]*Flow{
 					"flow-1": {ID: "flow-1", Curvature: 0.5},
 				},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 		"FlowDelete": {
 			op: Operation{
-				Type: FlowDelete,
-				ID:   "flow-1",
+				Type:  FlowDelete,
+				Clock: 1,
+				ID:    "flow-1",
 			},
 			initial: State{
 				Flows: map[string]*Flow{
 					"flow-1": {ID: "flow-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Flows:   map[string]*Flow{},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 	}
@@ -388,23 +433,27 @@ func TestState_Apply_LoopOperations(t *testing.T) {
 	}{
 		"LoopAdd": {
 			op: Operation{
-				Type: LoopAdd,
-				Loop: &Loop{ID: "loop-1"},
+				Type:  LoopAdd,
+				Clock: 1,
+				Loop:  &Loop{ID: "loop-1"},
 			},
 			initial: State{
 				Loops:   map[string]*Loop{},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Loops: map[string]*Loop{
 					"loop-1": {ID: "loop-1"},
 				},
 				Counter: 2,
+				Clock:   1,
 			},
 		},
 		"LoopUpdate": {
 			op: Operation{
 				Type:  LoopUpdate,
+				Clock: 1,
 				ID:    "loop-1",
 				Patch: map[string]any{"label": "updated"},
 			},
@@ -413,28 +462,33 @@ func TestState_Apply_LoopOperations(t *testing.T) {
 					"loop-1": {ID: "loop-1", Label: "old"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Loops: map[string]*Loop{
 					"loop-1": {ID: "loop-1", Label: "updated"},
 				},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 		"LoopDelete": {
 			op: Operation{
-				Type: LoopDelete,
-				ID:   "loop-1",
+				Type:  LoopDelete,
+				Clock: 1,
+				ID:    "loop-1",
 			},
 			initial: State{
 				Loops: map[string]*Loop{
 					"loop-1": {ID: "loop-1"},
 				},
 				Counter: 1,
+				Clock:   0,
 			},
 			want: State{
 				Loops:   map[string]*Loop{},
 				Counter: 1,
+				Clock:   1,
 			},
 		},
 	}
@@ -452,5 +506,18 @@ func TestState_Apply_LoopOperations(t *testing.T) {
 				t.Errorf("loops mismatch: want %+v but got %+v", test.want.Loops, got.Loops)
 			}
 		})
+	}
+}
+
+func TestState_Apply_RejectOutdatedOp(t *testing.T) {
+	state := State{Clock: 10}
+	op := Operation{
+		Type:  NodeAdd,
+		Clock: 1,
+		Node:  &Node{ID: "node-1"},
+	}
+	_, succeeded := state.Apply(op)
+	if succeeded {
+		t.Fatalf("outdated operation should fail")
 	}
 }

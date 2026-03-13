@@ -13,13 +13,14 @@ import {
 import type { Operation } from "@/models/operation";
 
 interface GraphState {
-    counter: number;
     nodes: Record<string, Node>;
     edges: Record<string, Edge>;
     stocks: Record<string, Stock>;
     clouds: Record<string, Cloud>;
     flows: Record<string, Flow>;
     loops: Record<string, Loop>;
+    counter: number;
+    clock: number;
 
     getNextId: (entityType: string) => string;
     getRecords: (entityType: string) => Record<string, unknown>;
@@ -28,13 +29,14 @@ interface GraphState {
 }
 
 export const useGraphStore = create<GraphState>((set, get) => ({
-    counter: 1,
     nodes: {},
     edges: {},
     stocks: {},
     clouds: {},
     flows: {},
     loops: {},
+    counter: 1,
+    clock: 0,
 
     getNextId: (entityType) => {
         return `${entityType}${ID_SEPARATOR}${get().counter}`;
@@ -95,8 +97,9 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                     const entity = (op as Record<string, unknown>)[entityType] as Identifiable;
 
                     return {
-                        counter: state.counter + 1,
                         [key]: { ...records, [entity.id]: entity },
+                        counter: state.counter + 1,
+                        clock: op.clock,
                     };
                 }
 
@@ -117,6 +120,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                             ...records,
                             [id]: { ...(records[id] as object), ...patch },
                         },
+                        clock: op.clock,
                     };
                 }
 
@@ -132,6 +136,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
                         [key]: Object.fromEntries(
                             Object.entries(records).filter(([entryId]) => entryId !== id),
                         ),
+                        clock: op.clock,
                     };
                 }
             }

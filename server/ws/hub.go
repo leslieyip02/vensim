@@ -11,9 +11,7 @@ import (
 )
 
 // this is left as a var so that it can be overridden in tests
-var autoCloseDuration = 5 * time.Minute
-
-const OperationSyncThreshold = 10
+var shutdownTimeout = 5 * time.Minute
 
 type Broadcaster interface {
 	addListener(listener Listener)
@@ -24,19 +22,20 @@ type Broadcaster interface {
 type Hub struct {
 	id                string
 	state             *graph.State
-	listeners         map[Listener]bool
+	listeners         map[string]Listener
 	registerChannel   chan Listener
 	unregisterChannel chan Listener
 	broadcastChannel  chan Envelope
 	closeChannel      chan struct{}
 	onClose           func()
+	shutdownTimer     *timeout.TimeoutManager
 }
 
 func NewHub(id string, state *graph.State, onClose func()) *Hub {
 	return &Hub{
 		id:                id,
 		state:             state,
-		listeners:         make(map[Listener]bool),
+		listeners:         make(map[string]Listener),
 		registerChannel:   make(chan Listener),
 		unregisterChannel: make(chan Listener),
 		broadcastChannel:  make(chan Envelope),
@@ -59,80 +58,91 @@ func (h *Hub) Register(conn *websocket.Conn) {
 }
 
 func (h *Hub) Run() {
-	autoCloseTimer := timeout.NewTimer(autoCloseDuration, h.close)
+	defer h.onClose()
 
-	operationsApplied := 0
+	// automatically shutdown the room if all clients have left
+	// with a grace period for reconnections
+	h.shutdownTimer = timeout.NewTimer(shutdownTimeout, h.close)
 
 	for {
 		select {
 		case c := <-h.registerChannel:
-			log.Printf("Hub %v: Client %v joined", h.GetID(), c.getID())
-
-			wasEmpty := len(h.listeners) == 0
-			h.listeners[c] = true
-
-			if wasEmpty {
-				autoCloseTimer.Reset()
-			}
-
-			c.sendID()
-			c.sendSnapshot(h.state)
+			h.registerClient(c)
 
 		case c := <-h.unregisterChannel:
-			log.Printf("Hub %v: Client %v left", h.GetID(), c.getID())
-			delete(h.listeners, c)
-
-			for c := range h.listeners {
-				c.sendLeaveMessage(c.getID())
-			}
-
-			if len(h.listeners) == 0 {
-				autoCloseTimer.Start()
-			}
+			h.unregisterClient(c)
 
 		case envelope := <-h.broadcastChannel:
-			// check if the envelope is an apply operation
-			if envelope.Type == "graph" {
-				var op graph.Operation
-				json.Unmarshal(envelope.Data, &op)
-
-				log.Printf("Hub %v: Applying %v", h.GetID(), op)
-				_, succeeded := h.state.Apply(op)
-				if !succeeded {
-					// if the operation fails, force all clients to re-sync their states
-					h.syncClients()
-					continue
-				}
-				operationsApplied++
-			}
-
-			// forward all envelopes
-			for c := range h.listeners {
-				if c.getID() != envelope.SenderID {
-					c.sendEnvelope(envelope)
-				}
-			}
-
-			// periodically sync state
-			if operationsApplied >= OperationSyncThreshold {
-				h.syncClients()
-				operationsApplied = 0
-			}
+			h.handleEnvelope(envelope)
 
 		case <-h.closeChannel:
-			if h.onClose != nil {
-				h.onClose()
-			}
 			return
 		}
 	}
 }
 
-func (h *Hub) syncClients() {
-	log.Printf("Hub %v: Syncing clients", h.GetID())
-	for c := range h.listeners {
-		c.sendSnapshot(h.state)
+func (h *Hub) registerClient(c Listener) {
+	log.Printf("Hub %v: Client %v joined", h.GetID(), c.getID())
+
+	wasEmpty := len(h.listeners) == 0
+	h.listeners[c.getID()] = c
+
+	if wasEmpty {
+		log.Printf("Hub %v: Room is no longer empty, resetting shutdown timer", h.GetID())
+		h.shutdownTimer.Reset()
 	}
+
+	c.sendID()
+	c.sendSnapshot(h.state)
+}
+
+func (h *Hub) unregisterClient(c Listener) {
+	log.Printf("Hub %v: Client %v left", h.GetID(), c.getID())
+	delete(h.listeners, c.getID())
+
+	for _, other := range h.listeners {
+		other.sendLeaveMessage(c.getID())
+	}
+
+	if len(h.listeners) == 0 {
+		log.Printf("Hub %v: Room is empty, starting shutdown timer", h.GetID())
+		h.shutdownTimer.Start()
+	}
+}
+
+func (h *Hub) handleEnvelope(envelope Envelope) {
+	// check if the envelope is an apply operation
+	if envelope.Type == "graph" {
+		var op graph.Operation
+		json.Unmarshal(envelope.Data, &op)
+
+		log.Printf("Hub %v: Applying %v", h.GetID(), op)
+		_, succeeded := h.state.Apply(op)
+		if !succeeded {
+			log.Printf("Hub %v: Client %v desynced", h.GetID(), envelope.SenderID)
+			h.syncClient(envelope.SenderID)
+			return
+		}
+	}
+
+	// forward all envelopes
+	for id, c := range h.listeners {
+		if id == envelope.SenderID {
+			// client has already applied its own update
+			continue
+		}
+		c.sendEnvelope(envelope)
+	}
+}
+
+func (h *Hub) syncClient(id string) {
+	c, found := h.listeners[id]
+	if !found {
+		return
+	}
+
+	log.Printf("Hub %v: Syncing client %v", h.GetID(), c.getID())
+	c.sendSnapshot(h.state)
 }
 
 func (h *Hub) close() {

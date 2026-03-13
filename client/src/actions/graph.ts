@@ -23,24 +23,45 @@ function dispatch(op: Operation) {
 //  Common logic
 // ==============
 
+function getClock() {
+    // increment logical clock by 1 for every operation
+    return useGraphStore.getState().clock + 1;
+}
+
 export function addEntity(entityType: string, entity: Partial<unknown>): string {
     const id = useGraphStore.getState().getNextId(entityType);
     entity = { id, ...entity };
 
-    const op = { type: `${entityType}/add` as OperationType, [entityType]: entity } as Operation;
-    dispatch(op);
+    dispatch({
+        type: `${entityType}/add` as OperationType,
+        clock: getClock(),
+        [entityType]: entity,
+    } as Operation);
     return id;
 }
 
 export function updateEntity(entityType: string, id: string, patch: Partial<unknown>): string {
-    const op = { type: `${entityType}/update` as OperationType, id, patch } as Operation;
-    dispatch(op);
+    const records = useGraphStore.getState().getRecords(entityType);
+    if (!records[id]) {
+        // don't dispatch updates on deleted records
+        return id;
+    }
+
+    dispatch({
+        type: `${entityType}/update` as OperationType,
+        clock: getClock(),
+        id,
+        patch,
+    } as Operation);
     return id;
 }
 
 export function deleteEntity(entityType: string, id: string): string {
-    const op = { type: `${entityType}/delete` as OperationType, id } as Operation;
-    dispatch(op);
+    dispatch({
+        type: `${entityType}/delete` as OperationType,
+        clock: getClock(),
+        id,
+    });
     return id;
 }
 
