@@ -38,6 +38,7 @@ export interface Stock extends Identifiable, Selectable {
     label: string;
     description: string;
     equation: string;
+    initialValue: number;
 }
 
 export interface Cloud extends Identifiable, Selectable {

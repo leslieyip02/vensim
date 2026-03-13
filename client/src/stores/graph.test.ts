@@ -40,6 +40,7 @@ const DEFAULT_STOCK: Stock = {
     label: "",
     description: "",
     equation: "",
+    initialValue: 0,
 };
 
 const DEFAULT_CLOUD: Cloud = {
@@ -50,11 +51,11 @@ const DEFAULT_CLOUD: Cloud = {
 };
 
 const DEFAULT_FLOW: Flow = {
+    label: `flow`,
     id: `flow${ID_SEPARATOR}0`,
     from: `stock${ID_SEPARATOR}0`,
     to: `cloud${ID_SEPARATOR}0`,
     curvature: 0,
-    label: "",
     equation: "",
 };
 

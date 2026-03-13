@@ -355,6 +355,7 @@ describe("graph actions", () => {
                     label: "",
                     description: "",
                     equation: "",
+                    initialValue: 0,
                 },
             };
 

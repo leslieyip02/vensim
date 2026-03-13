@@ -258,6 +258,7 @@ function makePartialStock(x: number, y: number, width: number, height: number): 
         label: "",
         description: "",
         equation: "",
+        initialValue: 0,
     };
 }
 

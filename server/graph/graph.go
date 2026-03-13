@@ -1,5 +1,7 @@
 package graph
 
+const ID_SEPARATOR string = "_"
+
 type Node struct {
 	ID         string  `json:"id"`
 	SelectedBy *string `json:"selectedBy"`
@@ -26,13 +28,14 @@ type Stock struct {
 	ID         string  `json:"id"`
 	SelectedBy *string `json:"selectedBy"`
 
-	X           float64 `json:"x"`
-	Y           float64 `json:"y"`
-	Width       float64 `json:"width"`
-	Height      float64 `json:"height"`
-	Label       string  `json:"label"`
-	Description string  `json:"description"`
-	Equation    string  `json:"equation"`
+	X            float64 `json:"x"`
+	Y            float64 `json:"y"`
+	Width        float64 `json:"width"`
+	Height       float64 `json:"height"`
+	Label        string  `json:"label"`
+	Description  string  `json:"description"`
+	Equation     string  `json:"equation"`
+	InitialValue float64 `json:"initialValue"`
 }
 
 type Cloud struct {
