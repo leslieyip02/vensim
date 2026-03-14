@@ -12,6 +12,7 @@ jobs:
   client:
     name: Lint and test client
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,9 +28,9 @@ jobs:
         working-directory: client
         run: npm ci
 
-      - name: Lint
+      - name: Lint and Type Check
         working-directory: client
-        run: npm run lint
+        run: npm run lint && npm run type-check
 
       - name: Run tests with coverage
         working-directory: client
@@ -46,6 +47,7 @@ jobs:
   server:
     name: Test server
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
