@@ -1,12 +1,13 @@
 import { useGraphStore } from "@/stores/graph";
 import { connectSocket } from "@/sync/socket";
 
-const API_ORIGIN = import.meta.env.VITE_API_ORIGIN;
-const WS_ORIGIN = import.meta.env.VITE_WS_ORIGIN;
+const HOST = import.meta.env.VITE_HOST || window.location.host;
+const API_ORIGIN = `${HOST.startsWith("localhost") ? "http" : "https"}://${HOST}`;
+const WS_ORIGIN = `${HOST.startsWith("localhost") ? "ws" : "wss"}://${HOST}`;
 
 export async function createRoom() {
     const state = useGraphStore.getState();
-    const path = `${API_ORIGIN}/create`;
+    const path = `${API_ORIGIN}/api/room/create`;
 
     const params = {
         method: "POST",
@@ -32,7 +33,7 @@ export async function createRoom() {
 }
 
 export async function joinRoom(roomId: string) {
-    const checkPath = `${API_ORIGIN}/check/${roomId}`;
+    const checkPath = `${API_ORIGIN}/api/room/${roomId}`;
     const response = await fetch(checkPath);
 
     if (!response.ok) {
@@ -40,6 +41,6 @@ export async function joinRoom(roomId: string) {
         throw new Error(text || `Server error: ${response.status}`);
     }
 
-    const wsPath = `${WS_ORIGIN}/join/${roomId}`;
+    const wsPath = `${WS_ORIGIN}/ws/room/${roomId}`;
     await connectSocket(wsPath);
 }
