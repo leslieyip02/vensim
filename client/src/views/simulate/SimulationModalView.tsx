@@ -17,17 +17,21 @@ import {
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { SimulationResult, SimulationSettings } from "@/models/simulation";
-import { haveNonEmptyEquations, haveAllInitialValues, haveUniqueNames, haveStock } from "@/utils/sim";
+import { haveNonEmptyEquations, haveAllInitialValues, haveUniqueLabels, haveStock, haveNonEmptyLabels } from "@/utils/sim";
 
 import { chartHeight, SimulationChartView } from "./SimulationChartView";
 import { useGraphStore } from "@/stores/graph";
+import { useShallow } from "zustand/react/shallow";
 
 export function SimulationModalView() {
     const [isOpen, setIsOpen] = useState(false);
-
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
     const [delta, setDelta] = useState("");
+    const [simulationData, setSimulationData] = useState<SimulationResult | null>(null);
+    const [isChartLoading, setIsChartLoading] = useState(false);
+
+    const { showBoundary } = useErrorBoundary();
 
     const isSettingsValid =
         !isNaN(parseFloat(startTime)) &&
@@ -36,26 +40,25 @@ export function SimulationModalView() {
         parseFloat(startTime) < parseFloat(endTime) &&
         parseFloat(delta) > 0;
 
-    const [simulationData, setSimulationData] = useState<SimulationResult | null>(null);
+    const nodes = useGraphStore(useShallow((state) => Object.values(state.nodes)));
+    const stocks = useGraphStore(useShallow((state) => Object.values(state.stocks)));
+    const flows = useGraphStore(useShallow((state) => Object.values(state.flows)));
 
-    const [isChartLoading, setIsChartLoading] = useState(false);
+    const hasStock = haveStock(stocks);
+    const hasLabels = haveNonEmptyLabels([...nodes, ...stocks, ...flows]);
+    const hasUniqueLabels = haveUniqueLabels([...nodes, ...stocks, ...flows]);
+    const hasEquations = haveNonEmptyEquations([...nodes, ...flows]);
+    const hasInitialValues = haveAllInitialValues(stocks);
 
-    const { showBoundary } = useErrorBoundary();
-
-    const hasEquations = useGraphStore(haveNonEmptyEquations);
-    const hasInitialValues = useGraphStore(haveAllInitialValues);
-    const hasUniqueNames = useGraphStore(haveUniqueNames);
-    const hasStock = useGraphStore(haveStock);
-
-    const isGraphValid = hasEquations && hasInitialValues && hasUniqueNames && hasStock;
+    const isGraphValid = hasEquations && hasInitialValues && hasUniqueLabels && hasStock && hasLabels;
 
     const getStatusMessage = () => {
         if (!isSettingsValid) return "Check simulation settings";
         if (!hasStock) return "Simulation requires at least one Stock.";
+        if (!hasLabels) return "All entities must have a label.";
+        if (!hasUniqueLabels) return "All entity labels must be unique.";
         if (!hasEquations) return "All Nodes and Flows must have equations.";
         if (!hasInitialValues) return "All Stocks must have initial values.";
-        if (!hasUniqueNames) return "All entity names must be unique.";
-        
         return null;
     };
 
@@ -80,7 +83,7 @@ export function SimulationModalView() {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={(isOpen) => setIsOpen(isOpen)}>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
@@ -104,7 +107,7 @@ export function SimulationModalView() {
                                 type="number"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                                placeholder="Enter start time"
+                                placeholder="0"
                             />
                         </Field>
                         <Field>
@@ -113,7 +116,7 @@ export function SimulationModalView() {
                                 type="number"
                                 value={endTime}
                                 onChange={(e) => setEndTime(e.target.value)}
-                                placeholder="Enter end time"
+                                placeholder="10"
                             />
                         </Field>
                         <Field>
@@ -122,15 +125,13 @@ export function SimulationModalView() {
                                 type="number"
                                 value={delta}
                                 onChange={(e) => setDelta(e.target.value)}
-                                placeholder="Enter delta"
+                                placeholder="1"
                             />
                         </Field>
                     </div>
                 </FieldSet>
 
-                <div
-                    className={`py-4 border rounded-md bg-slate-50 min-h-[${chartHeight}] flex items-center justify-center`}
-                >
+                <div className={`py-4 border rounded-md bg-slate-50 min-h-[${chartHeight}] flex items-center justify-center`}>
                     {simulationData ? (
                         <SimulationChartView data={simulationData} />
                     ) : (
