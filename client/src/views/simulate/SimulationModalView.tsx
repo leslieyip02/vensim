@@ -17,8 +17,10 @@ import {
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { SimulationResult, SimulationSettings } from "@/models/simulation";
+import { haveNonEmptyEquations, haveAllInitialValues, haveUniqueNames, haveStock } from "@/utils/sim";
 
 import { chartHeight, SimulationChartView } from "./SimulationChartView";
+import { useGraphStore } from "@/stores/graph";
 
 export function SimulationModalView() {
     const [isOpen, setIsOpen] = useState(false);
@@ -27,11 +29,37 @@ export function SimulationModalView() {
     const [endTime, setEndTime] = useState("");
     const [delta, setDelta] = useState("");
 
+    const isSettingsValid =
+        !isNaN(parseFloat(startTime)) &&
+        !isNaN(parseFloat(endTime)) &&
+        !isNaN(parseFloat(delta)) &&
+        parseFloat(startTime) < parseFloat(endTime) &&
+        parseFloat(delta) > 0;
+
     const [simulationData, setSimulationData] = useState<SimulationResult | null>(null);
 
     const [isChartLoading, setIsChartLoading] = useState(false);
 
     const { showBoundary } = useErrorBoundary();
+
+    const hasEquations = useGraphStore(haveNonEmptyEquations);
+    const hasInitialValues = useGraphStore(haveAllInitialValues);
+    const hasUniqueNames = useGraphStore(haveUniqueNames);
+    const hasStock = useGraphStore(haveStock);
+
+    const isGraphValid = hasEquations && hasInitialValues && hasUniqueNames && hasStock;
+
+    const getStatusMessage = () => {
+        if (!isSettingsValid) return "Check simulation settings";
+        if (!hasStock) return "Simulation requires at least one Stock.";
+        if (!hasEquations) return "All Nodes and Flows must have equations.";
+        if (!hasInitialValues) return "All Stocks must have initial values.";
+        if (!hasUniqueNames) return "All entity names must be unique.";
+        
+        return null;
+    };
+
+    const statusMessage = getStatusMessage();
 
     const handleSimulate = async () => {
         try {
@@ -114,12 +142,24 @@ export function SimulationModalView() {
                     )}
                 </div>
 
-                <DialogFooter className="flex gap-2">
-                    <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                    </DialogClose>
-
-                    <Button onClick={handleSimulate}>Run Simulation</Button>
+                <DialogFooter className="flex items-center gap-4">
+                    {statusMessage && (
+                        <span className="text-sm text-destructive flex-1">
+                            {statusMessage}
+                        </span>
+                    )}
+                    
+                    <div className="flex gap-2 ml-auto">
+                        <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button 
+                            onClick={handleSimulate} 
+                            disabled={!isSettingsValid || !isGraphValid || isChartLoading}
+                        >
+                            {isChartLoading ? "Simulating..." : "Run Simulation"}
+                        </Button>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
