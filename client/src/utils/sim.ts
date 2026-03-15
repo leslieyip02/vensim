@@ -3,7 +3,6 @@ import { useGraphStore } from "@/stores/graph";
 export function haveNonEmptyEquations(): boolean {
     const state = useGraphStore.getState();
     const entities = [...Object.values(state.nodes), ...Object.values(state.flows)];
-    if (entities.length === 0) return false;
     return entities.every(e => e.equation && e.equation.trim() !== "");
 }
 
