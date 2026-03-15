@@ -30,13 +30,21 @@ function getClock() {
 
 export function addEntity(entityType: string, entity: Partial<unknown>): string {
     const id = useGraphStore.getState().getNextId(entityType);
-    entity = { id, ...entity };
+    const newEntity: any = { ...entity, id };
+
+    // default label to id for nodes, stocks, and flows, feel like this sucks
+    if (entityType === "node" || entityType === "stock" || entityType === "flow") {
+        if (!newEntity.label) {
+            newEntity.label = id;
+        }
+    }
 
     dispatch({
         type: `${entityType}/add` as OperationType,
         clock: getClock(),
-        [entityType]: entity,
+        [entityType]: newEntity,
     } as Operation);
+
     return id;
 }
 
@@ -227,7 +235,6 @@ function makePartialNode(x: number, y: number, radius: number): Partial<Node> {
         x,
         y,
         radius,
-        label: "",
         description: "",
         equation: "",
     };
@@ -255,7 +262,6 @@ function makePartialStock(x: number, y: number, width: number, height: number): 
         y,
         width,
         height,
-        label: "",
         description: "",
         initialValue: 0,
     };
@@ -273,7 +279,6 @@ function makePartialCloud(x: number, y: number, radius: number): Partial<Cloud> 
 function makePartialFlow(from: string, to: string, curvature: number) {
     return {
         selectedBy: null,
-        label: "",
         from,
         to,
         curvature,
