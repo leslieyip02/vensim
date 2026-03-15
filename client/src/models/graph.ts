@@ -37,7 +37,6 @@ export interface Stock extends Identifiable, Selectable {
     height: number;
     label: string;
     description: string;
-    equation: string;
     initialValue: number;
 }
 

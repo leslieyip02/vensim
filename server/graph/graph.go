@@ -34,7 +34,6 @@ type Stock struct {
 	Height       float64 `json:"height"`
 	Label        string  `json:"label"`
 	Description  string  `json:"description"`
-	Equation     string  `json:"equation"`
 	InitialValue float64 `json:"initialValue"`
 }
 
