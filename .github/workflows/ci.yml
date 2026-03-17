@@ -12,14 +12,15 @@ jobs:
   client:
     name: Lint and test client
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
           cache-dependency-path: client/package-lock.json
 
@@ -27,9 +28,9 @@ jobs:
         working-directory: client
         run: npm ci
 
-      - name: Lint
+      - name: Lint and Type Check
         working-directory: client
-        run: npm run lint
+        run: npm run lint && npm run type-check
 
       - name: Run tests with coverage
         working-directory: client
@@ -46,9 +47,10 @@ jobs:
   server:
     name: Test server
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v5
