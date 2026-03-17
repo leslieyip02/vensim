@@ -2,28 +2,24 @@
 
 ## Getting Started
 
-1. Build the image
+Use the `Makefile` to run the app:
+
+1. Build + Run
 
 ```
-docker build -t vensim:latest .
+make
 ```
 
-2. Start the server
+2. Logs
 
 ```
-docker run --detach --publish 8080:8080 vensim:latest
-
-# inspect logs
-docker ps --all
-docker logs <CONTAINER ID>
+make logs
 ```
 
-3. Stop the server
+3. Cleanup
 
 ```
-docker ps --all
-docker stop <CONTAINER ID>
-docker rm <CONTAINER ID>
+make clean
 ```
 
 The client can also be run separately from the server for hot reloading (e.g. client on localhost:5173 and server on localhost:8080).

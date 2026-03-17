@@ -17,7 +17,7 @@ npm ci
 npm run build
 
 cd ../server
-cp ../client/dist .
+cp -r ../client/dist .
 ```
 
 2. Testing
