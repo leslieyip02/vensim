@@ -62,6 +62,8 @@ export interface Loop extends Identifiable, Selectable {
     label: string;
 }
 
+export type GraphEntity = Node | Edge | Stock | Cloud | Flow | Loop;
+
 export function isNodeId(id: string): boolean {
     return id.startsWith("node");
 }

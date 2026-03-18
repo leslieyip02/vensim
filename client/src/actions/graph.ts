@@ -2,6 +2,11 @@ import {
     type Cloud,
     type Edge,
     type Flow,
+    type GraphEntity,
+    type Identifiable,
+    isFlow,
+    isNode,
+    isStock,
     type Loop,
     type LoopType,
     type Node,
@@ -28,12 +33,11 @@ function getClock() {
     return useGraphStore.getState().clock + 1;
 }
 
-export function addEntity(entityType: string, entity: Partial<unknown>): string {
+export function addEntity(entityType: string, entity: Partial<GraphEntity>): string {
     const id = useGraphStore.getState().getNextId(entityType);
-    const newEntity: any = { ...entity, id };
+    const newEntity = { ...entity, id } as Identifiable;
 
-    // default label to id for nodes, stocks, and flows, feel like this sucks
-    if (entityType === "node" || entityType === "stock" || entityType === "flow") {
+    if (isNode(newEntity) || isStock(newEntity) || isFlow(newEntity)) {
         if (!newEntity.label) {
             newEntity.label = id;
         }

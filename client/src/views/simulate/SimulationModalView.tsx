@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 import { LuChartNoAxesCombined } from "react-icons/lu";
+import { useShallow } from "zustand/react/shallow";
 
 import { runSimulation } from "@/actions/simulation";
 import { Button } from "@/components/ui/button";
@@ -17,11 +18,16 @@ import {
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { SimulationResult, SimulationSettings } from "@/models/simulation";
-import { haveNonEmptyEquations, haveAllInitialValues, haveUniqueLabels, haveStock, haveNonEmptyLabels } from "@/utils/sim";
+import { useGraphStore } from "@/stores/graph";
+import {
+    haveAllInitialValues,
+    haveNonEmptyEquations,
+    haveNonEmptyLabels,
+    haveStock,
+    haveUniqueLabels,
+} from "@/utils/sim";
 
 import { chartHeight, SimulationChartView } from "./SimulationChartView";
-import { useGraphStore } from "@/stores/graph";
-import { useShallow } from "zustand/react/shallow";
 
 export function SimulationModalView() {
     const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +56,8 @@ export function SimulationModalView() {
     const hasEquations = haveNonEmptyEquations([...nodes, ...flows]);
     const hasInitialValues = haveAllInitialValues(stocks);
 
-    const isGraphValid = hasEquations && hasInitialValues && hasUniqueLabels && hasStock && hasLabels;
+    const isGraphValid =
+        hasEquations && hasInitialValues && hasUniqueLabels && hasStock && hasLabels;
 
     const getStatusMessage = () => {
         if (!isSettingsValid) return "Check simulation settings";
@@ -131,7 +138,9 @@ export function SimulationModalView() {
                     </div>
                 </FieldSet>
 
-                <div className={`py-4 border rounded-md bg-slate-50 min-h-[${chartHeight}] flex items-center justify-center`}>
+                <div
+                    className={`py-4 border rounded-md bg-slate-50 min-h-[${chartHeight}] flex items-center justify-center`}
+                >
                     {simulationData ? (
                         <SimulationChartView data={simulationData} />
                     ) : (
@@ -145,17 +154,15 @@ export function SimulationModalView() {
 
                 <DialogFooter className="flex items-center gap-4">
                     {statusMessage && (
-                        <span className="text-sm text-destructive flex-1">
-                            {statusMessage}
-                        </span>
+                        <span className="text-sm text-destructive flex-1">{statusMessage}</span>
                     )}
-                    
+
                     <div className="flex gap-2 ml-auto">
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
-                        <Button 
-                            onClick={handleSimulate} 
+                        <Button
+                            onClick={handleSimulate}
                             disabled={!isSettingsValid || !isGraphValid || isChartLoading}
                         >
                             {isChartLoading ? "Simulating..." : "Run Simulation"}
