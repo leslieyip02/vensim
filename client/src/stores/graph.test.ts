@@ -18,7 +18,7 @@ const DEFAULT_NODE: Node = {
     x: 0,
     y: 0,
     radius: 0,
-    label: "",
+    label: `node${ID_SEPARATOR}0`,
     description: "",
     equation: "",
 };
@@ -37,9 +37,9 @@ const DEFAULT_STOCK: Stock = {
     y: 0,
     width: 0,
     height: 0,
-    label: "",
+    label: `stock${ID_SEPARATOR}0`,
     description: "",
-    equation: "",
+    initialValue: 0,
 };
 
 const DEFAULT_CLOUD: Cloud = {
@@ -51,10 +51,10 @@ const DEFAULT_CLOUD: Cloud = {
 
 const DEFAULT_FLOW: Flow = {
     id: `flow${ID_SEPARATOR}0`,
+    label: `flow${ID_SEPARATOR}0`,
     from: `stock${ID_SEPARATOR}0`,
     to: `cloud${ID_SEPARATOR}0`,
     curvature: 0,
-    label: "",
     equation: "",
 };
 
@@ -72,6 +72,7 @@ describe("useGraphStore", () => {
     beforeEach(() => {
         useGraphStore.setState({
             counter: 1,
+            clock: 0,
             nodes: {},
             edges: {},
             stocks: {},
@@ -85,13 +86,13 @@ describe("useGraphStore", () => {
         const node: Node = {
             ...DEFAULT_NODE,
             id: `node${ID_SEPARATOR}1`,
-            label: "Node 1",
+            label: `node${ID_SEPARATOR}1`,
         };
 
         const op: Operation = {
             type: "node/add",
-            clock: 1,
             node,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -100,6 +101,7 @@ describe("useGraphStore", () => {
 
         expect(state.nodes[`node${ID_SEPARATOR}1`]).toEqual(node);
         expect(state.counter).toBe(2);
+        expect(state.clock).toBe(1);
     });
 
     it("updates a node", () => {
@@ -108,41 +110,54 @@ describe("useGraphStore", () => {
                 [`node${ID_SEPARATOR}1`]: {
                     ...DEFAULT_NODE,
                     id: `node${ID_SEPARATOR}1`,
-                    label: "old",
+                    label: `node${ID_SEPARATOR}1`,
                 },
             },
         });
 
         const op: Operation = {
             type: "node/update",
-            clock: 1,
             id: `node${ID_SEPARATOR}1`,
             patch: { label: "updated" },
+            clock: 2,
         };
 
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().nodes[`node${ID_SEPARATOR}1`].label).toBe("updated");
+        expect(useGraphStore.getState().clock).toBe(2);
     });
 
     it("deletes a node", () => {
         useGraphStore.setState({
             nodes: {
-                [`node${ID_SEPARATOR}1`]: { ...DEFAULT_NODE, id: `node${ID_SEPARATOR}1` },
-                [`node${ID_SEPARATOR}2`]: { ...DEFAULT_NODE, id: `node${ID_SEPARATOR}2` },
+                [`node${ID_SEPARATOR}1`]: {
+                    ...DEFAULT_NODE,
+                    id: `node${ID_SEPARATOR}1`,
+                    label: `node${ID_SEPARATOR}1`,
+                },
+                [`node${ID_SEPARATOR}2`]: {
+                    ...DEFAULT_NODE,
+                    id: `node${ID_SEPARATOR}2`,
+                    label: `node${ID_SEPARATOR}2`,
+                },
             },
         });
 
         const op: Operation = {
             type: "node/delete",
-            clock: 1,
             id: `node${ID_SEPARATOR}1`,
+            clock: 3,
         };
 
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().nodes).toEqual({
-            [`node${ID_SEPARATOR}2`]: { ...DEFAULT_NODE, id: `node${ID_SEPARATOR}2` },
+            [`node${ID_SEPARATOR}2`]: {
+                ...DEFAULT_NODE,
+                id: `node${ID_SEPARATOR}2`,
+                label: `node${ID_SEPARATOR}2`,
+            },
         });
     });
 
@@ -156,8 +171,8 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "edge/add",
-            clock: 1,
             edge,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -182,9 +197,9 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "edge/update",
-            clock: 1,
             id: `edge${ID_SEPARATOR}1`,
             patch: { to: "c" },
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -202,8 +217,8 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "edge/delete",
-            clock: 1,
             id: `edge${ID_SEPARATOR}1`,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -217,12 +232,13 @@ describe("useGraphStore", () => {
         const stock: Stock = {
             ...DEFAULT_STOCK,
             id: `stock${ID_SEPARATOR}1`,
+            label: `stock${ID_SEPARATOR}1`,
         };
 
         const op: Operation = {
             type: "stock/add",
-            clock: 1,
             stock,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -236,15 +252,19 @@ describe("useGraphStore", () => {
     it("updates a stock", () => {
         useGraphStore.setState({
             stocks: {
-                [`stock${ID_SEPARATOR}1`]: { ...DEFAULT_STOCK, id: `stock${ID_SEPARATOR}1` },
+                [`stock${ID_SEPARATOR}1`]: {
+                    ...DEFAULT_STOCK,
+                    id: `stock${ID_SEPARATOR}1`,
+                    label: `stock${ID_SEPARATOR}1`,
+                },
             },
         });
 
         const op: Operation = {
             type: "stock/update",
-            clock: 1,
             id: `stock${ID_SEPARATOR}1`,
             patch: { x: 30 },
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -255,21 +275,33 @@ describe("useGraphStore", () => {
     it("deletes a stock", () => {
         useGraphStore.setState({
             stocks: {
-                [`stock${ID_SEPARATOR}1`]: { ...DEFAULT_STOCK, id: `stock${ID_SEPARATOR}1` },
-                [`stock${ID_SEPARATOR}2`]: { ...DEFAULT_STOCK, id: `stock${ID_SEPARATOR}2` },
+                [`stock${ID_SEPARATOR}1`]: {
+                    ...DEFAULT_STOCK,
+                    id: `stock${ID_SEPARATOR}1`,
+                    label: `stock${ID_SEPARATOR}1`,
+                },
+                [`stock${ID_SEPARATOR}2`]: {
+                    ...DEFAULT_STOCK,
+                    id: `stock${ID_SEPARATOR}2`,
+                    label: `stock${ID_SEPARATOR}2`,
+                },
             },
         });
 
         const op: Operation = {
             type: "stock/delete",
-            clock: 1,
             id: `stock${ID_SEPARATOR}1`,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().stocks).toEqual({
-            [`stock${ID_SEPARATOR}2`]: { ...DEFAULT_STOCK, id: `stock${ID_SEPARATOR}2` },
+            [`stock${ID_SEPARATOR}2`]: {
+                ...DEFAULT_STOCK,
+                id: `stock${ID_SEPARATOR}2`,
+                label: `stock${ID_SEPARATOR}2`,
+            },
         });
     });
 
@@ -281,8 +313,8 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "cloud/add",
-            clock: 1,
             cloud: cloud,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -302,9 +334,9 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "cloud/update",
-            clock: 1,
             id: `cloud${ID_SEPARATOR}1`,
             patch: { x: 30 },
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -322,8 +354,8 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "cloud/delete",
-            clock: 1,
             id: `cloud${ID_SEPARATOR}1`,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -337,12 +369,13 @@ describe("useGraphStore", () => {
         const flow: Flow = {
             ...DEFAULT_FLOW,
             id: `flow${ID_SEPARATOR}1`,
+            label: `flow${ID_SEPARATOR}1`,
         };
 
         const op: Operation = {
             type: "flow/add",
-            clock: 1,
             flow,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -356,15 +389,19 @@ describe("useGraphStore", () => {
     it("updates a flow", () => {
         useGraphStore.setState({
             flows: {
-                [`flow${ID_SEPARATOR}1`]: { ...DEFAULT_FLOW, id: `flow${ID_SEPARATOR}1` },
+                [`flow${ID_SEPARATOR}1`]: {
+                    ...DEFAULT_FLOW,
+                    id: `flow${ID_SEPARATOR}1`,
+                    label: `flow${ID_SEPARATOR}1`,
+                },
             },
         });
 
         const op: Operation = {
             type: "flow/update",
-            clock: 1,
             id: `flow${ID_SEPARATOR}1`,
             patch: { curvature: 0.5 },
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -375,21 +412,33 @@ describe("useGraphStore", () => {
     it("deletes a flow", () => {
         useGraphStore.setState({
             flows: {
-                [`flow${ID_SEPARATOR}1`]: { ...DEFAULT_FLOW, id: `flow${ID_SEPARATOR}1` },
-                [`flow${ID_SEPARATOR}2`]: { ...DEFAULT_FLOW, id: `flow${ID_SEPARATOR}2` },
+                [`flow${ID_SEPARATOR}1`]: {
+                    ...DEFAULT_FLOW,
+                    id: `flow${ID_SEPARATOR}1`,
+                    label: `flow${ID_SEPARATOR}1`,
+                },
+                [`flow${ID_SEPARATOR}2`]: {
+                    ...DEFAULT_FLOW,
+                    id: `flow${ID_SEPARATOR}2`,
+                    label: `flow${ID_SEPARATOR}2`,
+                },
             },
         });
 
         const op: Operation = {
             type: "flow/delete",
-            clock: 1,
             id: `flow${ID_SEPARATOR}1`,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
 
         expect(useGraphStore.getState().flows).toEqual({
-            [`flow${ID_SEPARATOR}2`]: { ...DEFAULT_FLOW, id: `flow${ID_SEPARATOR}2` },
+            [`flow${ID_SEPARATOR}2`]: {
+                ...DEFAULT_FLOW,
+                id: `flow${ID_SEPARATOR}2`,
+                label: `flow${ID_SEPARATOR}2`,
+            },
         });
     });
 
@@ -402,8 +451,8 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "loop/add",
-            clock: 1,
             loop,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -427,9 +476,9 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "loop/update",
-            clock: 1,
             id: `loop${ID_SEPARATOR}1`,
             patch: { label: "updated" },
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -447,8 +496,8 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "loop/delete",
-            clock: 1,
             id: `loop${ID_SEPARATOR}1`,
+            clock: 1,
         };
 
         useGraphStore.getState().apply(op);
@@ -465,22 +514,22 @@ describe("useGraphStore", () => {
                 [`node${ID_SEPARATOR}1`]: {
                     ...DEFAULT_NODE,
                     id: `node${ID_SEPARATOR}1`,
-                    label: "old",
+                    label: `node${ID_SEPARATOR}1`,
                 },
             },
         });
 
         useGraphStore.getState().apply({
             type: "node/update",
-            clock: 1,
             id: `node${ID_SEPARATOR}1`,
             patch: { label: "updated" },
+            clock: 10,
         });
 
         useGraphStore.getState().apply({
             type: "node/delete",
-            clock: 1,
             id: `node${ID_SEPARATOR}1`,
+            clock: 11,
         });
 
         expect(useGraphStore.getState().counter).toBe(5);

@@ -5,7 +5,6 @@ import { useInteractionStore } from "@/stores/interaction";
 
 import { EditFlowEquationFormView } from "../equation/EditFlowEquationFormView";
 import { EditNodeEquationFormView } from "../equation/EditNodeEquationFormView";
-import { EditStockEquationFormView } from "../equation/EditStockEquationFormView";
 import { InspectorSectionWrapper } from "../InspectorSectionWrapper";
 import { EditCloudFormView } from "./EditCloudFormView";
 import { EditEdgeFormView } from "./EditEdgeFormView";
@@ -44,13 +43,7 @@ const FormView = ({ formType, selectedIds }: FormProps) => {
         case "edge":
             return <EditEdgeFormView edgeId={selectedIds[0]} />;
         case "stock":
-            return (
-                <>
-                    <EditStockFormView stockId={selectedIds[0]} />
-                    <Separator className="my-4" />
-                    <EditStockEquationFormView stockId={selectedIds[0]} />
-                </>
-            );
+            return <EditStockFormView stockId={selectedIds[0]} />;
         case "cloud":
             return <EditCloudFormView cloudId={selectedIds[0]} />;
         case "flow":

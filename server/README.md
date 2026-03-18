@@ -24,5 +24,5 @@ cp -r ../client/dist .
 
 ```
 go test ./...
-go test -cover ./env ./graph ./id ./room ./timeout ./ws -coverprofile=coverage.out
+go test -cover ./env ./graph ./id ./room ./timeout ./sim ./ws -coverprofile=coverage.out
 ```

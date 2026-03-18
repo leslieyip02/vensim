@@ -37,7 +37,7 @@ export interface Stock extends Identifiable, Selectable {
     height: number;
     label: string;
     description: string;
-    equation: string;
+    initialValue: number;
 }
 
 export interface Cloud extends Identifiable, Selectable {
@@ -61,6 +61,8 @@ export interface Loop extends Identifiable, Selectable {
     loopType: LoopType;
     label: string;
 }
+
+export type GraphEntity = Node | Edge | Stock | Cloud | Flow | Loop;
 
 export function isNodeId(id: string): boolean {
     return id.startsWith("node");

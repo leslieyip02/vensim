@@ -7,6 +7,7 @@ import (
 
 	"server/env"
 	"server/room"
+	"server/sim"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -26,6 +27,7 @@ func main() {
 	r := chi.NewRouter()
 	configureRouter(r, allowedOrigins)
 	configureRoomManager(r)
+	configureSimulation(r)
 	configureFileServer(r)
 	run(r, port)
 }
@@ -51,6 +53,10 @@ func configureRoomManager(r *chi.Mux) {
 	r.Post("/api/room/create", rm.CreateRoom)
 	r.Get("/api/room/{roomId}", rm.CheckRoom)
 	r.Get("/ws/room/{roomId}", rm.JoinRoom)
+}
+
+func configureSimulation(r *chi.Mux) {
+	r.Post("/api/simulate", sim.RunSimulation)
 }
 
 func configureFileServer(r *chi.Mux) {
