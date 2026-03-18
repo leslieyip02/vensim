@@ -18,7 +18,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 			op: Operation{
 				Type:  NodeAdd,
 				Clock: 1,
-				Node:  &Node{ID: "node-1"},
+				Node:  &Node{ID: fmt.Sprintf("node%s1", ID_SEPARATOR)},
 			},
 			initial: State{
 				Nodes:   map[string]*Node{},
@@ -37,7 +37,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 			op: Operation{
 				Type:  NodeUpdate,
 				Clock: 1,
-				ID:    "node-1",
+				ID:    fmt.Sprintf("node%s1", ID_SEPARATOR),
 				Patch: map[string]any{"x": 30},
 			},
 			initial: State{
@@ -59,7 +59,7 @@ func TestState_Apply_NodeOperations(t *testing.T) {
 			op: Operation{
 				Type:  NodeDelete,
 				Clock: 1,
-				ID:    "node-1",
+				ID:    fmt.Sprintf("node%s1", ID_SEPARATOR),
 			},
 			initial: State{
 				Nodes: map[string]*Node{
@@ -104,7 +104,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 			op: Operation{
 				Type:  EdgeAdd,
 				Clock: 1,
-				Edge:  &Edge{ID: "edge-1"},
+				Edge:  &Edge{ID: fmt.Sprintf("edge%s1", ID_SEPARATOR)},
 			},
 			initial: State{
 				Edges:   map[string]*Edge{},
@@ -123,7 +123,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 			op: Operation{
 				Type:  EdgeUpdate,
 				Clock: 1,
-				ID:    "edge-1",
+				ID:    fmt.Sprintf("edge%s1", ID_SEPARATOR),
 				Patch: map[string]any{"to": "c"},
 			},
 			initial: State{
@@ -145,7 +145,7 @@ func TestState_Apply_EdgeOperations(t *testing.T) {
 			op: Operation{
 				Type:  EdgeDelete,
 				Clock: 1,
-				ID:    "edge-1",
+				ID:    fmt.Sprintf("edge%s1", ID_SEPARATOR),
 			},
 			initial: State{
 				Edges: map[string]*Edge{
@@ -190,7 +190,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 			op: Operation{
 				Type:  StockAdd,
 				Clock: 1,
-				Stock: &Stock{ID: "stock-1"},
+				Stock: &Stock{ID: fmt.Sprintf("stock%s1", ID_SEPARATOR)},
 			},
 			initial: State{
 				Stocks:  map[string]*Stock{},
@@ -209,7 +209,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 			op: Operation{
 				Type:  StockUpdate,
 				Clock: 1,
-				ID:    "stock-1",
+				ID:    fmt.Sprintf("stock%s1", ID_SEPARATOR),
 				Patch: map[string]any{"x": 30},
 			},
 			initial: State{
@@ -231,7 +231,7 @@ func TestState_Apply_StockOperations(t *testing.T) {
 			op: Operation{
 				Type:  StockDelete,
 				Clock: 1,
-				ID:    "stock-1",
+				ID:    fmt.Sprintf("stock%s1", ID_SEPARATOR),
 			},
 			initial: State{
 				Stocks: map[string]*Stock{
@@ -276,7 +276,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 			op: Operation{
 				Type:  CloudAdd,
 				Clock: 1,
-				Cloud: &Cloud{ID: "cloud-1"},
+				Cloud: &Cloud{ID: fmt.Sprintf("cloud%s1", ID_SEPARATOR)},
 			},
 			initial: State{
 				Clouds:  map[string]*Cloud{},
@@ -295,7 +295,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 			op: Operation{
 				Type:  CloudUpdate,
 				Clock: 1,
-				ID:    "cloud-1",
+				ID:    fmt.Sprintf("cloud%s1", ID_SEPARATOR),
 				Patch: map[string]any{"x": 30},
 			},
 			initial: State{
@@ -317,7 +317,7 @@ func TestState_Apply_CloudOperations(t *testing.T) {
 			op: Operation{
 				Type:  CloudDelete,
 				Clock: 1,
-				ID:    "cloud-1",
+				ID:    fmt.Sprintf("cloud%s1", ID_SEPARATOR),
 			},
 			initial: State{
 				Clouds: map[string]*Cloud{
@@ -362,7 +362,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 			op: Operation{
 				Type:  FlowAdd,
 				Clock: 1,
-				Flow:  &Flow{ID: "flow-1"},
+				Flow:  &Flow{ID: fmt.Sprintf("flow%s1", ID_SEPARATOR)},
 			},
 			initial: State{
 				Flows:   map[string]*Flow{},
@@ -381,7 +381,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 			op: Operation{
 				Type:  FlowUpdate,
 				Clock: 1,
-				ID:    "flow-1",
+				ID:    fmt.Sprintf("flow%s1", ID_SEPARATOR),
 				Patch: map[string]any{"curvature": 0.5},
 			},
 			initial: State{
@@ -403,7 +403,7 @@ func TestState_Apply_FlowOperations(t *testing.T) {
 			op: Operation{
 				Type:  FlowDelete,
 				Clock: 1,
-				ID:    "flow-1",
+				ID:    fmt.Sprintf("flow%s1", ID_SEPARATOR),
 			},
 			initial: State{
 				Flows: map[string]*Flow{
@@ -446,7 +446,7 @@ func TestState_Apply_LoopOperations(t *testing.T) {
 			op: Operation{
 				Type:  LoopAdd,
 				Clock: 1,
-				Loop:  &Loop{ID: "loop-1"},
+				Loop:  &Loop{ID: fmt.Sprintf("loop%s1", ID_SEPARATOR)},
 			},
 			initial: State{
 				Loops:   map[string]*Loop{},
@@ -455,7 +455,7 @@ func TestState_Apply_LoopOperations(t *testing.T) {
 			},
 			want: State{
 				Loops: map[string]*Loop{
-					"loop-1": {ID: "loop-1"},
+					fmt.Sprintf("loop%s1", ID_SEPARATOR): {ID: fmt.Sprintf("loop%s1", ID_SEPARATOR)},
 				},
 				Counter: 2,
 				Clock:   1,
@@ -465,19 +465,19 @@ func TestState_Apply_LoopOperations(t *testing.T) {
 			op: Operation{
 				Type:  LoopUpdate,
 				Clock: 1,
-				ID:    "loop-1",
+				ID:    fmt.Sprintf("loop%s1", ID_SEPARATOR),
 				Patch: map[string]any{"label": "updated"},
 			},
 			initial: State{
 				Loops: map[string]*Loop{
-					"loop-1": {ID: "loop-1", Label: "old"},
+					fmt.Sprintf("loop%s1", ID_SEPARATOR): {ID: fmt.Sprintf("loop%s1", ID_SEPARATOR), Label: "old"},
 				},
 				Counter: 1,
 				Clock:   0,
 			},
 			want: State{
 				Loops: map[string]*Loop{
-					"loop-1": {ID: "loop-1", Label: "updated"},
+					fmt.Sprintf("loop%s1", ID_SEPARATOR): {ID: fmt.Sprintf("loop%s1", ID_SEPARATOR), Label: "updated"},
 				},
 				Counter: 1,
 				Clock:   1,
@@ -487,11 +487,11 @@ func TestState_Apply_LoopOperations(t *testing.T) {
 			op: Operation{
 				Type:  LoopDelete,
 				Clock: 1,
-				ID:    "loop-1",
+				ID:    fmt.Sprintf("loop%s1", ID_SEPARATOR),
 			},
 			initial: State{
 				Loops: map[string]*Loop{
-					"loop-1": {ID: "loop-1"},
+					fmt.Sprintf("loop%s1", ID_SEPARATOR): {ID: fmt.Sprintf("loop%s1", ID_SEPARATOR)},
 				},
 				Counter: 1,
 				Clock:   0,
@@ -525,7 +525,7 @@ func TestState_Apply_RejectOutdatedOp(t *testing.T) {
 	op := Operation{
 		Type:  NodeAdd,
 		Clock: 1,
-		Node:  &Node{ID: "node-1"},
+		Node:  &Node{ID: fmt.Sprintf("node%s1", ID_SEPARATOR)},
 	}
 	_, succeeded := state.Apply(op)
 	if succeeded {
