@@ -91,6 +91,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "node/add",
+            clock: 1,
             node,
             clock: 1,
         };
@@ -117,6 +118,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "node/update",
+            clock: 1,
             id: `node${ID_SEPARATOR}1`,
             patch: { label: "updated" },
             clock: 2,
@@ -146,6 +148,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "node/delete",
+            clock: 1,
             id: `node${ID_SEPARATOR}1`,
             clock: 3,
         };
@@ -171,6 +174,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "edge/add",
+            clock: 1,
             edge,
             clock: 1,
         };
@@ -197,6 +201,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "edge/update",
+            clock: 1,
             id: `edge${ID_SEPARATOR}1`,
             patch: { to: "c" },
             clock: 1,
@@ -217,6 +222,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "edge/delete",
+            clock: 1,
             id: `edge${ID_SEPARATOR}1`,
             clock: 1,
         };
@@ -237,6 +243,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "stock/add",
+            clock: 1,
             stock,
             clock: 1,
         };
@@ -262,6 +269,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "stock/update",
+            clock: 1,
             id: `stock${ID_SEPARATOR}1`,
             patch: { x: 30 },
             clock: 1,
@@ -290,6 +298,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "stock/delete",
+            clock: 1,
             id: `stock${ID_SEPARATOR}1`,
             clock: 1,
         };
@@ -313,6 +322,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "cloud/add",
+            clock: 1,
             cloud: cloud,
             clock: 1,
         };
@@ -334,6 +344,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "cloud/update",
+            clock: 1,
             id: `cloud${ID_SEPARATOR}1`,
             patch: { x: 30 },
             clock: 1,
@@ -354,6 +365,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "cloud/delete",
+            clock: 1,
             id: `cloud${ID_SEPARATOR}1`,
             clock: 1,
         };
@@ -374,6 +386,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "flow/add",
+            clock: 1,
             flow,
             clock: 1,
         };
@@ -399,6 +412,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "flow/update",
+            clock: 1,
             id: `flow${ID_SEPARATOR}1`,
             patch: { curvature: 0.5 },
             clock: 1,
@@ -427,6 +441,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "flow/delete",
+            clock: 1,
             id: `flow${ID_SEPARATOR}1`,
             clock: 1,
         };
@@ -451,6 +466,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "loop/add",
+            clock: 1,
             loop,
             clock: 1,
         };
@@ -476,6 +492,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "loop/update",
+            clock: 1,
             id: `loop${ID_SEPARATOR}1`,
             patch: { label: "updated" },
             clock: 1,
@@ -496,6 +513,7 @@ describe("useGraphStore", () => {
 
         const op: Operation = {
             type: "loop/delete",
+            clock: 1,
             id: `loop${ID_SEPARATOR}1`,
             clock: 1,
         };
@@ -521,6 +539,7 @@ describe("useGraphStore", () => {
 
         useGraphStore.getState().apply({
             type: "node/update",
+            clock: 1,
             id: `node${ID_SEPARATOR}1`,
             patch: { label: "updated" },
             clock: 10,
@@ -528,6 +547,7 @@ describe("useGraphStore", () => {
 
         useGraphStore.getState().apply({
             type: "node/delete",
+            clock: 1,
             id: `node${ID_SEPARATOR}1`,
             clock: 11,
         });
