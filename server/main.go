@@ -56,7 +56,7 @@ func configureRoomManager(r *chi.Mux) {
 }
 
 func configureSimulation(r *chi.Mux) {
-	r.Post("/simulate", sim.RunSimulation)
+	r.Post("/api/simulate", sim.RunSimulation)
 }
 
 func configureFileServer(r *chi.Mux) {

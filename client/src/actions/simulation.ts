@@ -5,7 +5,8 @@ import {
 } from "@/models/simulation";
 import { useGraphStore } from "@/stores/graph";
 
-const API_ORIGIN = import.meta.env.VITE_API_ORIGIN;
+const HOST = import.meta.env.VITE_HOST || window.location.host;
+const API_ORIGIN = `${HOST.startsWith("localhost") ? "http" : "https"}://${HOST}`;
 
 export async function runSimulation(settings: SimulationSettings): Promise<SimulationResult> {
     const state = useGraphStore.getState();
@@ -51,7 +52,7 @@ export async function runSimulation(settings: SimulationSettings): Promise<Simul
         variables,
     };
 
-    const res = await fetch(`${API_ORIGIN}/simulate`, {
+    const res = await fetch(`${API_ORIGIN}/api/simulate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
