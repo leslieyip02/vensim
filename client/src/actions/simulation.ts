@@ -59,7 +59,22 @@ export async function runSimulation(settings: SimulationSettings): Promise<Simul
     });
 
     if (!res.ok) {
-        const errorText = await res.text();
+        let errorText = await res.text();
+
+        // replace entity ids with labels
+        const allEntities = [
+            ...Object.values(state.nodes),
+            ...Object.values(state.stocks),
+            ...Object.values(state.flows),
+        ];
+
+        allEntities.forEach((entity) => {
+            if (entity.id && entity.label) {
+                const regex = new RegExp(entity.id, "g");
+                errorText = errorText.replace(regex, `'${entity.label}'`);
+            }
+        });
+
         throw new Error(errorText || "Failed to run simulation");
     }
 
