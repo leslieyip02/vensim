@@ -17,7 +17,8 @@ const INVALID_CHARACTERS_ERROR = `Equation can only contain numbers, operators "
 const UNBALANCED_PARENTHESES_ERROR = "Equation has unbalanced parentheses.";
 const INVALID_BINARY_OPERATOR_ERROR =
     "Operators and comparisons must be placed between two valid operands.";
-const INVALID_COMMA_ERROR = "Commas must be inside functions and separate valid arguments.";
+const INVALID_COMMA_ERROR =
+    "Commas must be inside a valid function and separate valid arguments. Entity names can't be function names";
 
 type EquationValidationResult = {
     isValid: boolean;
@@ -211,22 +212,36 @@ function hasValidBinaryOperatorPlacement(tokens: string[]) {
 }
 
 function hasValidCommaPlacement(tokens: string[]) {
-    let parenDepth = 0;
+    const parentStack: boolean[] = [];
 
     for (let i = 0; i < tokens.length; i++) {
         const curr = tokens[i];
         const prev = tokens[i - 1];
         const next = tokens[i + 1];
 
-        if (curr === "(") parenDepth++;
-        if (curr === ")") parenDepth--;
+        if (curr === "(") {
+            const isEntity =
+                prev !== undefined && (isNodeId(prev) || isStockId(prev) || isFlowId(prev));
+            if (isEntity) return false;
 
-        if (curr !== VALID_COMMA) continue;
+            const isFunctionContext = prev !== undefined && VALID_FUNCTIONS.has(prev);
+            parentStack.push(isFunctionContext);
+        }
 
-        if (parenDepth <= 0) return false;
-        if (i === 0 || i === tokens.length - 1) return false;
-        if (prev === "(" || prev === VALID_COMMA) return false;
-        if (next === ")" || next === VALID_COMMA) return false;
+        if (curr === ")") {
+            parentStack.pop();
+        }
+
+        if (curr === VALID_COMMA) {
+            if (parentStack.length === 0) return false;
+
+            const isInsideFunction = parentStack[parentStack.length - 1];
+            if (!isInsideFunction) return false;
+
+            if (i === 0 || i === tokens.length - 1) return false;
+            if (prev === "(" || prev === VALID_COMMA) return false;
+            if (next === ")" || next === VALID_COMMA) return false;
+        }
     }
 
     return true;
