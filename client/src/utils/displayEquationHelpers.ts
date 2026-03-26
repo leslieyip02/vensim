@@ -1,15 +1,24 @@
-import { parse } from "mathjs";
-
 import { type Flow, isFlowId, isNodeId, isStockId, type Node, type Stock } from "@/models/graph";
 import {
+    VALID_COMMA,
+    VALID_COMPARISON_REGEX,
+    VALID_COMPARISON_STRING,
     VALID_ENTITY_ID_REGEX,
     VALID_EQUATION_REGEX,
+    VALID_FUNCTION_REGEX,
+    VALID_FUNCTIONS,
+    VALID_FUNCTIONS_STRING,
     VALID_NUMBER,
     VALID_OPERATOR_REGEX,
     VALID_OPERATOR_STRING,
 } from "@/utils/equationValidationRegex";
 
-const INVALID_CHARACTERS_ERROR = `Equation can only contain numbers, operators ${VALID_OPERATOR_STRING} and valid node, stock or flow labels.`;
+const INVALID_CHARACTERS_ERROR = `Equation can only contain numbers, operators "${VALID_OPERATOR_STRING}", comparison operators "${VALID_COMPARISON_STRING}", commas, functions "${VALID_FUNCTIONS_STRING}", and valid node/stock/flow labels.`;
+const UNBALANCED_PARENTHESES_ERROR = "Equation has unbalanced parentheses.";
+const INVALID_BINARY_OPERATOR_ERROR =
+    "Operators and comparisons must be placed between two valid operands.";
+const INVALID_COMMA_ERROR =
+    "Commas must be inside a valid function and separate valid arguments. Entity names can't be function names";
 
 type EquationValidationResult = {
     isValid: boolean;
@@ -72,6 +81,7 @@ export function validateEquation(
     equation = equation.trim();
     if (equation.length < 1) return { isValid: true };
     const tokens = equation.match(VALID_EQUATION_REGEX);
+    // Empty tokens error
     if (!tokens) {
         return {
             isValid: false,
@@ -82,6 +92,7 @@ export function validateEquation(
     const reconstructed = tokens.join("");
     const stripped = equation.replace(/\s+/g, "");
 
+    // Invalid characters error
     if (reconstructed !== stripped) {
         return {
             isValid: false,
@@ -90,9 +101,18 @@ export function validateEquation(
     }
 
     const tokensWithValidIds = tokens.filter((tok) => {
-        // Keep numbers and operators
+        // numbers
         if (new RegExp(`^${VALID_NUMBER}$`).test(tok)) return true;
+        // math operators
         if (new RegExp(`^${VALID_OPERATOR_REGEX}$`).test(tok)) return true;
+        // comparison operators
+        if (new RegExp(`^${VALID_COMPARISON_REGEX}$`).test(tok)) return true;
+        // comma
+        if (tok === VALID_COMMA) return true;
+        // functions
+        if (new RegExp(`^${VALID_FUNCTION_REGEX}$`).test(tok)) {
+            return VALID_FUNCTIONS.has(tok);
+        }
 
         // Keep ID tokens only if they exist in state
         if (isNodeId(tok)) return nodes[tok] !== undefined;
@@ -100,6 +120,7 @@ export function validateEquation(
         if (isFlowId(tok)) return flows[tok] !== undefined;
     });
 
+    // Checks for valid IDs and functions
     if (tokensWithValidIds.length !== tokens.length) {
         return {
             isValid: false,
@@ -107,40 +128,123 @@ export function validateEquation(
         };
     }
 
-    try {
-        parse(tokensWithValidIds.join(" "));
-        return { isValid: true };
-    } catch {
+    if (!hasBalancedParentheses(tokens)) {
         return {
             isValid: false,
-            error: "Equation should be in the format [operand] [operator] [operand] (e.g. A + B)",
+            error: UNBALANCED_PARENTHESES_ERROR,
         };
     }
+
+    if (!hasValidBinaryOperatorPlacement(tokens)) {
+        return {
+            isValid: false,
+            error: INVALID_BINARY_OPERATOR_ERROR,
+        };
+    }
+
+    if (!hasValidCommaPlacement(tokens)) {
+        return {
+            isValid: false,
+            error: INVALID_COMMA_ERROR,
+        };
+    }
+
+    return { isValid: true };
 }
 
-export function removeInvalidCharacters(
-    equation: string,
-    nodes: Record<string, Node>,
-    flows: Record<string, Flow>,
-    stocks: Record<string, Stock>,
-) {
-    const tokens = equation.match(VALID_EQUATION_REGEX);
-    if (!tokens) return "";
+function hasBalancedParentheses(tokens: string[]): boolean {
+    let balance = 0;
+    for (const token of tokens) {
+        if (token === "(") {
+            balance++;
+        } else if (token === ")") {
+            balance--;
+            if (balance < 0) {
+                return false;
+            }
+        }
+    }
+    return balance === 0;
+}
 
-    const tokensWithValidIds = tokens.filter((tok) => {
-        // Keep numbers and operators
-        if (new RegExp(VALID_NUMBER).test(tok)) return true;
-        if (new RegExp(VALID_OPERATOR_REGEX).test(tok)) return true;
+const operators = new Set(["+", "-", "*", "/"]);
+const comparisons = new Set(["==", "!=", ">", "<", ">=", "<="]);
 
-        // Keep ID tokens only if they exist in state
-        if (isNodeId(tok)) return nodes[tok] !== undefined;
-        if (isFlowId(tok)) return flows[tok] !== undefined;
-        if (isStockId(tok)) return stocks[tok] !== undefined;
+function isBinaryOp(tok: string) {
+    return operators.has(tok) || comparisons.has(tok);
+}
 
-        return false;
-    });
+function hasValidBinaryOperatorPlacement(tokens: string[]) {
+    for (let i = 0; i < tokens.length; i++) {
+        const curr = tokens[i];
 
-    return tokensWithValidIds.join(" ");
+        if (!isBinaryOp(curr)) continue;
+
+        const prev = tokens[i - 1];
+        const next = tokens[i + 1];
+
+        if (curr === "-") {
+            const isUnary = i === 0 || isBinaryOp(prev) || prev === "(" || prev === VALID_COMMA;
+
+            if (isUnary) {
+                if (i === tokens.length - 1) return false;
+
+                if (isBinaryOp(next) || next === ")" || next === VALID_COMMA) {
+                    return false;
+                }
+
+                continue;
+            }
+        }
+
+        if (i === 0 || i === tokens.length - 1) return false;
+
+        if (isBinaryOp(prev) || prev === "(" || prev === VALID_COMMA) {
+            return false;
+        }
+
+        if (isBinaryOp(next) || next === ")" || next === VALID_COMMA) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function hasValidCommaPlacement(tokens: string[]) {
+    const parentStack: boolean[] = [];
+
+    for (let i = 0; i < tokens.length; i++) {
+        const curr = tokens[i];
+        const prev = tokens[i - 1];
+        const next = tokens[i + 1];
+
+        if (curr === "(") {
+            const isEntity =
+                prev !== undefined && (isNodeId(prev) || isStockId(prev) || isFlowId(prev));
+            if (isEntity) return false;
+
+            const isFunctionContext = prev !== undefined && VALID_FUNCTIONS.has(prev);
+            parentStack.push(isFunctionContext);
+        }
+
+        if (curr === ")") {
+            parentStack.pop();
+        }
+
+        if (curr === VALID_COMMA) {
+            if (parentStack.length === 0) return false;
+
+            const isInsideFunction = parentStack[parentStack.length - 1];
+            if (!isInsideFunction) return false;
+
+            if (i === 0 || i === tokens.length - 1) return false;
+            if (prev === "(" || prev === VALID_COMMA) return false;
+            if (next === ")" || next === VALID_COMMA) return false;
+        }
+    }
+
+    return true;
 }
 
 export function removeWhitespaces(equation: string) {
