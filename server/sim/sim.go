@@ -25,7 +25,7 @@ func simulate(req SimulationRequest) (SimulationResult, error) {
 
 	// inject custom functions
 	for name, fn := range CustomFunctions {
-		env[name] = fn
+		env[name] = fn(env)
 	}
 
 	// initialise stocks and variables
@@ -66,6 +66,7 @@ func simulate(req SimulationRequest) (SimulationResult, error) {
 
 	stepCount := 0
 	for timestamp <= endTime {
+		env["currentTime"] = timestamp
 		for _, varId := range sortedVarIds {
 			program := programs[varId]
 			output, err := expr.Run(program, env)
