@@ -1,6 +1,6 @@
 package sim
 
-// IF returns trueValue when cond is true and false otherwise
+// IF returns trueValue when cond is true and falseValue otherwise
 func IF(cond bool, trueValue float64, falseValue float64) float64 {
 	if cond {
 		return trueValue
@@ -8,7 +8,7 @@ func IF(cond bool, trueValue float64, falseValue float64) float64 {
 	return falseValue
 }
 
-// STEP returns the value if targetTime >= the environment's current time
+// STEP returns value if targetTime >= the environment's current time
 func STEP(value float64, targetTime float64, env RuntimeEnv) float64 {
 	currentTime, ok := env["currentTime"].(float64)
 	if !ok {
