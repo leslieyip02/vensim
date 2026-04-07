@@ -28,12 +28,7 @@ func TestSTEP(t *testing.T) {
 }
 
 func TestSTEP_Panic(t *testing.T) {
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Expected panic when currentTime is missing or invalid")
-		}
-	}()
-
+	defer expectPanic(t)
 	env := RuntimeEnv{} // missing currentTime
 	STEP(5, 5, env)
 }

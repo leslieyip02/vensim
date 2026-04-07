@@ -39,7 +39,7 @@ func LOOKUP(target any, args ...any) float64 {
 
 	x, ok := toFloat64(target)
 	if !ok {
-		panic("LOOKUP: expected all arguments to be numbers")
+		panic("LOOKUP: target argument should resolve to a number")
 	}
 
 	n := len(args)
@@ -52,28 +52,28 @@ func LOOKUP(target any, args ...any) float64 {
 	xs := make([]float64, half)
 	ys := make([]float64, half)
 
-	// Parse X values
+	// Parse x values
 	for i := range half {
 		val, ok := toFloat64(args[i])
 		if !ok {
-			panic("LOOKUP: expected all arguments to be numbers")
+			panic("LOOKUP: expected all x values to be numbers")
 		}
 		xs[i] = val
 	}
 
-	// Parse Y values
+	// Parse y values
 	for i := range half {
 		val, ok := toFloat64(args[half+i])
 		if !ok {
-			panic("LOOKUP: expected all arguments to be numbers")
+			panic("LOOKUP: expected all y values to be numbers")
 		}
 		ys[i] = val
 	}
 
-	// Ensure Xs are strictly increasing
+	// Ensure x are strictly increasing
 	for i := 0; i < half-1; i++ {
 		if xs[i] >= xs[i+1] {
-			panic("LOOKUP: X values must be strictly increasing")
+			panic("LOOKUP: x values must be strictly increasing")
 		}
 	}
 
