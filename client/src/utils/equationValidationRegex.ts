@@ -12,7 +12,7 @@ export const VALID_EQUATION_REGEX = new RegExp(
     "g",
 );
 
-export const VALID_FUNCTIONS = new Set(["IF"]);
+export const VALID_FUNCTIONS = new Set(["IF", "STEP", "LOOKUP"]);
 
 function getValidOperators(): string {
     // Remove ^, $ and brackets

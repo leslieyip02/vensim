@@ -8,6 +8,8 @@ import (
 	"github.com/expr-lang/expr/vm"
 )
 
+type RuntimeEnv = map[string]any
+
 func simulate(req SimulationRequest) (SimulationResult, error) {
 	timestamp := req.Settings.StartTime
 	delta := req.Settings.Delta
@@ -21,12 +23,10 @@ func simulate(req SimulationRequest) (SimulationResult, error) {
 	}
 
 	currValues := make(map[string]float64)
-	env := make(map[string]interface{})
+	env := make(RuntimeEnv)
 
 	// inject custom functions
-	for name, fn := range CustomFunctions {
-		env[name] = fn
-	}
+	registerFunctions(env)
 
 	// initialise stocks and variables
 	for _, s := range req.Stocks {
@@ -66,6 +66,7 @@ func simulate(req SimulationRequest) (SimulationResult, error) {
 
 	stepCount := 0
 	for timestamp <= endTime {
+		env["currentTime"] = timestamp
 		for _, varId := range sortedVarIds {
 			program := programs[varId]
 			output, err := expr.Run(program, env)
