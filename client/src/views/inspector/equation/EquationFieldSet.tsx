@@ -1,7 +1,9 @@
 import { useRef } from "react";
+import { LuCircleHelp } from "react-icons/lu";
 
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Flow, Node } from "@/models/graph";
 import { useEquationController } from "@/utils/useEquationController";
 import { useOutsideClickHandler } from "@/utils/useOutsideClickHandler";
@@ -32,7 +34,45 @@ export function EquationFieldSet({
         <>
             <FieldSet>
                 <Field>
-                    <FieldLabel>Equation</FieldLabel>
+                    <FieldLabel>
+                        Equation
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <LuCircleHelp />
+                            </TooltipTrigger>
+                            <TooltipContent className="flex flex-col gap-2 ml-2">
+                                <div className="space-y-1">
+                                    <code className="font-semibold">
+                                        IF(cond, trueValue, falseValue)
+                                    </code>
+                                    <p className="text-sm text-background/70">
+                                        Returns <code className="text-gray-200">trueValue</code> if{" "}
+                                        <code className="text-gray-200">cond</code> is true,
+                                        otherwise <code className="text-gray-200">falseValue</code>.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <code className="font-semibold">STEP(value, targetTime)</code>
+                                    <p className="text-sm text-background/70">
+                                        Returns <code className="text-gray-200">value</code> when{" "}
+                                        <code className="text-gray-200">targetTime</code> ≥ current
+                                        time, otherwise 0.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <code className="font-semibold">
+                                        LOOKUP(target, x1, ..., xn, y1, ..., yn)
+                                    </code>
+                                    <p className="text-sm text-background/70">
+                                        Performs piecewise linear interpolation for{" "}
+                                        <code className="text-gray-200">target</code>.
+                                    </p>
+                                </div>
+                            </TooltipContent>
+                        </Tooltip>
+                    </FieldLabel>
                     <Textarea
                         name="equation"
                         className={`
