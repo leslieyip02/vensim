@@ -40,23 +40,23 @@ export function EquationFieldSet({
                             <TooltipTrigger asChild>
                                 <LuCircleHelp />
                             </TooltipTrigger>
-                            <TooltipContent className="flex flex-col gap-2">
+                            <TooltipContent className="flex flex-col gap-2 ml-2">
                                 <div className="space-y-1">
                                     <code className="font-semibold">
                                         IF(cond, trueValue, falseValue)
                                     </code>
-                                    <p className="text-sm text-muted-foreground">
-                                        Returns <code className="text-gray-400">trueValue</code> if{" "}
-                                        <code className="text-gray-400">cond</code> is true,
-                                        otherwise <code className="text-gray-400">falseValue</code>.
+                                    <p className="text-sm text-background/70">
+                                        Returns <code className="text-gray-200">trueValue</code> if{" "}
+                                        <code className="text-gray-200">cond</code> is true,
+                                        otherwise <code className="text-gray-200">falseValue</code>.
                                     </p>
                                 </div>
 
                                 <div className="space-y-1">
                                     <code className="font-semibold">STEP(value, targetTime)</code>
-                                    <p className="text-sm text-muted-foreground">
-                                        Returns <code className="text-gray-400">value</code> when{" "}
-                                        <code className="text-gray-400">targetTime</code> ≥ current
+                                    <p className="text-sm text-background/70">
+                                        Returns <code className="text-gray-200">value</code> when{" "}
+                                        <code className="text-gray-200">targetTime</code> ≥ current
                                         time, otherwise 0.
                                     </p>
                                 </div>
@@ -65,9 +65,9 @@ export function EquationFieldSet({
                                     <code className="font-semibold">
                                         LOOKUP(target, x1, ..., xn, y1, ..., yn)
                                     </code>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="text-sm text-background/70">
                                         Performs piecewise linear interpolation for{" "}
-                                        <code className="text-gray-400">target</code>.
+                                        <code className="text-gray-200">target</code>.
                                     </p>
                                 </div>
                             </TooltipContent>
