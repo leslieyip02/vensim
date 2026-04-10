@@ -1,12 +1,11 @@
 import { useEffect } from "react";
 
+import { useCommands } from "@/controllers/command";
 import { useInteractionStore } from "@/stores/interaction";
-
-import { useCommands } from "./command";
 
 export function useKeyboardShortcuts() {
     const { setInteractionMode, toggleInspectorOpen } = useInteractionStore();
-    const { deleteSelectedIds, cancelSelection } = useCommands();
+    const { deleteSelectedIds, cancelSelection, updateSelectedEdgePolarities } = useCommands();
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -33,6 +32,12 @@ export function useKeyboardShortcuts() {
                     cancelSelection();
                     setInteractionMode("select");
                     break;
+                case "+":
+                    updateSelectedEdgePolarities("+");
+                    break;
+                case "-":
+                    updateSelectedEdgePolarities("-");
+                    break;
                 case "Backspace":
                 case "Delete":
                     deleteSelectedIds();
@@ -42,5 +47,11 @@ export function useKeyboardShortcuts() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [deleteSelectedIds, cancelSelection, setInteractionMode, toggleInspectorOpen]);
+    }, [
+        deleteSelectedIds,
+        cancelSelection,
+        updateSelectedEdgePolarities,
+        setInteractionMode,
+        toggleInspectorOpen,
+    ]);
 }

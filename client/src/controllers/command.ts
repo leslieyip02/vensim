@@ -5,6 +5,7 @@ import {
     deleteLoop,
     deleteNode,
     deleteStock,
+    updateEdge,
 } from "@/actions/graph";
 import { isCloudId, isEdgeId, isFlowId, isLoopId, isNodeId, isStockId } from "@/models/graph";
 import { useInteractionStore } from "@/stores/interaction";
@@ -24,9 +25,17 @@ export function useCommands() {
         clearSelectedIds();
     };
 
+    const updateEdgePolarities = (ids: string[], patch: Partial<{ polarity: "+" | "-" }>) => {
+        ids.forEach((id) => {
+            if (isEdgeId(id)) updateEdge(id, patch);
+        });
+    };
+
     return {
         deleteSelectedIds: () => deleteIds(selectedIds),
         deleteId: (id: string) => deleteIds([id]),
+        updateSelectedEdgePolarities: (polarity: "+" | "-") =>
+            updateEdgePolarities(selectedIds, { polarity }),
         cancelSelection: () => clearSelectedIds(),
     };
 }
