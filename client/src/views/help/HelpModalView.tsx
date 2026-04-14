@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { LuCircleHelp } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,11 @@ export function HelpModalView() {
     const [isOpen, setIsOpen] = useState(false);
 
     const shortcuts = [
-        { keys: ["Ctrl", "\\"], description: "Toggle Inspector Sidebar" },
+        { keys: ["Ctrl / ⌘", "\\"], description: "Toggle Inspector Sidebar" },
+        { keys: ["+"], description: "Set Selected Edges' Polarity to Positive" },
+        { keys: ["-"], description: "Set Selected Edges' Polarity to Negative" },
         { keys: ["Esc"], description: "Clear Selection & Select Mode" },
-        { keys: ["Del"], description: "Delete Selected Items" },
+        { keys: ["Del / ⌫"], description: "Delete Selected Items" },
     ];
 
     return (
@@ -45,14 +47,16 @@ export function HelpModalView() {
                             <span className="text-sm text-muted-foreground font-medium">
                                 {s.description}
                             </span>
-                            <div className="flex gap-1">
-                                {s.keys.map((key) => (
-                                    <kbd
-                                        key={key}
-                                        className="pointer-events-none inline-flex h-7 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-bold opacity-100"
-                                    >
-                                        {key === "\\" ? " \u005C " : key}
-                                    </kbd>
+                            <div className="flex items-center gap-1.5">
+                                {s.keys.map((key, index) => (
+                                    <Fragment key={key}>
+                                        <kbd className="pointer-events-none inline-flex min-w-[1.75rem] h-7 select-none items-center justify-center rounded border bg-muted px-1.5 font-mono text-[10px] font-bold opacity-100">
+                                            {key === "\\" ? "\u005C" : key}
+                                        </kbd>
+                                        {index < s.keys.length - 1 && (
+                                            <span className="text-muted-foreground text-xs">+</span>
+                                        )}
+                                    </Fragment>
                                 ))}
                             </div>
                         </div>
