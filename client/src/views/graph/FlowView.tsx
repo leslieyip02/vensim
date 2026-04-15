@@ -1,6 +1,6 @@
 import type { Context } from "konva/lib/Context";
 import type { Shape, ShapeConfig } from "konva/lib/Shape";
-import { Circle, Group, Shape as ShapeDiv } from "react-konva";
+import { Circle, Group, Shape as ShapeDiv, Text } from "react-konva";
 
 import { useFlowInteractions } from "@/controllers/interaction";
 import { computeLineGeometry } from "@/models/geometry";
@@ -81,6 +81,8 @@ export function FlowView({ flow }: { flow: Flow }) {
         ctx.strokeShape(shape);
     }
 
+    const width = Math.hypot(end.x - start.x, end.y - start.y);
+
     return (
         <Group opacity={opacity}>
             <Circle x={mid.x} y={mid.y} radius={18} onClick={(e) => onClick(e.evt)} />
@@ -89,6 +91,18 @@ export function FlowView({ flow }: { flow: Flow }) {
                 hitFunc={hit}
                 onClick={(e) => onClick(e.evt)}
                 stroke={stroke}
+            />
+            <Text
+                x={mid.x}
+                y={mid.y + 18}
+                width={width / 2}
+                offsetX={width / 4}
+                align="center"
+                verticalAlign="middle"
+                text={flow.label ?? ""}
+                fontSize={12}
+                fill={stroke}
+                wrap="word"
             />
         </Group>
     );
