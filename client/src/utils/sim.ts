@@ -5,7 +5,7 @@ export function haveNonEmptyLabels(entities: (Node | Stock | Flow)[]): boolean {
 }
 
 export function haveUniqueLabels(entities: (Node | Stock | Flow)[]): boolean {
-    const names = entities.map((e) => e.label.trim());
+    const names = entities.map((e) => e.label && e.label.trim());
     return new Set(names).size === names.length;
 }
 
